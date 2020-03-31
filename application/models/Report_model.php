@@ -61,8 +61,8 @@ class Report_model extends CI_Model {
 
     function get_customer_most_paid() {
         $total_paid = $this->get_max_paid_for_customer_most_paid()->max_paid;
-        
-        $this->db->select("customer.*, COUNT(*) as checkin_count, SUM(  `room_sales_price` +  `total_service_price` ) as total_paid")->from("room_sales"); 
+
+        $this->db->select("any_value(customer.customer_firstname) AS customer_firstname, any_value(customer.customer_lastname) AS customer_lastname, any_value(customer.customer_TCno) AS customer_TCno, COUNT(*) as checkin_count, SUM(  `room_sales_price` +  `total_service_price` ) as total_paid")->from("room_sales"); 
         $this->db->join("customer", "customer.customer_id = room_sales.customer_id");
         $this->db->group_by("room_sales.customer_id")->having("total_paid = '$total_paid'");
         $query = $this->db->get();
