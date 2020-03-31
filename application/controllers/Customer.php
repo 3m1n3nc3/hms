@@ -46,7 +46,11 @@ class Customer extends Admin_Controller
 		else
 		{
 			$page_title = "Add Customer";
-			$data = array('title' => $page_title . ' - ' . HOTEL_NAME, 'page' => 'reservation'); 
+			$data = array(
+				'title' => $page_title . ' - ' . HOTEL_NAME, 
+				'page' => 'reservation',
+        		'sub_page_title' => $page_title
+        	); 
 
 			$this->load->view($this->h_theme.'/header', $data);
 
@@ -61,12 +65,12 @@ class Customer extends Admin_Controller
 	{	
 		$customer = $this->customer_model->get_customer(['id' => $id]); 
 		$viewdata = array('customer' => $customer); 
-
+ 
 		$post = $this->input->post();
 		if ($post) 
-		{ 
+		{  
 			$unique_email = ($customer['customer_email'] !== $post['customer_email'] ? '|is_unique[customer.customer_email]' : '');
-			$unique_tel = ($customer['customer_telephone'] !== $post['customer_telephone'] ? '|is_unique[customer.customer_telephonecustomer_telephone]' : '');
+			$unique_tel = ($customer['customer_telephone'] !== $post['customer_telephone'] ? '|is_unique[customer.customer_telephone]' : '');
 
         	$this->form_validation->set_error_delimiters('<small class="text-danger pt-0">', '</small>'); 
 			$this->form_validation->set_rules('customer_firstname', 'First Name', 'trim|required|alpha'); 

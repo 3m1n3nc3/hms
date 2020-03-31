@@ -3,6 +3,10 @@
 This is a starter template page. Use this page to start your new project from
 scratch. This page gets rid of all links and provides the needed markup only.
 -->
+<?php 
+  $list_services = $this->services_model->get_service();
+  $employee = $this->employee_model->getEmployee($this->uid, 1);
+?>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -16,6 +20,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
     <!-- icheck bootstrap -->
     <link rel="stylesheet" href="<?= base_url('backend/modern/plugins/icheck-bootstrap/icheck-bootstrap.min.css'); ?>">
+    
+    <!-- Datatables -->
+    <?php if (isset($use_table) && $use_table): ?>
+        <link rel="stylesheet" href="<?php echo base_url(); ?>backend/modern/plugins/datatables-bs4/css/dataTables.bootstrap4.css">
+    <?php endif ?>
     
     <!-- fullCalendar -->
     <?php if (isset($has_calendar)): ?>  
@@ -72,50 +81,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <!-- Right navbar links -->
         <ul class="navbar-nav ml-auto">
 
-          <!-- Messages Dropdown Menu -->
-          <li class="nav-item dropdown">
-            <a class="nav-link" data-toggle="dropdown" href="#">
-              <i class="far fa-comments"></i>
-              <span class="badge badge-danger navbar-badge">3</span>
-            </a>
-            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-              <a href="#" class="dropdown-item">
-                <!-- Message Start -->
-                <div class="media">
-                  <img src="<?= base_url('backend/modern/dist/img')?>/user1-128x128.jpg" alt="User Avatar" class="img-size-50 mr-3 img-circle">
-                  <div class="media-body">
-                    <h3 class="dropdown-item-title">
-                    Brad Diesel
-                    <span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>
-                    </h3>
-                    <p class="text-sm">Call me whenever you can...</p>
-                    <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
-                  </div>
-                </div>
-                <!-- Message End -->
-              </a> 
-              <div class="dropdown-divider"></div>
-              <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
-            </div>
-          </li>
+          <!-- Add Messages Dropdown Menu Here --> 
 
-          <!-- Notifications Dropdown Menu -->
-          <li class="nav-item dropdown">
-            <a class="nav-link" data-toggle="dropdown" href="#">
-              <i class="far fa-bell"></i>
-              <span class="badge badge-warning navbar-badge">15</span>
-            </a>
-            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-              <span class="dropdown-header">15 Notifications</span>
-              <div class="dropdown-divider"></div>
-              <a href="#" class="dropdown-item">
-                <i class="fas fa-envelope mr-2"></i> 4 new messages
-                <span class="float-right text-muted text-sm">3 mins</span>
-              </a> 
-              <div class="dropdown-divider"></div>  
-              <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
-            </div>
-          </li>
+          <!-- Add Notifications Dropdown Menu Here --> 
 
           <?php if(UID): ?> 
           <li class="nav-item dropdown user-menu">
@@ -129,13 +97,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <img src="<?= base_url('backend/modern/dist/img')?>/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
 
                 <p>
-                  <?=FULLNAME?> - Web Developer
-                  <small>Member since Nov. 2012</small>
+                  <?=FULLNAME?> - <?= $employee['employee_type']?>
+                  <small>Employed <?= date('M. d Y', strtotime($employee['employee_hiring_date']))?></small>
                 </p>
               </li> 
               <!-- Menu Footer-->
               <li class="user-footer bg-warning">
-                <a href="#" class="btn btn-default btn-flat">Profile</a>
+                <a href="<?=site_url('employee/profile/'.$this->uid)?>" class="btn btn-default btn-flat">Profile</a>
                 <a href="<?=site_url('login/logout')?>" class="btn btn-default btn-flat float-right">Sign out</a>
               </li>
             </ul>
@@ -212,8 +180,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </a>
               </li> 
 
-              <li class="nav-item has-treeview <?= ($page == "sales-services" || $page == "inventory" ? 'menu-open' : '') ?>">
-                <a href="#" class="nav-link <?= ($page == "sales-services" || $page == "inventory" ? 'active' : '') ?>">
+              <li class="nav-item has-treeview <?= ($page == "sales-services" || $page == "inventory" || $page == "sales-records" ? 'menu-open' : '') ?>">
+                <a href="#" class="nav-link <?= ($page == "sales-services" || $page == "inventory" || $page == "sales-records" ? 'active' : '') ?>">
                   <i class="nav-icon fas fa-store"></i>
                   <p>
                     Sales Services
@@ -233,8 +201,70 @@ scratch. This page gets rid of all links and provides the needed markup only.
                       <p>Inventory</p>
                     </a>
                   </li> 
+                  <li class="nav-item">
+                    <a href="<?= site_url('services/sales_records')?>" class="nav-link <?= ($page == "sales-records" ? 'active' : '')?>">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Sales Records</p>
+                    </a>
+                  </li> 
                 </ul>
               </li>
+              
+              <?php if ($list_services): ?>
+                <li class="nav-item has-treeview <?= ($page == "service-point" ? 'menu-open' : '') ?>">
+                  <a href="#" class="nav-link <?= ($page == "service-point" ? 'active' : '') ?>">
+                    <i class="nav-icon fas fa-store-alt"></i>
+                    <p>
+                      Service Point
+                      <i class="right fas fa-angle-left"></i>
+                    </p>
+                  </a>
+                  <?php foreach ($list_services AS $service): ?>
+                  <?php $active = isset($active_page) && $active_page == $service->service_name ? ' active' : '' ?>
+                  <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                      <a href="<?= site_url('service/point/'.$service->service_name)?>" class="nav-link<?= $active?>">
+                        <i class="far fa-circle nav-icon"></i>
+                        <p><?= $service->service_name?></p>
+                      </a>
+                    </li>  
+                  </ul>
+                  <?php endforeach; ?>
+                </li>
+              <?php endif; ?>
+
+              <li class="nav-item has-treeview <?= ($page == "cashier-report" || $page == "expenses-register" ? 'menu-open' : '')?>">
+                <a href="#" class="nav-link <?= ($page == "cashier-report" || $page == "expenses-register" ? 'active' : '')?>">
+                  <i class="nav-icon fas fa-calculator"></i>
+                  <p>
+                    Cashier
+                    <i class="right fas fa-angle-left"></i>
+                  </p>
+                </a>  
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="<?= site_url('accounting/cashier')?>" class="nav-link <?= ($page == "cashier-report" ? 'active' : '')?>">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Cashier's Report</p>
+                    </a>
+                  </li> 
+                  <li class="nav-item">
+                    <a href="<?= site_url('accounting/cashier/expenses_register')?>" class="nav-link <?= ($page == "expenses-register" ? 'active' : '')?>">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Expenses Register</p>
+                    </a>
+                  </li>  
+                </ul> 
+              </li>
+
+              <li class="nav-item">
+                <a href="<?= site_url('employee')?>" class="nav-link <?= ($page == "employee" ? 'active' : '')?>">
+                  <i class="nav-icon fas fa-users"></i>
+                  <p>
+                    Employees
+                  </p>
+                </a>
+              </li> 
 
             </ul>
           </nav>
@@ -250,7 +280,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <div class="container-fluid">
             <div class="row mb-2">
               <div class="col-sm-6">
-                <h1 class="m-0 text-dark"><?= ucwords(str_ireplace('-', ' ', str_ireplace('_', ' ', $page)))?></h1>
+                <?php $sub_page_title = isset($sub_page_title) ? ' - ' . $sub_page_title : ''?>
+                <h1 class="m-0 text-dark">
+                  <span class="font-weight-bold"><?= ucwords(supr_replace($page))?></span>
+                  <?= $sub_page_title ?>
+                </h1>
               </div><!-- /.col -->
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
@@ -259,14 +293,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   </li>
                   <?php if ($this->uri->segment(1, NULL) && !$this->uri->segment(2, NULL)): ?>
                     <li class="breadcrumb-item active">
-                      <?= ucwords(str_ireplace('-', ' ',$this->uri->segment(1, NULL))) ?>
+                      <?= ucwords(supr_replace($this->uri->segment(1, NULL))) ?>
                     </li> 
                   <?php elseif ($this->uri->segment(1, NULL) && $this->uri->segment(2, NULL)): ?>
                     <li class="breadcrumb-item">
-                      <a href="<?= site_url($this->uri->segment(1, NULL)) ?>"><?= ucwords(str_ireplace('-', ' ',$this->uri->segment(1, NULL))) ?></a>
+                      <a href="<?= site_url($this->uri->segment(1, NULL)) ?>"><?= ucwords(supr_replace($this->uri->segment(1, NULL))) ?></a>
                     </li>
                     <li class="breadcrumb-item active">
-                      <?= ucwords(str_ireplace('-', ' ',$this->uri->segment(2, NULL))) ?>
+                      <?= ucwords(supr_replace($this->uri->segment(2, NULL))) ?>
                     </li> 
                   <?php endif; ?> 
                 </ol>

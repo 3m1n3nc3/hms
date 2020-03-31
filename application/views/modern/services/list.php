@@ -29,6 +29,8 @@
 	              <div class="card-body">
 		          	<?= form_open('services/sale') ?>
 			            <div class="row"> 
+                            <input type="hidden" id="last_item_id" value="">
+
 			                <div class="col-md-6">
 			                  	<!-- text input -->
 			                  	<div class="form-group">

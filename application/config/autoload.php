@@ -139,5 +139,6 @@ $autoload['language'] = array('hmsystem_lang');
 */
 $autoload['model'] = array(
     'user_model', 'employee_model', 'room_model', 'departments_model', 'services_model', 'medical_service_model', 
-    'report_model', 'reservation_model', 'customer_model', 'sport_facility_model', 'massage_room_model'
+    'report_model', 'reservation_model', 'customer_model', 'sport_facility_model', 'massage_room_model', 
+    'accounting_model'
 );

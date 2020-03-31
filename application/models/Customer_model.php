@@ -61,16 +61,28 @@ class Customer_model extends CI_Model {
 //        return $this->db->affected_rows();
     }
 
+    // function _get_active_customers()
+    // {
+    //     $date = date('Y-m-d');
+    //     $q = $this->db->free;
+    //     $q = $this->db->query("CALL get_customers('$date')");
+
+    //     $data = array();
+    //     foreach ($q->result() as $customer) {
+    //         $data[] = $customer;
+    //     }
+    //     return $data;
+    // } 
+
     function get_active_customers()
     {
-        $date = date('Y-m-d');
-        $q = $this->db->query("CALL get_customers('$date')");
-
-        $data = array();
-        foreach ($q->result() as $customer) {
-            $data[] = $customer;
-        }
-        return $data;
+        $date = date('Y-m-d');  
+        $this->db->select("*")->from("room_sales");
+        $this->db->where("checkout_date >=", "$date");
+        $this->db->where("checkin_date <=", "$date");
+        $this->db->join("customer", "room_sales.customer_id=customer.customer_id");
+        $q = $this->db->get(); 
+        return $q->result();
     }
 
     function delete_customer($customer_id)

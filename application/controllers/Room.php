@@ -35,7 +35,11 @@ class Room extends Admin_Controller {
 				redirect("room");
 			}
 		}
-		$data = array('title' => 'Add Rooms - ' . HOTEL_NAME, 'page' => 'room');
+		$data = array(
+			'title' => 'Add Rooms - ' . HOTEL_NAME, 
+			'page' => 'room',
+        	'sub_page_title' => 'Add Rooms'
+        );
 		$this->load->view($this->h_theme.'/header', $data);
 
 		$room_types = $this->room_model->get_room_types();

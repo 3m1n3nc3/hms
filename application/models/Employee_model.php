@@ -6,19 +6,23 @@ class Employee_model extends CI_Model {
     {
         // Call the Model constructor
         parent::__construct();
+        $this->CI = get_instance();
+        $this->CI->config->load('pagination');
     }
     
-    function get_employees()
+    function get_employees($data = array())
     {
+        if (isset($data['page'])) {
+            $this->db->limit($this->config->item('per_page'), $data['page']);
+        }
+
+        $this->db->order_by('employee_id DESC');
         $query = $this->db->from('employee')->join('department', 'department.department_id=employee.department_id')->get();
         $data = array();
 
         foreach (@$query->result() as $row)
         {
-            $data[] = $row;
-            // $row->customer_id
-            // $row->customer_username
-            // $data[0]->customer_id
+            $data[] = $row; 
         }
         if(count($data))
             return $data;
@@ -26,29 +30,17 @@ class Employee_model extends CI_Model {
     } 
 
     function addEditEmployee($data)
-    {
-        $save = array(
-            'employee_username' => $data['username'], 
-            'employee_password' => $data['password'], 
-            'employee_firstname' => $data['firstname'], 
-            'employee_lastname' => $data['lastname'], 
-            'employee_telephone' => $data['telephone'], 
-            'employee_email' => $data['email'], 
-            'department_id' => $data['department_id'], 
-            'employee_type' => $data['type'], 
-            'employee_salary' => $data['salary'], 
-            'employee_hiring_date' => $data['hiring_date']
-        ); 
-        
+    {       
         if (isset($data['employee_id'])) 
         { 
             $this->db->where('employee_id', $data['employee_id']);
-            $this->db->update('employee', $save); 
+            $this->db->update('employee', $data); 
+            return $this->db->affected_rows();
         }
         else
         {
-            $this->db->insert('employee', $save);
-            return $this->db->affected_rows();
+            $this->db->insert('employee', $data);
+            return $this->db->insert_id();
         }
     } 
 
@@ -58,10 +50,20 @@ class Employee_model extends CI_Model {
         return $this->db->affected_rows();
     } 
 
-    function getEmployee($employee_id)
+    function getEmployee($employee_id, $get_array = null)
     {
         $query = $this->db->get_where('employee', array('employee_id' => $employee_id));
+        if ($get_array) {
+            return $query->row_array();
+        }
         return $query->result();
+    }
+
+    function employee_department($employee_id)
+    {
+        $this->db->where('department_id', $employee_id);
+        $query = $this->db->from('department')->get(); 
+        return $query->row_array();
     }
 
     function getDepartments()

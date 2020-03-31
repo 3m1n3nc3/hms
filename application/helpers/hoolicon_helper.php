@@ -70,3 +70,15 @@ if ( ! function_exists('check_login'))
             redirect("login");
     } 
 }
+
+if ( ! function_exists('supr_replace'))
+{
+    function supr_replace($string = '', $predef = '')
+    {
+        if (!$predef) {
+            $string = str_ireplace('_', ' ', $string);
+            $string = str_ireplace('-', ' ', $string);
+        }
+        return $string;
+    } 
+}

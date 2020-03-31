@@ -48,26 +48,22 @@ class Hms_parser
     }
 
 
-    public function update_stock($data = array())
+    public function update_stock($items = array(), $quantity = array())
     {
-        foreach ($data as $key => $sid) 
+        foreach ($items as $key => $sid) 
         {
-            $query = $this->CI->db->get_where('sales_service_stock', array('item_id' => $sid));
-            $res = $query->row_array();
+            $res = $this->CI->services_model->get_stock(array('item_id' => $sid));
 
-            $data['item_id'] = $sid;
+            $items['item_id'] = $sid;
 
             if ($res['item_quantity'] > 0) 
             {
-                $new_quantity = ($res['item_quantity']-1);
-                $data['item_quantity'] = $new_quantity;
+                $sub_quantity = isset($quantity[$key]) ? $quantity[$key] : 1;
+                $new_quantity = ($res['item_quantity']-$sub_quantity);
+                $items['item_quantity'] = $new_quantity;
 
-                $this->CI->services_model->update_stock($data); 
-            }
-            else
-            {
-                $this->CI->services_model->delete_stock($data); 
-            }
+                $this->CI->services_model->update_stock($items); 
+            } 
         }
     } 
 }

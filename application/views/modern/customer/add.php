@@ -56,7 +56,7 @@
 	                  	</div>
 	                </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <!-- text input -->
                         <div class="form-group">
                             <label for="address">Address</label>
@@ -65,7 +65,7 @@
                         </div>
                     </div>   
 
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <!-- text input -->
                         <div class="form-group">
                             <label for="city">City</label>
@@ -74,7 +74,7 @@
                         </div>
                     </div> 
 
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <!-- text input -->
                         <div class="form-group">
                             <label for="state">State</label>
@@ -83,7 +83,7 @@
                         </div>
                     </div>  
 
-	                <div class="col-md-6">
+	                <div class="col-md-4">
 	                  	<!-- text input -->
 	                  	<div class="form-group">
 	                    	<label for="country">Country</label>

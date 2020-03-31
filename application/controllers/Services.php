@@ -4,7 +4,7 @@ class Services extends Admin_Controller {
 
 	public function index()
 	{
-		$services = $this->services_model->get_restaurants();
+		$services = $this->services_model->get_service();
 		$customers = $this->customer_model->get_active_customers();  
 
 		$viewdata = array('services' => $services, 'customers' => $customers);
@@ -13,6 +13,34 @@ class Services extends Admin_Controller {
 		$this->load->view($this->h_theme.'/header', $data);
 		$this->load->view($this->h_theme.'/services/list',$viewdata);
 		$this->load->view($this->h_theme.'/footer');
+	}
+
+	public function sales_records($set_service = '')
+	{  
+		$services = $this->services_model->get_service();
+		$customers = $this->customer_model->get_active_customers(); 
+
+		$config['base_url']   = site_url('services/inventory/');
+        $config['total_rows'] = count($this->services_model->get_stock()); 
+
+        $this->pagination->initialize($config);
+        $_page = $this->uri->segment($set_service ? 3 : 4, 0);
+
+		$inventory = $this->services_model->get_stock(['page' => $_page]);
+
+		$viewdata = array(
+			'inventory' => $inventory, 
+			'services' => $services, 
+			'customers' => $customers, 
+			'use_table' => TRUE, 
+			'table_method' => 'sales_records'
+		);  
+        $viewdata['pagination'] = $this->pagination->create_links();
+
+		$data = array('title' => 'Sales Records - ' . HOTEL_NAME, 'page' => 'sales-records');
+		$this->load->view($this->h_theme.'/header', $data);
+		$this->load->view($this->h_theme.'/services/sales_records',$viewdata);
+		$this->load->view($this->h_theme.'/footer', $viewdata);
 	}
 
 	public function inventory($set_service = '')
@@ -27,18 +55,19 @@ class Services extends Admin_Controller {
 
 		$inventory = $this->services_model->get_stock(['page' => $_page]);
 
-		$viewdata = array('inventory' => $inventory);  
+		$viewdata = array('inventory' => $inventory, 'use_table' => TRUE, 'table_method' => 'inventory');  
         $viewdata['pagination'] = $this->pagination->create_links();
 
-		$data = array('title' => 'Sales Services - ' . HOTEL_NAME, 'page' => 'inventory');
+		$data = array('title' => 'Inventory - ' . HOTEL_NAME, 'page' => 'inventory');
 		$this->load->view($this->h_theme.'/header', $data);
 		$this->load->view($this->h_theme.'/services/inventory',$viewdata);
-		$this->load->view($this->h_theme.'/footer');
+		$this->load->view($this->h_theme.'/footer', $viewdata);
 	}
 
-	public function add_inventory($id = '')
+	public function add_inventory($set_item_id = '')
 	{
-		$services = $this->services_model->get_restaurants();
+		$services = $this->services_model->get_service();
+		$inventory_item = $this->services_model->get_stock(['item_id' => $set_item_id]);  
 
 		if($this->input->post("item_name"))
 		{
@@ -54,17 +83,29 @@ class Services extends Admin_Controller {
 	            'item_quantity' => $item_quantity,
 	            'item_price' => $item_price,
 	            'item_service' => $item_service,
+		        'employee_id' => $this->uid,
 	            'item_add_date' => date('Y-m-d H:m:s')
 	        );
+	        if ($set_item_id) 
+	        {
+	        	$save['item_id'] = $set_item_id;
+	        }
 				
 			$this->services_model->add_stock($save);
-			$this->session->set_flashdata('message', alert_notice('New Inventory Item added', 'success')); 
+			$mit = $inventory_item ? 'updated' : 'added';
+			$this->session->set_flashdata('message', alert_notice('Inventory Item '.$mit, 'success')); 
 			redirect("services/inventory");
 		}
 
-		$viewdata = array('services' => $services);  
+		$tl = $inventory_item ? 'Update' : '';
+		$viewdata = array(
+			'services' => $services, 
+			'item_id' => $set_item_id, 
+			'inventory' => $inventory_item, 
+			'tl' => $tl
+		);  
 
-		$data = array('title' => 'Add Restaurant - ' . HOTEL_NAME, 'page' => 'inventory');
+		$data = array('title' => $tl.' Inventory - ' . HOTEL_NAME, 'page' => 'inventory');
 
 		$this->load->view($this->h_theme.'/header', $data);
 		$this->load->view($this->h_theme.'/services/add_inventory', $viewdata);
@@ -103,39 +144,88 @@ class Services extends Admin_Controller {
 	public function sale()
 	{
 		$post = $this->input->post();
-		$items_array = $this->input->post('stock_item');
-		$items = implode(',', $items_array);
 
-        $save = array(
-            'service_name' => $post['service'],
-            'customer_id' => $post['customer'],
-            'order_items' => $items,
-            'order_price' => $post['price'],
-            'order_date' => $post['date'],
-            'ordered_datetime' => date('Y-m-d H:m:s')
-        );
-
-		if($this->input->post("stock_item"))
+		if(!$this->input->post("stock_item"))
 		{
-			$this->hms_parser->update_stock($items_array);
-			$this->services_model->order_service($save);
-			$this->session->set_flashdata('message', alert_notice(count($items_array).' Items Sold', 'success')); 
-			redirect("services");
+			$this->session->set_flashdata('message', alert_notice(' Order not placed, No items where selected', 'error')); 
+		}
+		else
+		{ 
+			$items_array = $this->input->post('stock_item');
+			$items = implode(',', $items_array);
+
+			$quantity_array = $this->input->post('stock_qty');
+			$quantity = implode(',', $quantity_array);
+
+			$stock_item_name = $this->input->post('stock_item_name');
+
+			$errors = []; $sum_qty = 0;
+	        foreach ($items_array as $key => $sid) 
+	        {
+	            $res = $this->CI->services_model->get_stock(array('item_id' => $sid)); 
+
+	            if ($res)
+            	{	
+            		$real_quantity = ($quantity_array ? $quantity_array[$key] : 1);
+
+            		if ($real_quantity == 0) 
+            		{
+            			$errors[] .= 'You can\'t make a request for 0 '.$stock_item_name[$key];
+            		}
+            		elseif ($res['item_quantity'] < $real_quantity) 
+	            	{
+	            		$errors[] .= 'There are less than '.$real_quantity.' '.$stock_item_name[$key].' in stock';
+	            	} 
+
+            		$sum_qty += $real_quantity;
+            	}
+	            else
+	            {
+            		$errors[] .= $stock_item_name[$key].' is no longer available in stock';
+            	}
+	        }
+
+	        if (empty($errors)) { 
+		        $save = array(
+		            'service_name' => $post['service'],
+		            'customer_id' => $post['customer'],
+		            'order_items' => $items,
+		            'order_quantity' => $quantity,
+		            'order_price' => $post['price'],
+		            'order_date' => $post['date'],
+		            'employee_id' => $this->uid,
+		            'ordered_datetime' => date('Y-m-d H:m:s')
+		        );
+
+				$this->hms_parser->update_stock($items_array, $quantity_array);
+				$this->services_model->order_service($save);
+				$this->session->set_flashdata('message', alert_notice($sum_qty.' Items Sold', 'success'));
+			}
+			else
+			{ 
+				for ($i = 0; $i < count($errors); $i++) {
+					$this->session->set_flashdata('message', alert_notice($errors[$i], 'error')); 
+				}
+
+			}
 		} 
+		redirect("services");
 	}
 
 	function delete($service_name)
 	{
 		$service_name = urldecode($service_name);
+		$this->session->set_flashdata('message', alert_notice('Sales Service Item deleted', 'success')); 
 		$this->services_model->deleteService($service_name);
 		redirect("services");
 	}
 
-	function deleteinventory($item)
+	function delete_inventory($item)
 	{
 		$service_name = urldecode($service_name);
-		$this->services_model->deleteService($service_name);
-		redirect("services");
+		$this->session->set_flashdata('message', alert_notice('Inventory Item deleted', 'success')); 
+		$this->services_model->delete_stock(['item_id' => $item]);
+		redirect("services/inventory");
 	}
 
 	public function edit($get_service_name)
@@ -163,11 +253,18 @@ class Services extends Admin_Controller {
 		}
 		$data = array('title' => 'Edit Sales Service - ' . HOTEL_NAME, 'page' => 'sales-services');
 		$this->load->view($this->h_theme.'/header', $data);
-		$restaurant = $this->services_model->getService($get_service_name); 
-		$viewdata = array('service'  => $restaurant[0]);
+		$service = $this->services_model->getService($get_service_name); 
+		$viewdata = array('service'  => $service[0]);
 		$this->load->view($this->h_theme.'/services/edit',$viewdata);
 
 		$this->load->view($this->h_theme.'/footer'); 
+	}
+
+	public function calculator()
+	{	
+		$item_id = $this->input->post('item_id');
+		$stock_item = $this->services_model->get_stock(['item_id' => $item_id]);
+		print_r($stock_item);
 	}
 
 	public function list_stock($service = "")
@@ -176,41 +273,57 @@ class Services extends Admin_Controller {
 		$stock_list = $this->services_model->get_stock(['item_service' => $get_service_name]);
 
 		$stock_item_array = array();
+		$av_qty = 0;
+
 		if ($stock_list) 
 		{ 
 			foreach ($stock_list as $stock_item) 
 			{ 
-				$stock_item_array[] = '
-				<div class="col-4">
-					<div class="info-box">
-						<span class="info-box-icon bg-danger"><i class="fas fa-utensils"></i></span>
-						<div class="info-box-content">
-							<div class="form-group clearfix info-box-text">
-								<div class="icheck-primary d-inline">
-									<input type="checkbox" id="'.$stock_item['item_name'].'" name="stock_item[]" value="'.$stock_item['item_id'].'" data-price="'.$stock_item['item_price'].'" onchange="update_price(this, '.$stock_item['item_price'].')">
-									<label for="'.$stock_item['item_name'].'">
-										'.$stock_item['item_name'].'
-									</label>
-								</div>  
+				$av_qty += $stock_item['item_quantity'];
+
+				if ($stock_item['item_quantity'] > 0) 
+				{ 
+					$stock_item_array[] = '
+					<input type="hidden" name="stock_item_name[]" value="'.$stock_item['item_name'].'">
+					<input type="hidden" id="mult_'.$stock_item['item_id'].'" value="1">
+					<input type="hidden" id="prev_'.$stock_item['item_id'].'" value="1">
+					<div class="col-4">
+						<div class="info-box">
+							<span class="info-box-icon bg-danger"><i class="fas fa-utensils"></i></span>
+							<div class="info-box-content">
+								<div class="form-group clearfix info-box-text">
+									<div class="icheck-primary d-inline">
+										<input type="checkbox" id="'.$stock_item['item_name'].'" name="stock_item[]" value="'.$stock_item['item_id'].'" data-price="'.$stock_item['item_price'].'" data-id="'.$stock_item['item_id'].'" onchange="update_price(this, '.$stock_item['item_price'].')">
+										<label for="'.$stock_item['item_name'].'">
+											'.$stock_item['item_name'].'
+										</label>
+									</div>  
+								</div> 
+								<span class="info-box-number" id="price_'.$stock_item['item_name'].'">
+									'.$stock_item['item_price'].'
+								</span>
 							</div> 
-							<span class="info-box-number" id="price_'.$stock_item['item_name'].'">
-								'.$stock_item['item_price'].'
-							</span>
 						</div> 
-					</div> 
-				</div>';
-			}
+						<div class="form-group row">
+							<label for="qty_'.$stock_item['item_name'].'" class="col-sm-2 col-form-label">
+								Qty
+							</label>
+							<input type="number" min="1" max="'.$stock_item['item_quantity'].'" data-name="'.$stock_item['item_name'].'" id="qty_'.$stock_item['item_id'].'" name="stock_qty[]" class="form-control form-control-sm col-sm-3" value="1" onkeyup="price_calculator(this, '.$stock_item['item_price'].')" onchange="price_calculator(this, '.$stock_item['item_price'].')">
+							<label class="text-info ml-2"> '.$stock_item['item_quantity'].' Available</label>
+						</div> 
+					</div>';
+				} 
+			} 
 		}
-		else
-		{
+		
+		if ($av_qty < 1) 
+			{
 			$stock_item_array[] = '<div class="col-12">'.alert_notice('This store has no items on stock', 'error', FALSE, FALSE).'</div>';
 		}
 		$script = '
 		<script> 
-			$(\'input[type="checkbox"]\').click(function() {
-				var checked_box = $(this);
-				if (checked_box.prop("checked") == true) {  
-				}
+			$(\'input[name="stock_qty[]"]\').change(function() {
+				var quantity = $(this).val();
 			});
 		</script>';
 

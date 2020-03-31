@@ -11,7 +11,7 @@ class Welcome extends Admin_Controller {
 		
 		$data = array('title' => HOTEL_NAME, 'page' => 'dashboard', 'has_calendar' => TRUE);
 		$this->load->view($this->h_theme.'/header', $data);
-
+ 
 		$viewdata = array(
 			'today_stats' => $today_stats,
 			'customer_pay_list' => $customer_pay_list,

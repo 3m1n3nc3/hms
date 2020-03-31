@@ -42,6 +42,7 @@
                       <td> <?=$customer->customer_email;?> </td>
                       <td> <?=$customer->customer_TCno;?> </td>
                       <td class="td-actions">
+                        <?php if ($customer->customer_id !== '0'): ?>
                         <a href="<?= site_url('customer/reserve/'.$customer->customer_TCno) ?>" class="btn btn-sm btn-success" data-toggle="tooltip" title="Reserve">
                           <i class="btn-icon-only fa fa-calendar-check text-white"></i>
                         </a>
@@ -51,6 +52,7 @@
                         <a href="<?= site_url('customer/delete/'.$customer->customer_id) ?>" onclick="return confirm('Are you sure ?')" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Delete">
                           <i class="btn-icon-only fa fa-trash text-white"></i>
                         </a>
+                        <?php endif; ?>
                       </td>
                     </tr>
                     <?php endforeach; ?>

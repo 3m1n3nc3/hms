@@ -8,7 +8,7 @@
             </a> 
 
             <?= $this->session->flashdata('message') ?? '' ?>
-		  </div>
+		      </div>
 
           <!-- /.col-md-12 Important Shortcuts -->
  
@@ -24,47 +24,27 @@
                 </div>
               </div>
               <div class="card-body p-1">
-                <table class="table table-striped">
+                <?php if ($inventory): ?> 
+                <table class="table table-striped display" id="datatables_table" style="width: 100%">
                   <thead>
                     <tr>
-					    <th> Item </th>
-					    <th> Available Quantity </th>
-					    <th> Price (Per Item) </th>
-					    <th> Sales Service </th>
-					    <th> Date Added </th>
+        					    <th> Item </th>
+        					    <th> Available Quantity </th>
+        					    <th> Price (Per Item) </th>
+                      <th> Sales Service </th>
+        					    <th> Added By </th>
+        					    <th> Date Added </th>
                       <th class="td-actions"> Actions </th>
                     </tr>
                   </thead>
                   <tbody>
-                    <?php if ($inventory): ?>
-                    <?php foreach ($inventory as $item): ?>
-                    <tr> 
-					    <td> <?=$item['item_name'] ?> </td>
-					    <td> <?=$item['item_quantity'] ?> </td>
-					    <td> <?=$item['item_price'] ?> </td>
-                        <td> <?=$item['item_service'] ?> </td> 
-					    <td> <?=date('Y-m-d', strtotime($item['item_add_date'])) ?> </td> 
-                        <td class="td-actions">
-                            <a href="<?= site_url('services/inventory/'.$item['item_id']) ?>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Edit">
-                                <i class="btn-icon-only fa fa-edit text-white"></i>
-                            </a>
-                            <a href="<?= site_url('services/delete_inventory/'.$item['item_id']) ?>" onclick="return confirm('Are you sure ?')" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Delete">
-                                <i class="btn-icon-only fa fa-trash text-white"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-					<?php else: ?>
-						<tr>
-						    <td colspan="6"><?php alert_notice('No inventory items available', 'info', TRUE) ?></td>
-						</tr>
-					<?php endif;?>
                   </tbody>
                 </table>
+                <?php else: ?>
+                    <?php alert_notice('No inventory items available', 'info', TRUE, FALSE) ?>
+                <?php endif;?>
               </div>
-            </div>
-            
-            <?= $pagination ?>
+            </div> 
 
           </div>
           <!-- /.col-md-6 -->

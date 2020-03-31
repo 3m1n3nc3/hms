@@ -60,6 +60,34 @@ class Service extends Admin_Controller {
     $this->load->view($this->h_theme.'/footer');
   }
 
+  public function point($service_id = '')
+  {  
+    $service_id = urldecode($service_id);
+
+    $inventory = $this->services_model->get_stock();  
+    $list_services = $this->services_model->get_service();
+    $service = $this->services_model->getService($service_id);
+    $customers = $this->customer_model->get_active_customers(); 
+
+    $data = array(
+        'page' => 'service-point', 
+        'active_page' => $service_id,
+        'title' => 'Service Point - ' . HOTEL_NAME,
+        'sub_page_title' => $service[0]->service_name
+    );
+
+    $viewdata = array(
+        'inventory' => $inventory, 
+        'list_services' => $list_services, 
+        'service' => $service[0] ?? [], 
+        'customers' => $customers,  
+    );  
+
+    $this->load->view($this->h_theme.'/header', $data);
+    $this->load->view($this->h_theme.'/services/service_point', $viewdata);
+    $this->load->view($this->h_theme.'/footer');
+  }
+
 
 }
 

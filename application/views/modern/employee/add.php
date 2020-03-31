@@ -1,86 +1,166 @@
-<div class="container account-container" style="margin: 0 auto;">
-	
-	<div class="content clearfix">
-		
-		<?= form_open('employee/add', ['method' => 'post'])?> 
-			<h1>Add Employee</h1>		
-			
-			<div class="add-fields">
+<!-- Main content -->
+<div class="content">
+  <div class="container-fluid"> 
 
-				<div class="field">
-					<label for="employee_username">Username:</label>
-					<input type="text" id="username" name="username" required value="<?php echo set_value('username') ?>" placeholder="Username"/>
-					<?php echo form_error('username'); ?> 
-				</div> <!-- /field -->
-				
-				<div class="field">
-					<label for="password">Password:</label>
-					<input type="text" id="password" name="password" required value="<?php echo set_value('password') ?>" placeholder="Password"/>
-					<?php echo form_error('password'); ?> 
-				</div> <!-- /password -->
+    <?= $this->session->flashdata('message') ?? '' ?>
 
-				<div class="field">
-					<label for="employee_firstname">First name:</label>
-					<input type="text" id="firstname" name="firstname" required value="<?php echo set_value('firstname') ?>" placeholder="Firstname"/>
-					<?php echo form_error('firstname'); ?> 
-				</div> <!-- /field -->
+    <div class="row">
+      	<!-- /.col-md-4 Important Shortcuts -->
+      	<div class="col-md-12"> 
 
-				<div class="field">
-					<label for="employee_lastname">Last name:</label>
-					<input type="text" id="lastname" name="lastname" required value="<?php echo set_value('lastname') ?>" placeholder="Lastname"/>
-					<?php echo form_error('lastname'); ?> 
-				</div> <!-- /field -->
+        <div class="card">
+          	<div class="card-header">
+            	<h5 class="m-0">
+            		<i class="fa fa-user mx-2 text-gray"></i>
+            		Add a new employee
+            	</h5>
+          	</div>
+          	<div class="card-body">
+            
+	            <?= form_open('employee/add/'.($employee['employee_id'] ?? ''))?> 
+	            <div class="row"> 
 
-				<div class="field">
-					<label for="employee_telephone">Telephone:</label>
-					<input type="text" id="telephone" name="telephone" value="<?php echo set_value('telephone') ?>" placeholder="Telephone"/>
-					<?php echo form_error('telephone'); ?> 
-				</div> <!-- /field -->
+	                <div class="col-md-6">
+	                  	<!-- text input -->
+	                  	<div class="form-group">
+	                    	<label for="username">Username</label>
+	                    	<input type="text" id="username" name="username" class="form-control" value="<?= set_value_switch('username', $employee['employee_username']) ?>" required>
+	                  		<?= form_error('username'); ?>
+	                  	</div>
+	                </div> 
 
-				<div class="field">
-					<label for="employee_email">Email:</label>
-					<input type="text" id="email" name="email" required value="<?php echo set_value('email') ?>" placeholder="Email"/>
-					<?php echo form_error('email'); ?> 
-				</div> <!-- /field -->
+	                <div class="col-md-6">
+	                  	<!-- text input -->
+	                  	<div class="form-group">
+	                    	<label for="password">Password</label>
+	                    	<input type="text" id="password" name="password" class="form-control" value="<?= set_value('password') ?>" <?= !$employee['employee_id'] ? 'required' : ''?>>
+	                  		<?= form_error('password'); ?>
+	                  	</div>
+	                </div> 
 
-				<div class="field">
-					<label for="department_id">Department:</label>
-					<select id="department_id" name="department_id">
-					<?php foreach ($departments as $dept): ?>
-						<option value="<?=$dept->department_id?>"<?php echo set_select('department_id', $dept->department_id) ?>><?=$dept->department_name?></option>
-					<?php endforeach; ?>
-					</select> 
-					<?php echo form_error('department_id'); ?> 
-				</div> <!-- /field -->
+	                <div class="col-md-6">
+	                  	<!-- text input -->
+	                  	<div class="form-group">
+	                    	<label for="firstname">First Name</label>
+	                    	<input type="text" id="firstname" name="firstname" class="form-control" value="<?= set_value_switch('firstname', $employee['employee_firstname']) ?>" required>
+	                  		<?= form_error('firstname'); ?>
+	                  	</div>
+	                </div> 
 
-				<div class="field">
-					<label for="employee_type">Employee Type:</label>
-					<input type="text" id="type" name="type" required value="<?php echo set_value('type') ?>" placeholder="Employee Type"/>
-					<?php echo form_error('type'); ?> 
-				</div> <!-- /field -->
+	                <div class="col-md-6">
+	                  	<!-- text input -->
+	                  	<div class="form-group">
+	                    	<label for="lastname">Last Name</label>
+	                    	<input type="text" id="lastname" name="lastname" class="form-control" value="<?= set_value_switch('lastname', $employee['employee_lastname']) ?>" required>
+	                  		<?= form_error('lastname'); ?>
+	                  	</div>
+	                </div> 
 
-				<div class="field">
-					<label for="employee_salary">Employee Salary:</label>
-					<input type="text" id="salary" name="salary" required value="<?php echo set_value('salary') ?>" placeholder="Employee Salary"/>
-					<?php echo form_error('salary'); ?> 
-				</div> <!-- /field -->
+	                <div class="col-md-6">
+	                  	<!-- text input -->
+	                  	<div class="form-group">
+	                    	<label for="email">Email Address</label>
+	                    	<input type="text" id="email" name="email" class="form-control" value="<?= set_value_switch('email', $employee['employee_email']) ?>">
+	                  		<?= form_error('email'); ?>
+	                  	</div>
+	                </div>  
 
-				<div class="field">
-					<label for="employee_hiring_date">Employee Hiring Date:</label>
-					<input type="date" id="hiring_date" name="hiring_date" required value="<?php echo set_value('hiring_date') ?>" placeholder="Employee Hiring Date"/>
-					<?php echo form_error('hiring_date'); ?> 
-				</div> <!-- /field -->
+	                <div class="col-md-6">
+	                  	<!-- text input -->
+	                  	<div class="form-group">
+	                    	<label for="telephone">Phone</label>
+	                    	<input type="text" id="telephone" name="telephone" class="form-control" value="<?= set_value_switch('telephone', $employee['employee_telephone']) ?>" required>
+	                  		<?= form_error('telephone'); ?>
+	                  	</div>
+	                </div> 
 
-			</div> <!-- /login-fields -->
-			
-			<div class="login-actions">
-				
-				<button class="button btn btn-success btn-large">Add</button>
-				
-			</div> <!-- .actions -->
-		<?= form_close()?>
-		
-	</div> <!-- /content -->
-	
-</div> <!-- /account-container -->
-<br>
+                    <div class="col-md-3">
+                        <!-- text input -->
+                        <div class="form-group">
+                            <label for="salary">Salary</label>
+                            <input type="text" id="salary" name="salary" class="form-control" value="<?= set_value_switch('salary', $employee['employee_salary']) ?>" required>
+                            <?= form_error('salary'); ?>
+                        </div>
+                    </div> 
+
+                    <div class="col-md-3">
+                        <!-- text input -->
+                        <div class="form-group">
+                            <label for="hiring_date">Hiring Date</label>
+                            <input type="date" id="hiring_date" name="hiring_date" class="form-control" value="<?= set_value_switch('hiring_date', $employee['employee_hiring_date']) ?>" required>
+                            <?= form_error('hiring_date'); ?>
+                        </div>
+                    </div> 
+
+                    <div class="col-md-3">
+                        <!-- text input -->
+                        <div class="form-group">
+                            <label for="departments_id">Department</label>
+							<select id="department_id" name="department_id" class="form-control">
+							<?php foreach ($departments as $dept): ?>
+								<option value="<?=$dept->department_id?>"<?php echo set_select('department_id', $dept->department_id) ?>><?=$dept->department_name?></option>
+							<?php endforeach; ?>
+							</select> 
+                            <?= form_error('departments_id'); ?>
+                        </div>
+                    </div> 
+
+                    <div class="col-md-3">
+                        <!-- text input -->
+                        <div class="form-group">
+                            <label for="type">Employee Type</label>
+                            <input type="text" id="type" name="type" class="form-control" value="<?= set_value_switch('type', $employee['employee_type']) ?>" required>
+                            <?= form_error('type'); ?>
+                        </div>
+                    </div> 
+
+                    <div class="col-md-12">
+                        <!-- text input -->
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            <textarea id="address" name="address" class="form-control"><?= set_value_switch('address', $employee['employee_address'] ?? '') ?></textarea>
+                            <?= form_error('address'); ?>
+                        </div>
+                    </div>   
+
+                    <div class="col-md-4">
+                        <!-- text input -->
+                        <div class="form-group">
+                            <label for="city">City</label>
+                            <input type="text" id="city" name="city" class="form-control" value="<?= set_value_switch('city', $employee['employee_city'] ?? '') ?>" required>
+                            <?= form_error('city'); ?>
+                        </div>
+                    </div> 
+
+                    <div class="col-md-4">
+                        <!-- text input -->
+                        <div class="form-group">
+                            <label for="state">State</label>
+                            <input type="text" id="state" name="state" class="form-control" value="<?= set_value_switch('state', $employee['employee_state'] ?? '') ?>" required>
+                            <?= form_error('state'); ?>
+                        </div>
+                    </div>  
+
+	                <div class="col-md-4">
+	                  	<!-- text input -->
+	                  	<div class="form-group">
+	                    	<label for="country">Country</label>
+	                    	<input type="text" id="country" name="country" class="form-control" value="<?= set_value_switch('country', $employee['employee_country'] ?? '') ?>" required>
+	                  		<?= form_error('country'); ?>
+	                  	</div>
+	                </div>   
+	  
+	            </div>
+	 
+	            <button class="button btn btn-success">Add</button>
+	            <?= form_close()?>
+            
+          		</div>
+        	</div>
+      	</div>
+      <!-- /.col-md-12 --> 
+    </div>
+    <!-- /.row -->
+  </div><!-- /.container-fluid -->
+</div>
+<!-- /.content -->

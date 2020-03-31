@@ -10,7 +10,7 @@ class Services_model extends CI_Model {
         $this->CI->config->load('pagination');
     }
     
-    function get_restaurants()
+    function get_service()
     {
         $query = $this->db->from('sales_services')->get();
         $data = array();
@@ -92,7 +92,15 @@ class Services_model extends CI_Model {
 
     function add_stock($data = array())
     {  
-        $this->db->insert('sales_service_stock', $data);  
+        if (isset($data['item_id'])) 
+        {
+            $this->db->where('item_id', $data['item_id']);  
+            $this->db->update('sales_service_stock', $data); 
+        }
+        else
+        {
+            $this->db->insert('sales_service_stock', $data);
+        }  
     }
 
     function update_stock($data = array())

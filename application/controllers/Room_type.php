@@ -32,7 +32,11 @@ class Room_type extends Admin_Controller
 			}
 		}
 
-		$data = array('title' => 'Add Room Type - ' . HOTEL_NAME, 'page' => 'room_type');
+		$data = array(
+			'title' => 'Add Room Type - ' . HOTEL_NAME, 
+			'page' => 'room_type',
+        	'sub_page_title' => 'Add Room Type'
+        );
 		$this->load->view($this->h_theme.'/header', $data);
 		$this->load->view($this->h_theme.'/room-type/add', $viewdata);
 		$this->load->view($this->h_theme.'/footer');

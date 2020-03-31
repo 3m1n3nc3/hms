@@ -239,7 +239,6 @@
         console.log("Opening Form...");
         $('#form').fadeIn();
       }
-
     </script>
   </body>
 </html>

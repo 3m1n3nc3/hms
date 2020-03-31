@@ -59,7 +59,29 @@
     <script language="javascript" type="text/javascript" src="<?= base_url('backend/js/full-calendar/fullcalendar.min.js'); ?>"></script>
     <script src="<?= base_url('backend/js/base.js'); ?>"></script> 
 
-    <script src="<?= base_url('backend/js/hhms.js'); ?>"></script>
+    <script src="<?= base_url('backend/js/hhms.js?time='.strtotime('NOW')); ?>"></script>
+
+    <!-- Datatables -->
+    <?php if (isset($use_table) && $use_table): ?>
+      <script src="<?php echo base_url(); ?>backend/modern/plugins/datatables/jquery.dataTables.min.js"></script>
+      <script src="<?php echo base_url(); ?>backend/modern/plugins/datatables-bs4/js/dataTables.bootstrap4.js"></script>
+      <!-- page script -->
+      <script>
+        $(function () {
+          $('#datatables_table').DataTable({  
+              "scrollX": true,    
+            "pageLength" : 10,
+            "serverSide": true,
+            "order": [[0, "asc" ]],
+            "ajax":{
+                  url :  '<?= site_url('tables/datatables/'.$table_method); ?>',
+                  type : 'POST'
+              },
+              rowId: 20
+          }) 
+        })
+      </script>
+    <?php endif ?>
     
     <?php if (isset($has_calendar)): ?>  
     <script>

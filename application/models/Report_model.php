@@ -27,7 +27,7 @@ class Report_model extends CI_Model {
 
     function search_customers($query)
     {
-        $query = $this->db->from("customer")->like('customer_firstname', $query)->or_like('customer_lastname', $query)->get();
+        $query = $this->db->from("customer")->like('customer_firstname', $query)->or_like('customer_lastname', $query)->or_like('customer_TCno', $query)->or_like('customer_email', $query)->or_like('customer_state', $query)->get();
         $data = array();
         foreach ($query->result() as $res) {
             $data[] = $res;
@@ -47,24 +47,26 @@ class Report_model extends CI_Model {
         return $data;
     }
 
+    function get_max_paid_for_customer_most_paid() {
+        $query = $this->db->query("
+            SELECT MAX( total_paid ) AS max_paid
+            FROM (                
+                SELECT customer_id, SUM(  `room_sales_price` +  `total_service_price` ) AS total_paid
+                FROM room_sales
+                GROUP BY  `customer_id`
+            ) AS SRS
+        ");
+        return $query->row();
+    }
+
     function get_customer_most_paid() {
-/*        $query = $this->db->select("customer.* , SUM(  `room_sales_price` +  `total_service_price` ) as total_paid")
-                ->from("room_sales")->join("customer", "customer.customer_id = room_sales.customer_id")
-                ->group_by("customer_id")->having('total_paid = MAX(total_paid)')->get();*/
-        $query = $this->db->query(
-            "SELECT * , COUNT(*) as checkin_count,  SUM(  `room_sales_price` +  `total_service_price` ) AS total_paid
-            FROM room_sales
-            JOIN (
-                SELECT MAX( total_paid ) AS max_paid
-                FROM (                
-                    SELECT customer_id, SUM(  `room_sales_price` +  `total_service_price` ) AS total_paid
-                    FROM room_sales
-                    GROUP BY  `customer_id`
-                ) AS SRS
-            ) AS MRS
-            LEFT JOIN customer ON customer.customer_id = room_sales.customer_id
-            GROUP BY room_sales.customer_id HAVING total_paid = max_paid"// HAVING total_paid = max_paid
-        );
+        $total_paid = $this->get_max_paid_for_customer_most_paid()->max_paid;
+        
+        $this->db->select("customer.*, COUNT(*) as checkin_count, SUM(  `room_sales_price` +  `total_service_price` ) as total_paid")->from("room_sales"); 
+        $this->db->join("customer", "customer.customer_id = room_sales.customer_id");
+        $this->db->group_by("room_sales.customer_id")->having("total_paid = '$total_paid'");
+        $query = $this->db->get();
+        
         $data = array();
         if ($query) {
             foreach ($query->result() as $res) {
