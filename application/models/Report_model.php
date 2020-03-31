@@ -37,9 +37,9 @@ class Report_model extends CI_Model {
 
     function get_customer_freq_list() {
         $this->db->reconnect();
-        $query = $this->db->select("customer.* , SUM(  `room_sales_price` +  `total_service_price` ) as total_paid, COUNT(*) as checkin_count")
+        $query = $this->db->select("any_value(customer.customer_firstname) AS customer_firstname, any_value(customer.customer_lastname) AS customer_lastname, any_value(customer.customer_TCno) AS customer_TCno, SUM( `room_sales_price` +  `total_service_price` ) as total_paid, COUNT(*) as checkin_count")
                 ->from("room_sales")->join("customer", "customer.customer_id = room_sales.customer_id")
-                ->group_by("customer_id")->order_by('checkin_count','DESC')->order_by('total_paid','DESC')->get();
+                ->group_by("room_sales.customer_id")->order_by('checkin_count','DESC')->order_by('total_paid','DESC')->get();
         $data = array();
         foreach ($query->result() as $res) {
             $data[] = $res;
