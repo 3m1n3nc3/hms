@@ -44,6 +44,10 @@
 
                     <?= $this->session->flashdata('message') ?? '' ?>
 
+                    <?= form_open('accounting/cashier'.$filter_query, array('class' => 'my-2'))?>
+                        <button class="btn btn-default" name="print" value="print"><i class="fas fa-print"></i> Print</button>
+                    <?= form_close()?>
+
                     <div class="card">
                         <div class="card-header">
                             <strong class="m-0 p-0">

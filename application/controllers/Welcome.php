@@ -4,6 +4,9 @@ class Welcome extends Admin_Controller {
 
 	public function index()
 	{ 
+        // Check if the user has permission to access this module and redirect to 401 if not
+        error_redirect(has_privilege('dashboard'), '401');
+        
 		$today_stats = $this->report_model->today_stats();
 		$customer_pay_list = $this->report_model->get_customer_freq_list();
 		$customer_most_paid = $this->report_model->get_customer_most_paid();

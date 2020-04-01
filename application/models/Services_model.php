@@ -10,7 +10,7 @@ class Services_model extends CI_Model {
         $this->CI->config->load('pagination');
     }
     
-    function get_service()
+    function get_service() 
     {
         $query = $this->db->from('sales_services')->get();
         $data = array();

@@ -115,6 +115,7 @@
                                         <th> Order Items </th>
                                         <th> Order Quantity (Per Items) </th>
                                         <th> Order Amount </th>
+                                        <th> Ordered By </th>
                                         <th> Sold At </th>
                                         <th> Sold By </th>
                                         <th> Order Time </th>

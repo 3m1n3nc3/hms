@@ -29,6 +29,7 @@
                       <th> Job </th>
                       <th> Email Address</th> 
                       <th class="td-actions"> Actions </th>
+                      <th> <i class="fa fa-key fa-fw text-danger" data-toggle="tooltip" title="Permision"></i> </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -45,17 +46,27 @@
                       <td> <?=$employee->department_name;?> </td>
                       <td> <?=$employee->employee_type;?> </td>
                       <td> <?=$employee->employee_email;?> </td> 
-                      <td class="td-actions">
+                      <td class="td-actions p-0">
                         <?php if ($employee->employee_id !== '0'): ?>
-                        <a href="<?= site_url('employee/profile/'.$employee->employee_id) ?>" class="btn btn-sm btn-success" data-toggle="tooltip" title="Profile">
-                          <i class="btn-icon-only fa fa-user text-white"></i>
+                        <a href="<?= site_url('employee/profile/'.$employee->employee_id) ?>" class="btn btn-sm btn-success m-1" data-toggle="tooltip" title="Profile">
+                          <i class="btn-icon-only fa fa-user text-white fa-fw"></i>
                         </a>
-                        <a href="<?= site_url('employee/add/'.$employee->employee_id) ?>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Edit">
-                          <i class="btn-icon-only fa fa-edit text-white"></i>
+                        <a href="<?= site_url('employee/add/'.$employee->employee_id) ?>" class="btn btn-sm btn-primary m-1" data-toggle="tooltip" title="Edit">
+                          <i class="btn-icon-only fa fa-edit text-white fa-fw"></i>
                         </a>
-                        <a href="<?= site_url('employee/delete/'.$employee->employee_id) ?>" onclick="return confirm('Are you sure ?')" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Delete">
-                          <i class="btn-icon-only fa fa-trash text-white"></i>
+                        <a href="<?= site_url('employee/permissions/assign/'.$employee->employee_id) ?>" class="btn btn-sm btn-warning m-1" data-toggle="tooltip" title="Change Permissions">
+                          <i class="btn-icon-only fa fa-key text-danger fa-fw"></i>
                         </a>
+                        <a href="<?= site_url('employee/delete/'.$employee->employee_id) ?>" onclick="return confirm('Are you sure ?')" class="btn btn-danger btn-sm m-1" data-toggle="tooltip" title="Delete">
+                          <i class="btn-icon-only fa fa-trash text-white fa-fw"></i>
+                        </a>
+                        <?php endif; ?>
+                      </td>
+                      <?php $privilege =  $this->privilege_model->get($employee->role_id); ?>
+                      <td class="text-danger font-weight-bold p-0" data-toggle="tooltip" title="<?=$privilege['title']?> Permision: <?=$privilege['info']?>"> 
+                        <?php if ($privilege): ?>
+                        <?=substr($privilege['title'], 0, 3);?> 
+                        <i class="btn-icon-only fa fa-level-up-alt text-danger fa-fw"></i>
                         <?php endif; ?>
                       </td>
                     </tr>

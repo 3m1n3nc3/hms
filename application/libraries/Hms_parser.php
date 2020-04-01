@@ -37,7 +37,7 @@ class Hms_parser
                 title          : \''.$title.'\',
                 start          : new Date('.$sy.', '.$sm.', '.$sd.'),
                 end            : new Date('.$ey.', '.$em.', '.$ed.'), 
-                url            : \'http://google.com/\',
+                url            : \''.site_url('room/reserved_room/'.$room['room_id'].'/'.$customer['customer_id']. '').'\',
                 backgroundColor: \'#00a65a\', //#f39c12-yellow
                 borderColor    : \'#00a65a\', //yellow
                 textColor      : \'#fff\' //yellow

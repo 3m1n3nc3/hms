@@ -147,8 +147,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </a>
               </li>
 
-              <li class="nav-item has-treeview <?= ($page == "room" || $page == "room_type" ? 'menu-open' : '') ?>">
-                <a href="#" class="nav-link <?= ($page == "room" || $page == "room_type" ? 'active' : '') ?>">
+              <li class="nav-item has-treeview <?= ($page == "room" || $page == "room_type" || $page == "reserved" ? 'menu-open' : '') ?>">
+                <a href="#" class="nav-link <?= ($page == "room" || $page == "room_type" || $page == "reserved" ? 'active' : '') ?>">
                   <i class="nav-icon fas fa-bed"></i>
                   <p>
                     Rooms
@@ -156,6 +156,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   </p>
                 </a>
                 <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="<?= site_url('room/reserved')?>" class="nav-link <?= ($page == "reserved" ? 'active' : '')?>">
+                      <i class="far fa-circle nav-icon"></i>
+                      <p>Reserved</p>
+                    </a>
+                  </li> 
                   <li class="nav-item">
                     <a href="<?= site_url('room')?>" class="nav-link <?= ($page == "room" ? 'active' : '')?>">
                       <i class="far fa-circle nav-icon"></i>

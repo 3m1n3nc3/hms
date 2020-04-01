@@ -20,90 +20,107 @@ class Account_Data {
 
     public function logged_in()
     {    
-        return (bool) $this->CI->session->userdata('admin') or get_cookie('admin');
-    }
-
-    public function user_logged_in()
-    { 
         return (bool) $this->CI->session->userdata('username') or get_cookie('username');
     }    
 
-    public function is_logged_in($default_redirect = false)
-    {
-        $admin = ($this->CI->session->userdata('admin') ? $this->CI->session->userdata('admin') : get_cookie('admin'));
-
-        if (!$admin) {
-
-            $_SESSION['redirect_to'] = current_url();
-            redirect('access/login/admin');
-
-            return false;
-        } else {
-
-            if ($default_redirect) {
-
-                redirect('admin/admin/dashboard');
-            }
-            return true;
-        }
-    }
-
-    public function is_logged_in_user($role = false)
+    public function is_logged_in($role = false)
     {
 
-        if ($this->CI->session->has_userdata('username') or get_cookie('username')) {
+        if ($this->CI->session->has_userdata('username') or get_cookie('username')) 
+        {
             $_user = ($this->CI->session->userdata('username') ? $this->CI->session->userdata('username') : get_cookie('username'));
             $user = $this->fetch($_user);
-            if (!$role) {
-                redirect('access/login');
-            } else {
-                if ($user['role'] == $role) {
+            if (!$role) 
+            {
+                redirect('login');
+            } 
+            else 
+            {
+                if ($user['role'] == $role) 
+                {
                     return true;
-                } else {
-                    redirect($user['role'] . '/unauthorized');
+                } 
+                else 
+                {
+                    redirect('errors/');
                 }
             }
-        } else {
-            $_SESSION['redirect_to_user'] = current_url();
-            redirect('access/login');
+        } 
+        else 
+        {
+            $this->CI->session->userdata('redirect_to', current_url());
+            redirect('login');
         }
     }
 
     public function user_redirect()
     {
-        if ($this->CI->session->has_userdata('username')) {
+        if ($this->CI->session->has_userdata('username')) 
+        {
             $_user = ($this->CI->session->userdata('username') ? $this->CI->session->userdata('username') : get_cookie('username'));
             $user = $this->fetch($_user);
             $role = $user['role'];
-            if ($role == "user") {
-                redirect('users/account');   
-            } else {
-                redirect('access/login');
+            if ($role == "user") 
+            {
+                redirect('welcome/dashboard');   
+            } 
+            else 
+            {
+                redirect('login');
             }
-        } else {
-            redirect('access/login');
+        } 
+        else 
+        {
+            redirect('login');
         }
     }
 
-    public function fetch($id = null, $admin = 0)
+    public function fetch($id = null, $customer = 0)
     {   
-        if ($admin === 0) {
-            $data = $this->CI->user_model->get($id); 
-        } else {
-            $data = $this->CI->admin_model->get($id); 
+        if ($customer === 1) 
+        {
+            $data = $this->CI->customer_model->get_customer(['id' =>5]); 
+
+            if ($data['customer_firstname'] && $data['customer_lastname']) 
+            {
+                $data['name'] = $data['customer_firstname'] . ' ' . $data['customer_lastname'];
+            } 
+            elseif ($data['customer_firstname']) 
+            {
+                $data['name'] = $data['customer_firstname'];
+            } 
+            elseif ($data['customer_lastname']) 
+            {
+                $data['name'] = $data['customer_lastname'];
+            } 
+            elseif ($data) 
+            {
+                $data['name'] = $data['customer_username'];
+            }  
+        } 
+        else 
+        {
+            $data = $this->CI->employee_model->getEmployee($id, 1);  
+
+            if ($data['employee_firstname'] && $data['employee_lastname']) 
+            {
+                $data['name'] = $data['employee_firstname'] . ' ' . $data['employee_lastname'];
+            } 
+            elseif ($data['employee_firstname']) 
+            {
+                $data['name'] = $data['employee_firstname'];
+            } 
+            elseif ($data['employee_lastname']) 
+            {
+                $data['name'] = $data['employee_lastname'];
+            } 
+            elseif ($data) 
+            {
+                $data['name'] = $data['employee_username'];
+            }  
         }
 
-        if ($data['fname'] && $data['fname']) {
-            $data['name'] = $data['fname'] . ' ' . $data['lname'];
-        } elseif ($data['fname']) {
-            $data['name'] = $data['fname'];
-        } elseif ($data['lname']) {
-            $data['name'] = $data['lname'];
-        } elseif ($data) {
-            $data['name'] = $data['username'];
-        } else {
-            $data['name'] = '';
-        }
+        $data['name'] = $data['name'] ?? NULL;
         return $data;
     }
 

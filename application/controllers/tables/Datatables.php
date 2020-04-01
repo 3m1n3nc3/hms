@@ -139,10 +139,10 @@ class Datatables extends MY_Controller {
         $valid_columns = array(
             0=>'order_items',
             1=>'order_quantity', 
-            2=>'order_price', 
-            3=>'service_name', 
-            4=>'employee_id', 
-            5=>'ordered_datetime' 
+            2=>'order_price',  
+            4=>'service_name', 
+            5=>'employee_id', 
+            6=>'ordered_datetime' 
         );
 
         if(!isset($valid_columns[$col]))
@@ -188,11 +188,13 @@ class Datatables extends MY_Controller {
             }
 
             $employee = $this->employee_model->getEmployee($rows->employee_id); 
+            $customer = $this->account_data->fetch($rows->customer_id ?? '', 1); 
 
             $data[]= array(  
                 implode(', ', $item_name), 
                 $rows->order_quantity, 
                 $rows->order_price, 
+                $customer['name'], 
                 $rows->service_name, 
                 $employee ? $employee[0]->employee_firstname . ' ' . $employee[0]->employee_lastname : 'N/A',
                 $rows->ordered_datetime,  
@@ -224,7 +226,7 @@ class Datatables extends MY_Controller {
         return 0;
     }
     
-    public function cashier_report($filter = null, $show_btn = TRUE)
+    public function cashier_report($show_btn = TRUE)
     {
         $draw = intval($this->input->post("draw"));
         $start = intval($this->input->post("start"));
@@ -313,7 +315,7 @@ class Datatables extends MY_Controller {
                 20 => 'tr_'.$rows->id
             );     
         }
-        $total_content = $this->total_cashier_report($filter);
+        $total_content = $this->total_cashier_report();
         $output = array(
             "draw" => $draw,
             "recordsTotal" => $total_content,
@@ -324,7 +326,7 @@ class Datatables extends MY_Controller {
         exit();
     }
 
-    public function total_cashier_report($filter = null)
+    public function total_cashier_report()
     {      
         $query = $this->db->select("COUNT(id) as num")->get("expenses");
         $result = $query->row();

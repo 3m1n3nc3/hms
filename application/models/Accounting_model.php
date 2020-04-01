@@ -72,4 +72,13 @@ class Accounting_model extends CI_Model {
         $this->db->delete('expenses'); 
         return $this->db->affected_rows(); 
     } 
+
+    function min_max($min_max = 0)
+    {   
+        $order = $min_max ? 'DESC' : 'ASC';
+        $this->db->limit('1'); 
+        $this->db->order_by('date '.$order); 
+        $query = $this->db->select('date')->from('expenses')->get();
+        return $query->row_array();
+    } 
 }

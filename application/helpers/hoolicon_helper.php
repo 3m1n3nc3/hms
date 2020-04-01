@@ -73,12 +73,44 @@ if ( ! function_exists('check_login'))
 
 if ( ! function_exists('supr_replace'))
 {
-    function supr_replace($string = '', $predef = '')
+    function supr_replace($string = '', $caps = '', $predef = '')
     {
-        if (!$predef) {
+        if (!$predef) 
+        {
             $string = str_ireplace('_', ' ', $string);
             $string = str_ireplace('-', ' ', $string);
         }
+        if ($caps) 
+        {
+            return ucwords($string);   
+        }
         return $string;
+    } 
+}
+
+if ( ! function_exists('service_point_access'))
+{
+    /** 
+     *
+     * Checks if a user has the specified privilege
+     *
+     * @param   string      $role   
+     * @return  boolen
+     */
+    function service_point_access($department_id = '')
+    {
+        global $CI; 
+ 
+        if ($CI->logged_user['role'] == 2)
+        {
+            return true;
+        }
+
+        if ($CI->logged_user['department_id'] === $department_id) 
+        {   
+            return true; 
+        } 
+
+        return false; 
     } 
 }

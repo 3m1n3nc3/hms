@@ -13,6 +13,12 @@ class Reservation extends Admin_Controller {
 			'page' => 'reservation', 
 			'has_calendar' => TRUE
 		);
+
+		if ($this->input->post('change_booking') && !isset($_SESSION['change_booking'])) 
+		{
+			$this->session->set_userdata('change_booking', $this->input->post('change_booking'));
+		}
+
 		$this->load->view($this->h_theme.'/header', $data);
 		$this->load->view($this->h_theme.'/reservation/add', $viewdata);
 		$this->load->view($this->h_theme.'/footer');
@@ -64,9 +70,7 @@ class Reservation extends Admin_Controller {
 			$viewdata['customer_TCno'] = $post['customer_TCno'] ?? '';
 			$viewdata['checkin_date'] = $post['checkin_date'] ?? '';
 			$viewdata['checkout_date'] = $post['checkout_date'] ?? '';
-			$viewdata['room_type'] = $post['room_type'] ?? '';
-//			echo "<pre>";
-//			var_dump($viewdata);return;echo "</pre>";
+			$viewdata['room_type'] = $post['room_type'] ?? ''; 
 			$this->load->view($this->h_theme.'/reservation/list',$viewdata);
 		}
 
@@ -104,9 +108,20 @@ class Reservation extends Admin_Controller {
 			} 
 			else 
 			{
-				$this->reservation_model->add_reservation($data);
+				// If you're changing the reservation information, delete the reservation and room sale
+				if (isset($_SESSION['change_booking']))
+				{
+					$change = $this->reservation_model->fetch_reservation(['id' => $_SESSION['change_booking']]);
+					$this->reservation_model->deleteReservation($change['reservation_id']);
+					$this->reservation_model->deleteRoomSale($change['reservation_id']);
+					unset($_SESSION['change_booking']);
+				}
+
+				// Add the reservation and set the reservation_id to a variable
+				$reservation_id = $this->reservation_model->add_reservation($data);
 
 				unset($data['reservation_date'], $data['reservation_price']);
+				$data['reservation_id'] = $reservation_id;
 				$this->room_model->add_room_sale($data);
 				$this->session->set_flashdata('message', alert_notice('Reservation successfully made', 'success'));  
 			}

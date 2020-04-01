@@ -93,7 +93,7 @@ $autoload['drivers'] = array();
 |	$autoload['helper'] = array('url', 'file');
 */
 $autoload['helper'] = array(
-    'url', 'cookie', 'file', 'date', 'string', 'text', 'hoolicon', 'passcontest'
+    'url', 'cookie', 'language', 'file', 'date', 'string', 'text', 'hoolicon', 'passcontest', 'passpreviledge'
 );
 
 /*
@@ -138,7 +138,7 @@ $autoload['language'] = array('hmsystem_lang');
 |	$autoload['model'] = array('first_model' => 'first');
 */
 $autoload['model'] = array(
-    'user_model', 'employee_model', 'room_model', 'departments_model', 'services_model', 'medical_service_model', 
+    'user_model', 'employee_model', 'room_model', 'services_model', 'medical_service_model', 
     'report_model', 'reservation_model', 'customer_model', 'sport_facility_model', 'massage_room_model', 
-    'accounting_model'
+    'accounting_model', 'privilege_model'
 );

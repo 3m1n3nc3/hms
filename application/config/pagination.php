@@ -14,7 +14,7 @@ $config['attributes'] = array('class' => 'page-link');
 $config['full_tag_open']    = '<ul class="d-flex pagination justify-content-center mx-auto">';
 $config['full_tag_close']   = '</ul>';
 
-$config['per_page']         = 2;
+$config['per_page']         = 10;
 $config['use_page_numbers'] = TRUE; 
 
 $config['first_link']       = '<i class="fa fa-chevron-left"></i><i class="fa fa-chevron-left"></i>'; 

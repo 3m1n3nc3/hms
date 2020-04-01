@@ -25,8 +25,9 @@ class MY_Controller extends CI_Controller
         $this->uid      = $this->CI->session->userdata('uid');
         $this->username = $this->CI->session->userdata('username');
         $this->fullname = $this->CI->session->userdata('fullname');
+        $this->logged_user = $this->employee_model->getEmployee($this->uid, 1);
+        $this->show_guide  = !$this->CI->session->userdata('show_guide');
         $this->department_name = $this->CI->session->userdata('department_name');
-        $this->show_guide      = !$this->CI->session->userdata('show_guide');
     }
 
     function check_login()
@@ -37,6 +38,15 @@ class MY_Controller extends CI_Controller
 }
 
 class Admin_Controller extends MY_Controller
+{
+    public function __construct()
+    {
+        parent::__construct(); 
+        $this->check_login();  
+    } 
+} 
+
+class Frontsite_Controller extends MY_Controller
 {
     public function __construct()
     {

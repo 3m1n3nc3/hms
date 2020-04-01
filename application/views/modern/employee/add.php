@@ -98,7 +98,9 @@
                             <label for="departments_id">Department</label>
 							<select id="department_id" name="department_id" class="form-control">
 							<?php foreach ($departments as $dept): ?>
-								<option value="<?=$dept->department_id?>"<?php echo set_select('department_id', $dept->department_id) ?>><?=$dept->department_name?></option>
+								<option value="<?=$dept->id?>"<?php echo set_select('department_id', $dept->id) ?>>
+                                    <?=$dept->service_name?> 
+                                </option>
 							<?php endforeach; ?>
 							</select> 
                             <?= form_error('departments_id'); ?>

@@ -240,7 +240,7 @@ if ( ! function_exists('timeDifference'))
 }
 
 
-if ( ! function_exists('page_not_found')) 
+if ( ! function_exists('error_redirect')) 
 {
     function error_redirect($condition = TRUE, $type = '404')
     {

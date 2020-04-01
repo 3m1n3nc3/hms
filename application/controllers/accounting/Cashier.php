@@ -20,14 +20,28 @@ class Cashier extends Admin_Controller {
 
 		$viewdata = array(
 			'expenses' => $this->accounting_model->get_expense($filter),  
+			'date_from' => $this->accounting_model->min_max()['date'],
+			'date_to' => $this->accounting_model->min_max(1)['date'],
+			'from' => $filter_from,
+			'to' => $filter_to,
+			'filter_query' => $filter_query,
 			'use_table' => TRUE, 
 			'table_method' => 'cashier_report'.($filter_query)
 		); 
 
 		$data = array('title' => 'Cashiers Report - ' . HOTEL_NAME, 'page' => 'cashier-report');
-		$this->load->view($this->h_theme.'/header', $data);
-		$this->load->view($this->h_theme.'/accounting/cashier',$viewdata);
-		$this->load->view($this->h_theme.'/footer');
+
+		if ($this->input->post('print')) 
+		{	
+			$viewdata['table_method'] = 'cashier_report/0'.($filter_query);
+			$this->load->view($this->h_theme.'/accounting/cashier_report',array_merge($data, $viewdata));
+		}
+		else
+		{
+			$this->load->view($this->h_theme.'/header', $data);
+			$this->load->view($this->h_theme.'/accounting/cashier',$viewdata);
+			$this->load->view($this->h_theme.'/footer');
+		}
 	} 
 
 	public function expenses_register($record_id = '')

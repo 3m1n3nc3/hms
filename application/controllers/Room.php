@@ -14,6 +14,42 @@ class Room extends Admin_Controller {
 		$this->load->view($this->h_theme.'/footer');
 	}
 
+	public function reserved()
+	{
+		$config['base_url']   = site_url('room/reserved/'); 
+        $config['total_rows'] = count($this->reservation_model->reserved_rooms()); 
+
+        $this->pagination->initialize($config);
+        $_page = $this->uri->segment(3, 0); 
+
+		$rooms = $this->reservation_model->reserved_rooms(['page' => $_page]);
+
+		$viewdata = array('rooms' => $rooms);
+        $viewdata['pagination'] = $this->pagination->create_links();
+
+		$data = array('title' => 'Rooms - ' . HOTEL_NAME, 'page' => 'reserved');
+		$this->load->view($this->h_theme.'/header', $data);
+		$this->load->view($this->h_theme.'/room/reserved',$viewdata);
+		$this->load->view($this->h_theme.'/footer');
+	}
+
+	public function reserved_room($room_id = '', $customer_id = '')
+	{ 
+		$reservation = $this->reservation_model->reserved_rooms(['room' => $room_id, 'customer' => $customer_id, 'uncheck' => TRUE], 1);
+		$rooms = $this->reservation_model->reserved_rooms(['room' => $room_id, 'uncheck' => TRUE]);
+
+		$viewdata = array('reservation' => $reservation, 'rooms' => $rooms);
+		$viewdata['checkin_date'] = date('Y-m-d', strtotime($reservation['checkin_date']));
+		$viewdata['checkout_date'] = date('Y-m-d', strtotime($reservation['checkout_date']));
+
+        $viewdata['pagination'] = $this->pagination->create_links();
+
+		$data = array('title' => 'Rooms - ' . HOTEL_NAME, 'page' => 'reserved');
+		$this->load->view($this->h_theme.'/header', $data);
+		$this->load->view($this->h_theme.'/room/reserved_room',$viewdata);
+		$this->load->view($this->h_theme.'/footer');
+	}
+
 	public function add()
 	{
 		$viewdata = array();
@@ -54,6 +90,13 @@ class Room extends Admin_Controller {
 		$this->session->set_flashdata('message', alert_notice('All rooms numbered from '. $min_id.' to '.$max_id.' have been deleted')); 
 		$this->room_model->deleteRoomRange($min_id, $max_id);
 		redirect("room");
+	}
+
+	function delete_reservation($reservation_id = '')
+	{
+		$this->session->set_flashdata('message', alert_notice('Reservation Deleted')); 
+		$this->reservation_model->deleteReservation($reservation_id);
+		redirect("room/reserved");
 	}
 
 	public function edit($room_type, $min_id, $max_id)

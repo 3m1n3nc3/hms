@@ -1,5 +1,6 @@
-
-      </div>
+      <?php if(!isset($hide_this_div)):?>
+      </div> 
+      <?php endif;?>
       <!-- /.content-wrapper (Opened at view/classic/header.php)-->
 
       <!-- Main Footer -->

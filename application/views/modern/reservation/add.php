@@ -52,7 +52,7 @@
                   <!-- text input -->
                   <div class="form-group">
                     <label for="adults">Number of Adults</label>
-                    <input type="number" min="1" id="adults" name="adults" class="form-control" value="<?= set_value('adults') ?>" required>
+                    <input type="number" min="1" id="adults" name="adults" class="form-control" value="<?= set_value('adults', '1') ?>" required>
                   </div>
                 </div>
 
@@ -60,7 +60,7 @@
                   <!-- text input -->
                   <div class="form-group">
                     <label for="children">Number of Children</label>
-                    <input type="number" min="1" id="children" name="children" class="form-control" value="<?= set_value('children') ?>" required>
+                    <input type="number" min="0" id="children" name="children" class="form-control" value="<?= set_value('children', '0') ?>" required>
                   </div>
                 </div>
 
