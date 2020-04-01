@@ -150,7 +150,7 @@ class Account_Data {
             'uid' => $data['employee_id'],
             'username' => $data['employee_username'],
             'fullname' => $fullname,
-            'department_name' => $dept[0]->department_name
+            'department_name' => $dept[0]->service_name
         );
         $this->CI->session->set_userdata($data);
     }

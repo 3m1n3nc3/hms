@@ -12,7 +12,7 @@ class Employee extends Admin_Controller {
 
         $this->pagination->initialize($config);
         $_page = $this->uri->segment(3, 0);
-print_r($this->services_model->getService('10'));
+
 		$employees = $this->employee_model->get_employees(['page' => $_page]); 
 		$viewdata  = array('employees' => $employees); 
         $viewdata['pagination'] = $this->pagination->create_links(); 
