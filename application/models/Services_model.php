@@ -40,15 +40,17 @@ class Services_model extends CI_Model {
         return $this->db->affected_rows();
     }
 
-    function deleteService($service_name)
+    function deleteService($service_id)
     {
-        $this->db->delete('sales_services', array('service_name' => $service_name));
+        $this->db->where('service_name', $service_id)->or_where('id', $service_id);
+        $this->db->delete('sales_services');
         return $this->db->affected_rows();
     }
 
-    function getService($service_name)
+    function getService($service_id)
     {
-        $query = $this->db->get_where('sales_services', array('service_name' => $service_name));
+        $this->db->select('*')->from('sales_services');
+        $query = $this->db->where('service_name', $service_id)->or_where('id', $service_id)->get();
         return $query->result();
     }
 
@@ -63,8 +65,7 @@ class Services_model extends CI_Model {
 
         if (isset($data['item_id'])) 
         {
-            $this->db->where('item_id', $data['item_id']);
-            $this->db->or_where('item_name', $data['item_id']);
+            $this->db->where('item_id', $data['item_id'])->or_where('item_name', $data['item_id']);
         }
         elseif (isset($data['item_service'])) 
         {

@@ -141,7 +141,7 @@ class Account_Data {
     public function employee_login($user)
     {   
         $data = $this->CI->user_model->fetch_user($user['employee_id']);
-        $dept = $this->CI->departments_model->getDepartment($data['department_id']);
+        $dept = $this->CI->services_model->getService($data['department_id']);
 
         $space = $data['employee_firstname'] && $data['employee_lastname'] ? ' ' : '';
         $fullname = ($data['employee_firstname'] || $data['employee_lastname'] ? ($data['employee_firstname'] ?? '') . $space . ($data['employee_lastname'] ?? '') : $data['employee_username']);
