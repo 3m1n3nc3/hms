@@ -266,8 +266,9 @@ class Homepage extends Frontsite_Controller {
 		        	}
 		        	else
 		        	{
-    					$post['invoice_id'] = 'pending';
-    					$post['description'] = 'Reservation payments for '.$post['room_type'].' room '.$post['room_id']; 
+        				$post['date']    	  = date('Y-m-d', strtotime('NOW'));
+    					$post['invoice_id']   = 'pending';
+    					$post['description']  = 'Reservation payments for '.$post['room_type'].' room '.$post['room_id']; 
 		        		$data['reserve_room'] = $this->hms_parser->show_invoice(
 		        			['post' => $post, 'customer' => $customer, 'room' => $room_type_info]
 		        		);
