@@ -69,7 +69,7 @@ class Hms_payments {
 
                     $this->post['invoice_id']  = $reservation_id;
                     $this->post['description'] = $save['description']; 
-                    $this->post['date']        = date('Y-m-d', strtotime('NOW');
+                    $this->post['date']        = date('Y-m-d', strtotime('NOW'));
                     
                     $reserve_room = sprintf($container_holder, alert_notice(lang('reservation_made'), 'success'));
                     $reserve_room .= $this->CI->hms_parser->show_invoice(
