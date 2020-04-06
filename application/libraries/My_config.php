@@ -10,15 +10,15 @@ class My_config {
     }
 
     public function item($item, $index = '')
-	{	
-		$config = $this->CI->admin_model->get_settings($item);
-		if ($index == '')
-		{
-			return $config ? $config : NULL;
-		}
+    {   
+        $config = $this->CI->setting_model->get_settings($item);
+        if ($index == '')
+        {
+            return $config ? $config : NULL;
+        }
 
-		return isset($config[$index], $config[$index][$item]) ? $config[$index][$item] : NULL;
-	}
+        return isset($config[$index], $config[$index][$item]) ? $config[$index][$item] : NULL;
+    }
 
 	public function alert($msg = '', $type = 'info')
 	{	

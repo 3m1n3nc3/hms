@@ -21,6 +21,11 @@ class Account_Data {
     public function logged_in()
     {    
         return (bool) $this->CI->session->userdata('username') or get_cookie('username');
+    }  
+
+    public function customer_logged_in()
+    {    
+        return (bool) $this->CI->session->userdata('customer_username') or get_cookie('customer_username');
     }    
 
     public function is_logged_in($role = false)
@@ -79,7 +84,7 @@ class Account_Data {
     {   
         if ($customer === 1) 
         {
-            $data = $this->CI->customer_model->get_customer(['id' =>5]); 
+            $data = $this->CI->customer_model->get_customer(['id' => $id]); 
 
             if ($data['customer_firstname'] && $data['customer_lastname']) 
             {
@@ -131,10 +136,10 @@ class Account_Data {
         $this->CI->session->sess_destroy();
     }
 
-    public function admin_logout()
+    public function customer_logout()
     {   
-        delete_cookie('admin');
-        $this->CI->session->unset_userdata('admin');
+        delete_cookie('customer_username');
+        $this->CI->session->unset_userdata('customer_username');
         $this->CI->session->sess_destroy();
     }
 
@@ -151,6 +156,16 @@ class Account_Data {
             'username' => $data['employee_username'],
             'fullname' => $fullname,
             'department_name' => $dept[0]->service_name
+        );
+        $this->CI->session->set_userdata($data);
+    }
+
+    public function customer_login($data)
+    {     
+        $data = array(
+            'cuid' => $data['customer_id'],
+            'cemail' => $data['customer_email'], 
+            'cusername' => $data['customer_username']
         );
         $this->CI->session->set_userdata($data);
     }

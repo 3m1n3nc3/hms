@@ -45,7 +45,7 @@ class Room_type extends Admin_Controller
 	function delete($room_type)
 	{
 		$this->room_model->deleteRoomType($room_type);
-		redirect("/room-type");
+		redirect("room-type");
 	}
 
 	public function edit($room_type)

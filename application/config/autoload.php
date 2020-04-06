@@ -59,8 +59,8 @@ $autoload['packages'] = array();
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
 $autoload['libraries'] = array(
-	'database', 'form_validation', 'session', 'upload', 'pagination', 'Licenser', 'Aes', 'enc_lib', 'Curler', 
-	'Account_Data', 'my_config', 'Creative_lib', 'Ip', 'Intl', 'Hms_parser'
+	'database', 'form_validation', 'session', 'upload', 'pagination', 'licenser', 'Aes', 'enc_lib', 'Curler', 
+	'Account_Data', 'my_config', 'creative_lib', 'ip', 'intl', 'hms_parser', 'hms_data', 'hms_payments'
 );
 
 /*
@@ -93,7 +93,8 @@ $autoload['drivers'] = array();
 |	$autoload['helper'] = array('url', 'file');
 */
 $autoload['helper'] = array(
-    'url', 'cookie', 'language', 'file', 'date', 'string', 'text', 'hoolicon', 'passcontest', 'passpreviledge'
+    'url', 'cookie', 'language', 'file', 'date', 'string', 'text', 'inflector', 'hoolicon', 'passcontest', 'passpreviledge', 
+    'pass_icon', 'locale'
 );
 
 /*
@@ -140,5 +141,5 @@ $autoload['language'] = array('hmsystem_lang');
 $autoload['model'] = array(
     'user_model', 'employee_model', 'room_model', 'services_model', 'medical_service_model', 
     'report_model', 'reservation_model', 'customer_model', 'sport_facility_model', 'massage_room_model', 
-    'accounting_model', 'privilege_model'
+    'accounting_model', 'privilege_model', 'content_model', 'locale_model', 'payment_model', 'setting_model'
 );

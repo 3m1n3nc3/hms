@@ -10,20 +10,50 @@ class Customer_model extends CI_Model {
         $this->CI->config->load('pagination');
     }
     
+
+    /**
+     * This function will fetch return the a specified customer from the customers table
+     * @param array $data
+     * @return mixed    Depending on available parameters it will either return an object or an array
+     */
     function get_customer($data)
     {
-        if (isset($data['id'])) 
+        if (isset($data['id']) || isset($data['email']) || isset($data['username']) || isset($data['customer_id']) || isset($data['customer_TCno'])) 
         {
             $this->db->select('customer_id, customer_firstname, customer_lastname, customer_TCno, customer_address, customer_state, customer_city, customer_country, customer_telephone,  customer_email')->from('customer');
-            $this->db->where('customer_id', $data['id']);
-            $this->db->or_where('customer_TCno', $data['id']);
+        
+            if (isset($data['username'])) 
+            {
+                $this->db->where('customer_username', $data['username']);
+            }
+
+            if (isset($data['email'])) 
+            {
+                $this->db->where('customer_email', $data['email']);
+            }
+
+            if (isset($data['id'])) 
+            {
+                $this->db->where('customer_id', $data['id']); 
+                $this->db->or_where('customer_TCno', $data['id']);
+            }
+
+            if (isset($data['customer_id'])) 
+            {
+                $this->db->where('customer_id', $data['customer_id']); 
+            }
+
+            if (isset($data['customer_TCno'])) 
+            { 
+                $this->db->where('customer_TCno', $data['customer_TCno']);
+            }
 
             $query = $this->db->get();
             return $query->row_array();
         }
         else
         {
-            $query = $this->db->get_where('customer', array('customer_TCno' => $data));
+            $query = $this->db->get_where('customer', array('customer_TCno' => $data)); 
         }
 
         if($query) {
@@ -33,6 +63,12 @@ class Customer_model extends CI_Model {
         }
     } 
 
+
+    /**
+     * This function will fetch return all available customers from the customer table
+     * @param array $data
+     * @return object    Returns a standard object
+     */
     function list_customers($data = '')
     {
         $this->db->select('customer_id, customer_firstname, customer_lastname, customer_TCno, customer_address, customer_state, customer_city, customer_country, customer_telephone,  customer_email')->from('customer');
@@ -47,18 +83,20 @@ class Customer_model extends CI_Model {
 
     function add_customer($data)
     {
-        $data['customer_id'] = $data['cid'];
-        unset($data['cid']);
-        if (isset($data['customer_id'])) 
+        if (isset($data['cid'])) 
         {
+            $data['customer_id'] = $data['cid'];
+            unset($data['cid']);
+
             $this->db->where('customer_id', $data['customer_id']);
             $this->db->update('customer', $data);
+            return $this->db->affected_rows();
         }
         else
         {
             $this->db->insert('customer', $data);
+            return $this->db->insert_id();
         }
-//        return $this->db->affected_rows();
     }
 
     // function _get_active_customers()
@@ -74,6 +112,11 @@ class Customer_model extends CI_Model {
     //     return $data;
     // } 
 
+
+    /**
+     * This function will fetch return data of all active customers currently logged 
+     * @return object    Returns a standard object
+     */
     function get_active_customers()
     {
         $date = date('Y-m-d');  
@@ -85,6 +128,11 @@ class Customer_model extends CI_Model {
         return $q->result();
     }
 
+
+    /**
+     * This function will delete the data of the specified customer from the customers table
+     * @return integer    Returns the count of records updated by the query
+     */
     function delete_customer($customer_id)
     {
         $this->db->delete('room_sales', array('customer_id' => $customer_id));

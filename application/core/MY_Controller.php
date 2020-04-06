@@ -28,12 +28,30 @@ class MY_Controller extends CI_Controller
         $this->logged_user = $this->employee_model->getEmployee($this->uid, 1);
         $this->show_guide  = !$this->CI->session->userdata('show_guide');
         $this->department_name = $this->CI->session->userdata('department_name');
+
+        $this->cuid     = $this->CI->session->userdata('cuid');
+        $this->username = $this->CI->session->userdata('cusername');
+        $this->logged_customer = $this->cuid ? $this->customer_model->get_customer(['id' => $this->cuid]) : [];
+
+        $this->currency = 'NGN';
+        $this->cr_symbol = $this->intl->currency(3, $this->currency);
     }
 
     function check_login()
     {
         if(!$this->uid)
             redirect("login");
+    }
+
+    function check_customer_login($redirect = FALSE)
+    {
+        if(!$this->cuid)
+        {
+            if ($redirect) redirect("customer/login");
+            return FALSE;
+        }
+
+        return TRUE;
     } 
 }
 
@@ -50,7 +68,6 @@ class Frontsite_Controller extends MY_Controller
 {
     public function __construct()
     {
-        parent::__construct(); 
-        $this->check_login();  
+        parent::__construct();   
     } 
 } 

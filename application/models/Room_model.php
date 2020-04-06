@@ -80,8 +80,8 @@ class Room_model extends CI_Model {
     {
         if (isset($room_type['id'])) 
         {
-            $this->db->select('room_id, room_type')->from('room');
             $this->db->where('room_id', $room_type['id']); 
+            $this->db->select('room_id, room_type')->from('room');
 
             $query = $this->db->get();
             return $query->row_array();

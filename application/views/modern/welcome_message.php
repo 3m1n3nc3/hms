@@ -7,12 +7,12 @@
           <div class="row" id="target-1">
             <div class="col-12 col-sm-6 col-md-3">
               <div class="info-box">
-                <span class="info-box-icon bg-info elevation-1"><i class="fas fa-utensils"></i></span>
+                <span class="info-box-icon bg-info elevation-1"><i class="fas fa-credit-card"></i></span>
 
                 <div class="info-box-content">
-                  <span class="info-box-text">Restaurant</span>
+                  <span class="info-box-text">Total Payments</span>
                   <span class="info-box-number">
-                    <?=$today_stats["restaurant"]?>
+                    <?=$this->cr_symbol.number_format($sales_stats["payments"], 2);?>
                   </span>
                 </div>
                 <!-- /.info-box-content -->
@@ -22,11 +22,13 @@
             <!-- /.col -->
             <div class="col-12 col-sm-6 col-md-3">
               <div class="info-box mb-3">
-                <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-futbol"></i></span>
+                <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-store"></i></span>
 
                 <div class="info-box-content">
-                  <span class="info-box-text">Sport</span>
-                  <span class="info-box-number"><?=$today_stats["sport"]?></span>
+                  <span class="info-box-text">Service Sales</span>
+                  <span class="info-box-number">
+                    <?=$this->cr_symbol.number_format($sales_stats["sales"], 2);?>
+                  </span>
                 </div>
                 <!-- /.info-box-content -->
               </div>
@@ -39,11 +41,13 @@
 
             <div class="col-12 col-sm-6 col-md-3">
               <div class="info-box mb-3">
-                <span class="info-box-icon bg-success elevation-1"><i class="fas fa-first-aid"></i></span>
+                <span class="info-box-icon bg-success elevation-1"><i class="fas fa-bed"></i></span>
 
                 <div class="info-box-content">
-                  <span class="info-box-text">Medical Service</span>
-                  <span class="info-box-number"><?=$today_stats["medicalservice"]?></span>
+                  <span class="info-box-text">Room Sales</span>
+                  <span class="info-box-number">
+                    <?=$this->cr_symbol.number_format($sales_stats["room_sales"], 2);?>
+                  </span>
                 </div>
                 <!-- /.info-box-content -->
               </div>
@@ -52,11 +56,13 @@
             <!-- /.col -->
             <div class="col-12 col-sm-6 col-md-3">
               <div class="info-box mb-3">
-                <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-hand-rock"></i></span>
+                <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-users"></i></span>
 
                 <div class="info-box-content">
-                  <span class="info-box-text">Massage</span>
-                  <span class="info-box-number"><?=$today_stats["massage"]?></span>
+                  <span class="info-box-text">Customers</span>
+                  <span class="info-box-number">
+                    <?=$sales_stats["customers"];?>
+                  </span>
                 </div>
                 <!-- /.info-box-content -->
               </div>

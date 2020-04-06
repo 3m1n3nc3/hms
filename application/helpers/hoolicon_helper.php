@@ -114,3 +114,57 @@ if ( ! function_exists('service_point_access'))
         return false; 
     } 
 }
+
+if ( ! function_exists('showBBcodes'))
+{ 
+
+    /** 
+    * A simple PHP BBCode Parser function
+    *
+    * @author Afsal Rahim
+    * @link http://digitcodes.com/create-simple-php-bbcode-parser-function/
+    * Extended by passtech
+    * 
+    **/
+
+    //BBCode Parser function
+
+    function showBBcodes($text, $class = '') {
+        // BBcode array
+        $find = array(
+            '~\[b\](.*?)\[/b\]~s',
+            '~\[i\](.*?)\[/i\]~s',
+            '~\[u\](.*?)\[/u\]~s',
+            '~\[quote\](.*?)\[/quote\]~s',
+            '~\[size=(.*?)\](.*?)\[/size\]~s',
+            '~\[color=(.*?)\](.*?)\[/color\]~s',
+            '~\[link=(.*?)\](.*?)\[/link\]~s',
+            '~\[url\]((?:ftp|https?)://.*?)\[/url\]~s',
+            '~\[img\](https?://.*?\.(?:jpg|jpeg|gif|png|bmp))\[/img\]~s'
+        );
+
+        $class = ($class ? ' class="' . $class .'" ' : '');
+
+        // HTML tags to replace BBcode
+        $replace = array(
+            '<'.$class.'b>$1</b>',
+            '<'.$class.'i>$1</i>',
+            '<'.$class.'span style="text-decoration:underline;">$1</span>',
+            '<'.$class.'pre>$1</'.'pre>',
+            '<span'.$class.' style="font-size:$1px;">$2</span>',
+            '<span'.$class.' style="color:$1;">$2</span>',
+            '<a'.$class.' href="$1">$2</a>',
+            '<a'.$class.' href="$1">$1</a>',
+            '<img'.$class.' src="$1" alt="" />'
+        );
+
+        // Replacing the BBcodes with corresponding HTML tags
+        return preg_replace($find,$replace,$text);
+    }
+
+    // How to use the above function:
+
+    // $bbtext = "This is [b]bold[/b] and this is [u]underlined[/u] and this is in [i]italics[/i] with a [color=red] red color[/color]";
+    // $htmltext = showBBcodes($bbtext);
+    // echo $htmltext; 
+}

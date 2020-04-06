@@ -10,6 +10,37 @@ class Reservation_model extends CI_Model {
         $this->CI->config->load('pagination');
     }
     
+    function get_available_rooms_inline($data, $array = FALSE)
+    {
+        $room_type = $data['room_type'];
+        $checkin_date = date('Y-m-d', strtotime($data['checkin_date']));
+        $checkout_date = date('Y-m-d', strtotime($data['checkout_date']));
+        $adults = $data['adults'];
+        $children = $data['children'];
+
+        $this->db->select('*')->from('room')->join('room_type', '`room`.`room_type` = `room_type`.`room_type`', 'Left');
+        $this->db->where('room.room_type', $room_type); 
+        $this->db->where('room_type.max_adults >=', $adults); 
+        $this->db->where('room_type.max_kids >=', $children); 
+        $query = $this->db->where('
+            NOT EXISTS (
+                SELECT room_id FROM reservation WHERE reservation.room_id=room.room_id AND checkout_date >= \''.$checkin_date.'\' AND checkin_date <= \''.$checkout_date.'\'
+                UNION ALL
+                SELECT room_id FROM room_sales WHERE room_sales.room_id=room.room_id AND checkout_date >= \''.$checkin_date.'\' AND checkin_date <= \''.$checkout_date.'\'
+            )', NULL, FALSE
+        )->get();
+        
+        $data = array();
+
+        foreach ($query->result() as $row)
+        {
+            $data[] = $row;
+        }
+        if(count($data))
+            return $data;
+        return false;
+    }
+    
     function get_available_rooms($data)
     {
         $room_type = $data['room_type'];
@@ -22,12 +53,12 @@ class Reservation_model extends CI_Model {
             "CALL get_available_rooms(
                 '$room_type', '$checkin_date', '$checkout_date', '$adults', '$children'
             )"
-        );
-        
+        ); 
+
         $this->db->reconnect();
         $data = array();
 
-        foreach (@$query->result() as $row)
+        foreach ($query->result() as $row)
         {
             $data[] = $row;
         }
@@ -48,13 +79,17 @@ class Reservation_model extends CI_Model {
         {
             $this->db->where('reservation_id', $data['id']);
         }
+        if (isset($data['reservation_ref']))
+        {
+            $this->db->where('reservation_ref', $data['reservation_ref']);
+        }
 
         $this->db->select('*')->from('reservation');
  
         $this->db->order_by('checkin_date', 'ASC');
         $query = $this->db->get();
 
-        if (isset($data['id']))
+        if (isset($data['id']) || isset($data['reservation_ref']))
         {
             return $query->row_array();
         }

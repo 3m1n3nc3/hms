@@ -14,7 +14,7 @@ class Paystack {
     public function __construct() 
     { 
         $this->CI = & get_instance();
-        $this->secret = $this->CI->my_config->item('paystack_secret');
+        $this->secret = my_config('paystack_secret');
         $this->init = new Yabacon\Paystack($this->secret);
     }
 

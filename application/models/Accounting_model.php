@@ -81,4 +81,20 @@ class Accounting_model extends CI_Model {
         $query = $this->db->select('date')->from('expenses')->get();
         return $query->row_array();
     } 
+
+    function statistics($data = null)
+    {   
+        if (isset($data)) 
+        { 
+            if (isset($data['service'])) 
+            { 
+                $query = $this->db->select('(SELECT SUM(order_price) FROM sales_service_orders WHERE service_name = \''.$data['service'].'\') AS sales')->get();
+            }
+        }
+        else
+        {
+            $query = $this->db->select('(SELECT SUM(amount) FROM payments) AS payments, (SELECT SUM(order_price) FROM sales_service_orders) AS sales, (SELECT SUM(room_sales_price) FROM room_sales) AS room_sales, (SELECT COUNT(customer_id) FROM customer) AS customers')->get();
+        }
+        return $query->row_array();
+    } 
 }

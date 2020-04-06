@@ -71,7 +71,7 @@ class Creative_lib {
 		if ($src && file_exists('./'.$src)) {
 			return base_url().$src;
 		} else {
-			return base_url().'backend/images/avatar'.$type.'.png';
+			return base_url().'backend/img/default'.$type.'.jpg';
 		}
 	}
 

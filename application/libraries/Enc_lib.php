@@ -54,21 +54,34 @@ class Enc_lib {
     /**
     /*  Generate a random token (MD5 or password_hash)
     **/
-    function generateToken($length = 10, $type = 0, $prefix = '')
+    function generateToken($length = 10, $type = 0, $prefix = '', $appendix = FALSE)
     {
         $str = ''; 
         $characters = array_merge(range('A','Z'), range('a','z'), range(0,9));
  
-        for($i=0; $i < $length; $i++) {
+        for($i=0; $i < $length; $i++) 
+        {
             $str .= $characters[array_rand($characters)];
         }
-        if ($type == 1) {            
-            $rand_letter = substr(str_shuffle("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, $length);
+        if ($type == 1) 
+        {   
+            $rand_number = '';
+            if ($appendix === TRUE) 
+            {
+                $length = ($length/2);
+                $rand_number = substr(rand(10000,90000).rand(10000,90000).rand(10000,90000).rand(10000,90000), 0, $length);
+            }
+
+            $rand_letter = substr(str_shuffle("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, $length);
             $rand_sm = substr(str_shuffle("DEFGHOPQRSTUVWXYZ"), 0, 3);
-            return $prefix.$rand_letter.rand(4000000,9000000).'-'.$rand_sm;
-        } elseif ($type == 2) {
+            return $prefix.$rand_letter.$rand_number.'-'.$rand_sm;
+        } 
+        elseif ($type == 2) 
+        {
             return hash('md5', $str.time());
-        } else {
+        } 
+        else 
+        {
             return password_hash($str.time(), PASSWORD_DEFAULT);
         }
     }    

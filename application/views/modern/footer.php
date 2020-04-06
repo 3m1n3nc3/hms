@@ -7,12 +7,12 @@
       <footer class="main-footer text-sm">
         <!-- To the right -->
         <div class="float-right d-none d-sm-inline">
-          <span class="mx-5"> 
+      <!--     <span class="mx-5"> 
             <a href="<?= site_url($this->uri->uri_string().'?set_theme='.($this->h_theme == 'classic' ? 'modern' : 'classic'))?>" class="text-danger">
               <i class="fas fa-lg fa-tint"></i>
             </a> 
             <span class="text-info">Theme: <?=ucwords($this->h_theme)?></span> 
-          </span>
+          </span> -->
 
           Hoolicon Tech HMS 1.0.0
         </div>

@@ -47,7 +47,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
     
     <script type="text/javascript">
       siteUrl = "<?=site_url()?>";
-      site_currency = "$";
+      currency_symbol = "<?=$this->cr_symbol?>";
+      site_currency = "<?=$this->cr_symbol?>";
     </script>
  
     <div class="wrapper">
@@ -128,8 +129,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column nav-child-indent text-sm" data-widget="treeview" role="menu" data-accordion="false">
               <!-- Add icons to the links using the .nav-icon class
-              with font-awesome or any other icon font library --><li class="nav-item">
-                <a href="<?= site_url()?>" class="nav-link <?= ($page == "dashboard" ? 'active' : '')?>">
+              with font-awesome or any other icon font library -->
+              <li class="nav-item">
+                <a href="<?= site_url('dashboard')?>" class="nav-link <?= ($page == "dashboard" ? 'active' : '')?>">
                   <i class="nav-icon fas fa-tachometer-alt"></i>
                   <p>
                     Dashboard
@@ -308,6 +310,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <li class="breadcrumb-item active">
                       <?= ucwords(supr_replace($this->uri->segment(2, NULL))) ?>
                     </li> 
+                  <?php else: ?> 
+                    <li class="active">
+                        Home
+                    </li>
                   <?php endif; ?> 
                 </ol>
               </div><!-- /.col -->

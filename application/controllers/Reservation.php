@@ -3,9 +3,7 @@
 class Reservation extends Admin_Controller { 
 
 	public function index()
-	{
-		$this->check_login();
-
+	{ 
 		$room_types = $this->room_model->get_room_types();
 		$viewdata = array('room_types' => $room_types);
 		$data = array(
@@ -121,7 +119,9 @@ class Reservation extends Admin_Controller {
 				$reservation_id = $this->reservation_model->add_reservation($data);
 
 				unset($data['reservation_date'], $data['reservation_price']);
+
 				$data['reservation_id'] = $reservation_id;
+				
 				$this->room_model->add_room_sale($data);
 				$this->session->set_flashdata('message', alert_notice('Reservation successfully made', 'success'));  
 			}
