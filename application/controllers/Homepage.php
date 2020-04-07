@@ -81,6 +81,8 @@ class Homepage extends Frontsite_Controller {
      */
     public function account($id = '')
     { 
+         $this->account_data->is_customer_logged_in();
+
     	$customer = $this->account_data->fetch($this->cuid, 1);
         $data = array(
         	'page' => 'account',

@@ -56,10 +56,6 @@ class Frontsite_Controller extends MY_Controller
 {
     public function __construct()
     {
-        parent::__construct();
-        if ($this->uri->segment(2, 0) !== 'login') 
-        {
-            $this->account_data->is_customer_logged_in();
-        }
+        parent::__construct(); 
     } 
 } 
