@@ -205,11 +205,22 @@ class Hms_parser
                 <a class="nav-link" href="'.site_url('page/'.$navbar_link['safelink']).'">'.$link_title.'</a>
             </li>';
         }
-        if ($this->CI->check_customer_login()) 
+        if ($this->CI->account_data->customer_logged_in()) 
+        {
+            $links[] .= ' 
+            <li class="nav-item submenu dropdown'.('account' === $page ? ' active' : '').'">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">'.lang('my_account').'</a>
+                <ul class="dropdown-menu">
+                    <li class="nav-item"><a class="nav-link" href="'.site_url('account').'">'.lang('account').'</a></li>
+                    <li class="nav-item"><a class="nav-link" href="'.site_url('account/login/logout').'">'.lang('signout').'</a></li>
+                </ul>
+            </li> ';
+        }
+        else
         {
             $links[] .= '
-            <li class="nav-item'.('account' === $page ? ' active' : '').'">
-                <a class="nav-link" href="'.site_url('account').'">'.lang('my_account').'</a>
+            <li class="nav-item'.('login' === $page ? ' active' : '').'">
+                <a class="nav-link" href="'.site_url('account/login').'">'.lang('signin').'</a>
             </li>';
         }
 

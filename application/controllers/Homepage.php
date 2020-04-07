@@ -7,6 +7,8 @@ class Homepage extends Frontsite_Controller {
         parent::__construct();  
         $this->payment_ref = $this->enc_lib->generateToken(12, 1, 'HRSPR-', TRUE);
     } 
+
+
     /**
      * Renders the default publicly available static contents and 
      * parses a page where the page method has not been called
@@ -36,10 +38,9 @@ class Homepage extends Frontsite_Controller {
         error_redirect(!$data['content']['parent']); 
         error_redirect($data['content']);   
  
-        // $this->load->view($this->h_theme.'/layout/header', $data);    		
+        $this->load->view($this->h_theme.'/homepage/header', $data);    		
         $this->load->view($this->h_theme.'/homepage/home', $data);
-		// $this->load->view($this->h_theme.'/footer', array("next_week_freq"=>$next_week_freq));
-		$this->session->set_userdata('show_guide',true);
+        $this->load->view($this->h_theme.'/homepage/footer', $data);  
     }
 
 
@@ -67,10 +68,116 @@ class Homepage extends Frontsite_Controller {
         error_redirect(!$data['content']['parent']); 
         error_redirect($data['content']);   
         
-        // $this->load->view($this->h_theme.'/layout/header', $data);    		
+        $this->load->view($this->h_theme.'/homepage/header', $data);    		
         $this->load->view($this->h_theme.'/homepage/home', $data);
-		// $this->load->view($this->h_theme.'/footer', array("next_week_freq"=>$next_week_freq));
-		$this->session->set_userdata('show_guide',true);
+        $this->load->view($this->h_theme.'/homepage/footer', $data);  
+    }
+
+
+    /**
+     * Renders the publicly available static contents and parses a page
+     * @param  string   $id   id or safelink of the parent content to render
+     * @return null           Does not return anything but uses code igniter's view() method to render the page
+     */
+    public function account($id = '')
+    { 
+    	$customer = $this->account_data->fetch($this->cuid, 1);
+        $data = array(
+        	'page' => 'account',
+        	'page_title' => $customer['name'] . ' Account' . ' - ' . HOTEL_NAME,
+        	'customer' => $customer,
+        	'form_action' => 'account'
+        );  
+
+		$data['account_data'] = $this->load->view($this->h_theme.'/customer/view', $data, TRUE);
+
+        $this->load->view($this->h_theme.'/homepage/header', $data);    		
+        $this->load->view($this->h_theme.'/homepage/account_holder', $data);
+        $this->load->view($this->h_theme.'/homepage/footer', $data);  
+    }
+
+
+    /**
+     * Renders the login and registration pages
+     * @param  string   $action   whether to do a login, forget password or register
+     * @return null           Does not return anything but uses code igniter's view() method to render the page
+     */
+    public function access($action = 'login')
+    { 
+        $data = array(
+        	'page' => $action,
+        	'page_title' => ucwords($action) . ' - ' . HOTEL_NAME,
+        	'login_box' => $action,
+        	'login_action' => 'account/login'
+        );  
+
+        // Log the customer out
+		if ($action == 'logout') 
+		{
+			$this->account_data->customer_logout();
+		} 
+		
+		// If the user is already logged in redirect them 
+		if ($this->account_data->customer_logged_in())
+		{	
+        	$this->account_data->customer_redirect();
+		}
+
+		$login_data['username'] = $this->input->post("username"); 
+		$login_data['password'] = $this->input->post("password");
+
+		// Try to log the customer in
+		$post = $this->input->post(NULL, TRUE);
+
+		if (isset($post['login_form'])) 
+		{
+	        $this->form_validation->set_error_delimiters('<div class="text-danger form-text text-muted">', '</div>');
+	        $uu = null; 
+	        if ($action == 'register') 
+	        {
+	        	$uu = '|is_unique[customers.customer_username]|alpha_dash';
+	        	$this->form_validation->set_rules('customer_email', lang('email_address'), 'trim|required|is_unique[customer.customer_email]|valid_email');  
+	        	$this->form_validation->set_rules('customer_telephone', lang('phone'), 'trim|required|is_unique[customer.customer_telephone]');  
+	        }
+	        $this->form_validation->set_rules('username', lang('username'), 'trim|required'.$uu);  
+	        $this->form_validation->set_rules('password', lang('password'), 'trim|required');  
+
+	        if ($this->form_validation->run() !== FALSE) 
+	        { 
+				if ($post['login_form'] == 1) 
+				{
+					if($user = $this->user_model->customer_login($login_data)) 
+					{
+						$this->account_data->customer_login($user);
+						redirect('account/');
+					}
+					else
+					{
+						$this->session->set_flashdata('message', alert_notice(lang('invalid_username_password'), 'error', FALSE)); 
+					}
+				}
+				else
+				{
+					$this->hms_data->customer_register('account');
+				}
+			}
+			else
+			{
+				if ($action == 'login')
+					$this->session->set_flashdata('message', alert_notice(validation_errors(), 'error', FALSE)); 
+			}
+		}  
+
+		// Parse the login and registration view to an array
+        if ($action !== 'register') 
+        {
+        	$data['login_box'] = 'login';
+        }
+		$data['account_data'] = $this->load->view($this->h_theme.'/homepage/login_box', $data, TRUE);
+
+        $this->load->view($this->h_theme.'/homepage/header', $data);    		
+        $this->load->view($this->h_theme.'/homepage/account_holder', $data);
+        $this->load->view($this->h_theme.'/homepage/footer', $data);  
     }
 
 
@@ -187,16 +294,17 @@ class Homepage extends Frontsite_Controller {
 
     			$this->session->set_userdata('reservation', $post); 
 
-    			if ($this->check_customer_login()) 
+    			if ($this->account_data->customer_logged_in()) 
     			{
 					redirect('page/rooms/book/' . $post['room_type']);
     			}
     		}
 
     		// Check if the customer is logged in
-    		if (!$this->check_customer_login()) 
+    		if (!$this->account_data->customer_logged_in()) 
     		{
 	    		$data['login_box'] = $customer ? 'login' : 'register';
+	    		$data['login_action'] = 'page/rooms/book/' . $room->room_type;
 
 				$pre_session = $this->session->userdata('reservation');
 
@@ -230,7 +338,7 @@ class Homepage extends Frontsite_Controller {
     	}
  
     	// Reserve the room
-    	if (isset($_SESSION['reservation']) && $this->check_customer_login())
+    	if (isset($_SESSION['reservation']) && $this->account_data->customer_logged_in())
     	{
     		$post = $this->session->userdata('reservation');
 			$customer = $this->account_data->fetch($this->cuid, 1);
@@ -280,10 +388,9 @@ class Homepage extends Frontsite_Controller {
         error_redirect(!$data['content']['parent']); 
         error_redirect($data['content']);   
  
-        // $this->load->view($this->h_theme.'/layout/header', $data);    		
-        $this->load->view($this->h_theme.'/homepage/room_info', $data);
-		// $this->load->view($this->h_theme.'/footer', array("next_week_freq"=>$next_week_freq));
-		$this->session->set_userdata('show_guide',true);
+        $this->load->view($this->h_theme.'/homepage/header', $data);    		
+        $this->load->view($this->h_theme.'/homepage/room_info', $data); 
+        $this->load->view($this->h_theme.'/homepage/footer', $data);  
     }
 
 

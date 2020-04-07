@@ -25,30 +25,23 @@ class Account_Data {
 
     public function customer_logged_in()
     {    
-        return (bool) $this->CI->session->userdata('customer_username') or get_cookie('customer_username');
+        return (bool) $this->CI->session->userdata('cusername') or get_cookie('cusername');
     }    
 
-    public function is_logged_in($role = false)
+    public function is_logged_in()
     {
 
         if ($this->CI->session->has_userdata('username') or get_cookie('username')) 
         {
-            $_user = ($this->CI->session->userdata('username') ? $this->CI->session->userdata('username') : get_cookie('username'));
+            $_user = ($this->CI->session->userdata('username') ?? get_cookie('username'));
             $user = $this->fetch($_user);
-            if (!$role) 
+            if (!$user) 
             {
                 redirect('login');
             } 
             else 
             {
-                if ($user['role'] == $role) 
-                {
-                    return true;
-                } 
-                else 
-                {
-                    redirect('errors/');
-                }
+                return true;
             }
         } 
         else 
@@ -58,16 +51,38 @@ class Account_Data {
         }
     }
 
+    public function is_customer_logged_in($redirect = FALSE)
+    {
+        if ($this->CI->session->has_userdata('cusername') or get_cookie('cusername')) 
+        {
+            $_user = ($this->CI->session->userdata('cusername') ?? get_cookie('cusername'));
+            $user = $this->fetch($_user, 1);
+            if (!$user) 
+            { 
+                if ($redirect) redirect("account/login");
+                return FALSE;
+            } 
+            else 
+            {
+                return TRUE;
+            }
+        } 
+        else 
+        {
+            $this->CI->session->userdata('redirect_customer_to', current_url());
+            redirect('account/login');
+        }
+    }
+
     public function user_redirect()
     {
-        if ($this->CI->session->has_userdata('username')) 
+        if ($this->CI->session->has_userdata('username') OR get_cookie('username')) 
         {
-            $_user = ($this->CI->session->userdata('username') ? $this->CI->session->userdata('username') : get_cookie('username'));
-            $user = $this->fetch($_user);
-            $role = $user['role'];
-            if ($role == "user") 
+            $_user = ($this->CI->session->userdata('username') ?? get_cookie('username'));
+            $user = $this->fetch($_user); 
+            if ($user) 
             {
-                redirect('welcome/dashboard');   
+                redirect('dashboard');   
             } 
             else 
             {
@@ -77,6 +92,27 @@ class Account_Data {
         else 
         {
             redirect('login');
+        }
+    }
+
+    public function customer_redirect()
+    {
+        if ($this->CI->session->has_userdata('cusername') OR get_cookie('cusername')) 
+        {
+            $_user = ($this->CI->session->userdata('cusername') ?? get_cookie('cusername'));
+            $user = $this->fetch($_user, 1); 
+            if ($user) 
+            {
+                redirect('account');   
+            } 
+            else 
+            {
+                redirect('account/login');
+            }
+        } 
+        else 
+        {
+            redirect('account/login');
         }
     }
 
@@ -138,8 +174,8 @@ class Account_Data {
 
     public function customer_logout()
     {   
-        delete_cookie('customer_username');
-        $this->CI->session->unset_userdata('customer_username');
+        delete_cookie('cusername');
+        $this->CI->session->unset_userdata(['cuid', 'cusername', 'cemail']); 
         $this->CI->session->sess_destroy();
     }
 

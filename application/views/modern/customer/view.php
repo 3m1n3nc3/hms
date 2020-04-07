@@ -25,10 +25,13 @@
 								<b>Expenses</b> <a class="float-right">13,287</a>
 							</li>
 						</ul>
+
+						<?php if (isset($uid)):?>
 						<?=form_open('reservation')?>
 							<input type="hidden" name="customer_TCno" value="<?=$customer['customer_TCno']?>">
 							<button class="btn btn-primary btn-block"><b>Reserve</b></button>
 						<?=form_close()?>
+						<?php endif;?>
 					</div>
 					<!-- /.card-body -->
 				</div>
@@ -79,7 +82,7 @@
 							</div>
 
 							<div class="tab-pane<?= $this->input->post('update_profile') || $this->session->flashdata('update_profile') ? ' active' : ''?>" id="settings">
-								<?= form_open('customer/data/' . $customer['customer_id'])?> 
+								<?= form_open($form_action ?? 'customer/data/' . $customer['customer_id'])?> 
 									<input type="hidden" name="update_profile" value="1">
 
 									<div class="form-group row">

@@ -2,9 +2,12 @@
                 <div class="row">
                     <!-- /.col-md-4 Important Shortcuts -->
                     <div class="col-md-12"> 
-                    <?php alert_notice(sprintf(lang('login_to_book'), $room->room_type), 'info', TRUE, FALSE)?>
+                    <?php 
+                    if (isset($room->room_type)) {
+                        alert_notice(sprintf(lang('login_to_book'), $room->room_type), 'info', TRUE, FALSE);
+                    }?>
                     </div>
-                    <div class="col-md-6 mx-auto"> 
+                    <div class="<?=($login_box ?? null) == 'login' ? 'col-md-6' : 'col-md-8' ?> mx-auto"> 
 
                         <div class="card">
                             <div class="card-header">
@@ -19,7 +22,7 @@
 
                                 <?php if (($login_box ?? null) == 'login'):?>
 
-                                    <?= form_open('page/rooms/book/' . $room->room_type);?>
+                                    <?= form_open($login_action);?>
 
                                         <input type="hidden" name="login_form" value="1">
 
@@ -31,7 +34,7 @@
                                                     <span class="fas fa-user"></span>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> 
                                         
                                         <label class="font-weight-bold" for="password"><?=lang('password')?></label>
                                         <div class="input-group mb-3">
@@ -40,7 +43,7 @@
                                                 <div class="input-group-text">
                                                     <span class="fas fa-lock"></span>
                                                 </div>
-                                            </div>
+                                            </div> 
                                         </div>
                                         <div class="row">
                                             <div class="col-8">
@@ -59,14 +62,14 @@
                                         </div>
 
                                         <p class="mb-1">
-                                            <a href="<?= site_url('account/forget')?>"><?=lang('forgot_password')?></a>
+                                            <a href="<?= site_url('account/login/forgot')?>"><?=lang('forgot_password')?></a>
                                         </p>
                                         <p class="mb-0">
-                                            <a href="<?= site_url('account/register')?>" class="text-center"><?=lang('register')?></a>
+                                            <a href="<?= site_url('account/login/register')?>" class="text-center"><?=lang('register')?></a>
                                         </p>
                                     <?= form_close();?>
                                 <?php else: ?>
-                                    <?= form_open('page/rooms/book/' . $room->room_type);?>
+                                    <?= form_open($login_action);?>
 
                                         <input type="hidden" id="login_form" name="login_form" value="2">
 
@@ -141,13 +144,13 @@
                                             <div class="col-md-4">
                                                 <!-- text input -->
                                                 <div class="form-group">
-                                                    <label class="font-weight-bold" for="city"><?=lang('city')?></label> 
-                                                    <select id="city" name="customer_city" class="form-control select-city" required>
-                                                        
+                                                    <label class="font-weight-bold" for="select-country"><?=lang('country')?></label>
+                                                    <select id="country" name="customer_country" class="form-control select-country" data-target="state" required>
+                                                        <?=select_countries(set_value('customer_country'))?>
                                                     </select> 
-                                                    <?= form_error('customer_city'); ?>
+                                                    <?= form_error('customer_country'); ?>
                                                 </div>
-                                            </div> 
+                                            </div>
 
                                             <div class="col-md-4">
                                                 <!-- text input -->
@@ -163,13 +166,13 @@
                                             <div class="col-md-4">
                                                 <!-- text input -->
                                                 <div class="form-group">
-                                                    <label class="font-weight-bold" for="select-country"><?=lang('country')?></label>
-                                                    <select id="country" name="customer_country" class="form-control select-country" data-target="state" required>
-                                                        <?=select_countries(set_value('customer_country'))?>
+                                                    <label class="font-weight-bold" for="city"><?=lang('city')?></label> 
+                                                    <select id="city" name="customer_city" class="form-control select-city" required>
+                                                        
                                                     </select> 
-                                                    <?= form_error('customer_country'); ?>
+                                                    <?= form_error('customer_city'); ?>
                                                 </div>
-                                            </div>
+                                            </div> 
 
                                             <div class="col-md-12">
                                                 <!-- text input -->
@@ -183,8 +186,8 @@
 
                                         <div class="row">
                                             <div class="col-8">
-                                                <div class="text-danger">
-                                                    <input type="checkbox" id="Field" name="remember">
+                                                <div class="icheck-primary">
+                                                    <input type="checkbox" id="remember" name="remember">
                                                     <label for="remember">
                                                         <?=lang('read_accepted_terms')?>
                                                     </label>
@@ -198,10 +201,10 @@
                                         </div>
 
                                         <p class="mb-1">
-                                            <a href="<?= site_url('forget')?>"><?=lang('forgot_password')?></a>
+                                            <a href="<?= site_url('account/login/forgot')?>"><?=lang('forgot_password')?></a>
                                         </p>
                                         <p class="mb-0">
-                                            <a href="<?= site_url('register')?>" class="text-center"><?=lang('register')?></a>
+                                            <a href="<?= site_url('account/login')?>" class="text-center"><?=lang('signin')?></a>
                                         </p>
                                     <?= form_close();?>
                                 <?php endif; ?>

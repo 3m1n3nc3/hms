@@ -39,19 +39,7 @@ class MY_Controller extends CI_Controller
 
     function check_login()
     {
-        if(!$this->uid)
-            redirect("login");
-    }
-
-    function check_customer_login($redirect = FALSE)
-    {
-        if(!$this->cuid)
-        {
-            if ($redirect) redirect("customer/login");
-            return FALSE;
-        }
-
-        return TRUE;
+        $this->account_data->is_logged_in();
     } 
 }
 
@@ -68,6 +56,10 @@ class Frontsite_Controller extends MY_Controller
 {
     public function __construct()
     {
-        parent::__construct();   
+        parent::__construct();
+        if ($this->uri->segment(2, 0) !== 'login') 
+        {
+            $this->account_data->is_customer_logged_in();
+        }
     } 
 } 

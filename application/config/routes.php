@@ -50,24 +50,26 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |		my-controller/my-method	-> my_controller/my_method
 */ 
 
-$route['default_controller'] = "homepage";
-$route['page/(:any)'] = "homepage/page/$1";
+$route['default_controller']       = "homepage";
+$route['page/(:any)']              = "homepage/page/$1";
 
-$route['account'] = "homepage/account";
-$route['account/(:any)'] = "homepage/account/$1";
+$route['account/login']            = "homepage/access";
+$route['account/login/(:any)']     = "homepage/access/$1";
+$route['account']                  = "homepage/account";
+$route['account/(:any)']           = "homepage/account/$1";
 
 // For this route, the id as the first parameter is routed as the second parameter
 $route['page/rooms/(:any)/(:any)'] = "homepage/rooms/$2/$1/";
 // ----------------------------------------------------------------------------------
-$route['page/rooms/(:any)'] = "homepage/rooms/$1";
+$route['page/rooms/(:any)']        = "homepage/rooms/$1";
 
-$route['dashboard'] = "admin/dashboard/";
-$route['dashboard/(:any)'] = "admin/$1";
+$route['dashboard']                = "admin/dashboard/";
+$route['dashboard/(:any)']         = "admin/$1";
 
-$route['room-type'] = "room_type";
-$route['room-type/(:any)'] = "room_type/$1";
-$route['room-type/edit/(:any)'] = "room_type/edit/$1";
+$route['room-type']                = "room_type";
+$route['room-type/(:any)']         = "room_type/$1";
+$route['room-type/edit/(:any)']    = "room_type/edit/$1";
 
-$route['404_override'] = '';
+$route['404_override']             = '';
 
  

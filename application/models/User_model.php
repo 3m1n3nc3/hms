@@ -61,10 +61,14 @@ class User_model extends CI_Model {
     {
         $this->db->select('customer_id, customer_username, customer_password, customer_email');
         $this->db->from('customer');
-        $this->db->where('customer_email', $data['username']);
-        $this->db->or_where('customer_username', $data['username']);
-        $this->db->where('customer_password', MD5($data['password']));
-        $this->db->limit(1);
+
+        $this->db->group_start();
+            $this->db->where('customer_email', $data['username']);
+            $this->db->or_where('customer_username', $data['username']);
+        $this->db->group_end();
+
+        $this->db->where('customer_password', MD5($data['password'])); 
+        
         $query = $this->db->get();
         if ($query->num_rows() == 1) 
         {

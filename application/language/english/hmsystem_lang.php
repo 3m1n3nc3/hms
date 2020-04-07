@@ -2,6 +2,7 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+$lang['account']                    = 'Account'; 
 $lang['account_login']              = 'Account Login'; 
 $lang['account_register']           = 'Account Registration'; 
 $lang['read_accepted_terms']        = 'I have read and accepted the terms and conditions'; 
@@ -21,7 +22,7 @@ $lang['book_room']                  = 'Book Room';
 $lang['book_a_room']                = 'Book a Room';
 $lang['book_now']                   = 'Book Now';
 $lang['checkin']                    = 'Checkin';  
-$lang['checkin_date_past']         = 'Check in date is past and can\'t be before today'; 
+$lang['checkin_date_past']          = 'Check in date is past and can\'t be before today'; 
 $lang['checkout']                   = 'Checkout';   
 $lang['child']                      = 'Child';  
 $lang['children']                   = 'Children';  
@@ -49,7 +50,7 @@ $lang['invalid_username_password']  = 'Invalid Username or Password';
 $lang['kid']                    = 'kid';
 $lang['lastname']               = 'Last Name';
 $lang['list_users']			    = 'List Users';
-$lang['list_payments']          = 'List Payments';
+$lang['list_payments']          = 'List Payments'; 
 $lang['manage_pages']           = 'Manage Pages'; 
 $lang['manage_privileges']      = 'Manage Privileges'; 
 $lang['my_account']             = 'My Account';
@@ -84,6 +85,7 @@ $lang['registration_failed']    = 'Registration Failed';
 $lang['room_not_available']     = 'This room is not available';
 $lang['select_a_room']          = 'Select a Room';
 $lang['signin']                 = 'Sign In';
+$lang['signout']                = 'Sign Out';
 $lang['signup_success']         = 'Signup Success';
 $lang['state']                  = 'State';
 $lang['update_profile']         = 'Update Profile';
