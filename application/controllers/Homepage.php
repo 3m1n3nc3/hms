@@ -305,8 +305,10 @@ class Homepage extends Frontsite_Controller {
     		// Check if the customer is logged in
     		if (!$this->account_data->customer_logged_in()) 
     		{
+	    		$login_session = $this->session->userdata('reservation');
+
 	    		$data['login_box'] = $customer ? 'login' : 'register';
-	    		$data['login_action'] = 'page/rooms/book/' . $room->room_type;
+	    		$data['login_action'] = 'page/rooms/book/' . ($login_session['room_type'] ?? '');
 
 				$pre_session = $this->session->userdata('reservation');
 
