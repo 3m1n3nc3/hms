@@ -18,7 +18,7 @@ class Errors extends My_Controller
      */
     public function page404() 
     { 
-        header('HTTP/1.1 404 Page Not Found.', TRUE, 404);
+        // header('HTTP/1.1 404 Page Not Found.', TRUE, 404);
 
         $data = $this->data ;
         $data['page_title'] = 'Error 404';
