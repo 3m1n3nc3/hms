@@ -66,7 +66,4 @@ class Service extends Admin_Controller
     $this->load->view($this->h_theme.'/services/service_point', $viewdata);
     $this->load->view($this->h_theme.'/footer');
   }
-}
-
-/* End of file welcome.php */
-/* Location: ./application/controllers/welcome.php */
+} 

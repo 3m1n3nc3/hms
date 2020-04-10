@@ -1,7 +1,13 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Search extends Admin_Controller { 
+class Search extends Admin_Controller 
+{ 
 
+
+    /**
+     * Search the users data base 
+     * @return null                 	Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function index()
 	{ 
 		$word = $this->input->post("customer");
@@ -15,10 +21,8 @@ class Search extends Admin_Controller {
 			'query' => $word,
 			'result' => $result
 		);
+		
 		$this->load->view($this->h_theme.'/search', $vdata);
 		$this->load->view($this->h_theme.'/footer');
 	}
-}
-
-/* End of file search.php */
-/* Location: ./application/controllers/search.php */
+} 

@@ -11,6 +11,11 @@ class Errors extends My_Controller
         $this->data = $data;
     } 
 
+
+    /**
+     * Show the 404 error page 
+     * @return null                 Does not return anything but uses code igniter's view() method to render the page
+     */
     public function page404() 
     { 
         $data = $this->data ;
@@ -26,6 +31,11 @@ class Errors extends My_Controller
         $this->load->view($this->h_theme.'/extra_layout/error_page', $data); 
     } 
 
+
+    /**
+     * Show the 401 error page 
+     * @return null                 Does not return anything but uses code igniter's view() method to render the page
+     */
     public function page401() 
     { 
         $data = $this->data ;

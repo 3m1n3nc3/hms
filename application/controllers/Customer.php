@@ -2,11 +2,17 @@
 
 class Customer extends Admin_Controller 
 { 
+
+
+    /**
+     * This method will allow you to add or update customers
+     * @param  string   $ref    Probably the id or username of the customer if updating
+     * @return null             Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function add($ref="", $action = "create")
 	{
         error_redirect(has_privilege('customers'), '401');
-
-		// 	customer_id	customer_firstname	customer_lastname	customer_TCno	customer_city	customer_country	customer_telephone	customer_email
+ 
 		$data = $this->input->post(NULL, TRUE);
 
 		if ($action === 'update') 
@@ -86,6 +92,11 @@ class Customer extends Admin_Controller
 	} 
 
 
+    /**
+     * This methods allow viewing of a customer's profile
+     * @param  string   $id   	Id of the customer records to retrieve 
+     * @return null             Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function data($id = "")
 	{	
         error_redirect(has_privilege('customers'), '401');
@@ -129,7 +140,11 @@ class Customer extends Admin_Controller
 	} 
 
 
-	public function list($id = "")
+    /**
+     * This methods lists all the available customers 
+     * @return null             Does not return anything but uses code igniter's view() method to render the page
+     */
+	public function list()
 	{	
         error_redirect(has_privilege('customers'), '401');
 
@@ -151,6 +166,11 @@ class Customer extends Admin_Controller
 	} 
 
 
+    /**
+     * Delete a customer
+     * @param  string   $customer_id   Id of customer to delete  
+     * @return null     Redirects to the customer list
+     */
 	function delete($customer_id)
 	{
         error_redirect(has_privilege('customers'), '401');
@@ -161,6 +181,11 @@ class Customer extends Admin_Controller
 	}
 
 
+    /**
+     * Sets the id number of the customer as flash data and redirects to the reservation
+     * @param  string   $customer_id    Id of the customer to set 
+     * @return null     Redirects to the reservation page
+     */
 	function reserve($customer_id)
 	{ 
         error_redirect(has_privilege('customers'), '401');
@@ -168,7 +193,4 @@ class Customer extends Admin_Controller
 		$this->session->set_flashdata('customer_TCno', $customer_id);
 		redirect("reservation");
 	}
-}
-
-/* End of file welcome.php */
-/* Location: ./application/controllers/welcome.php */
+} 

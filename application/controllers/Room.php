@@ -1,7 +1,12 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Room extends Admin_Controller { 
+class Room extends Admin_Controller 
+{ 
 
+    /**
+     * This methods list all the rooms 
+     * @return null                 Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function index()
 	{
 		// Check of employee has permission to take this action
@@ -17,6 +22,11 @@ class Room extends Admin_Controller {
 		$this->load->view($this->h_theme.'/footer');
 	}
 
+
+    /**
+     * Displays all reserved rooms 
+     * @return null                 Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function reserved()
 	{
 		// Check of employee has permission to take this action
@@ -39,6 +49,13 @@ class Room extends Admin_Controller {
 		$this->load->view($this->h_theme.'/footer');
 	}
 
+
+    /**
+     * Fetch information about a reserved room
+     * @param  string   $room_id    	Id of the room to retrieve
+     * @param  string   $customer_id  	Id of the customer with reservation to this room to check
+     * @return null                 	Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function reserved_room($room_id = '', $customer_id = '')
 	{ 
 		// Check of employee has permission to take this action
@@ -59,6 +76,11 @@ class Room extends Admin_Controller {
 		$this->load->view($this->h_theme.'/footer');
 	}
 
+
+    /**
+     * This methods allows for adding new rooms 
+     * @return null                 Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function add()
 	{
 		// Check of employee has permission to take this action
@@ -97,6 +119,13 @@ class Room extends Admin_Controller {
 		$this->load->view($this->h_theme.'/footer');
 	}
 
+
+    /**
+     * Delete the rooms withing the selected min/max range
+     * @param  string   $min_id     Id where to start deleting
+     * @param  string   $max_id     Id where to end deleting
+     * @return null                 Redirects to the rooms listing page
+     */
 	function delete($min_id, $max_id)
 	{
 		// Check of employee has permission to take this action
@@ -107,6 +136,12 @@ class Room extends Admin_Controller {
 		redirect("room");
 	}
 
+
+    /**
+     * Delete the the room reservation with the specified id
+     * @param  string   $reservation_id     Id of the reservation to delete 
+     * @return null                 		Redirects to the reserved rooms listing page
+     */
 	function delete_reservation($reservation_id = '')
 	{
 		// Check of employee has permission to take this action
@@ -117,6 +152,14 @@ class Room extends Admin_Controller {
 		redirect("room/reserved");
 	}
 
+
+    /**
+     * Allows for the editing of the rooms withing the specified min/max range
+     * @param  string   $room_type     	The room type these rooms belong to
+     * @param  string   $min_id        	Id where to start editing
+     * @param  string   $max_id     	Id where to end editing 
+     * @return null                 	Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function edit($room_type, $min_id, $max_id)
 	{
 		// Check of employee has permission to take this action
@@ -163,7 +206,4 @@ class Room extends Admin_Controller {
 
 		$this->load->view($this->h_theme.'/footer');
 	}
-}
-
-/* End of file welcome.php */
-/* Location: ./application/controllers/welcome.php */
+} 

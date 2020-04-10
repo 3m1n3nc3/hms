@@ -1,7 +1,13 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Reservation extends Admin_Controller { 
+class Reservation extends Admin_Controller 
+{ 
 
+
+    /**
+     * This methods allows for adding reservations 
+     * @return null                 Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function index()
 	{ 
         error_redirect(has_privilege('reservation'), '401');
@@ -24,7 +30,12 @@ class Reservation extends Admin_Controller {
 		$this->load->view($this->h_theme.'/footer');
 	}
 
-	public function check($ref="") 
+
+    /**
+     * This methods checks the current reservations 
+     * @return null                 Does not return anything but uses code igniter's view() method to render the page
+     */
+	public function check() 
 	{
         error_redirect(has_privilege('reservation'), '401');
 
@@ -78,9 +89,13 @@ class Reservation extends Admin_Controller {
 		}
 
 		$this->load->view($this->h_theme.'/footer');
-
 	}
-	
+
+
+    /**
+     * This methods save the customer room reservation 
+     * @return null                 Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function make()
 	{
         error_redirect(has_privilege('reservation'), '401');
@@ -150,7 +165,4 @@ class Reservation extends Admin_Controller {
 		$this->load->view($this->h_theme.'/reservation/add', $viewdata);
 		$this->load->view($this->h_theme.'/footer');
 	}
-}
-
-/* End of file welcome.php */
-/* Location: ./application/controllers/welcome.php */
+} 

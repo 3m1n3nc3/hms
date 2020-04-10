@@ -74,7 +74,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php if ($rooms): ?>
+                            <?php if ($rooms): ?>
                                 <?php foreach ($rooms as $rm): ?>
                                 <tr>
                                     <td> <?=$rm->room_id ?> </td>
@@ -105,11 +105,11 @@
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>
-                                <?php else: ?>
+                            <?php else: ?>
                                 <tr>
                                     <td colspan="7"><?php alert_notice(lang('no_more_reservations_this_room'), 'info', TRUE, FALSE) ?></td>
                                 </tr>
-                                <?php endif; ?>
+                            <?php endif; ?>
                             </tbody>
                         </table>
                     </div><!-- /.card-body -->

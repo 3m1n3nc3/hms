@@ -6,22 +6,15 @@ class Connect extends MY_Controller {
 	public function index()
 	{
 		$this->load->view('welcome_message');
-	} 
+	}  
 
-	public function login()
-	{
-		$data['username'] = $this->input->post('username');
-		$data['password'] = $this->input->post('password');
 
-		$login = $this->user_model->userLogin($data);
-		if (!$login) {
-			echo json_encode(NULL, JSON_FORCE_OBJECT);
-			return;
-		}
-		echo json_encode('true', JSON_FORCE_OBJECT);
-		return;
-	}
-
+    /**
+     * Handles ajax image uploads
+     * @param  string 	$endpoint_id	Specifies the id of the content receiving the image record
+     * @param  string 	$endpoint		Specifies the type of content receiving the image record
+     * @return null     Does not return anything but echoes a JSON Object with a response
+     */
 	public function upload_image($endpoint_id = '', $endpoint = 0)
 	{ 	 
 		if ($endpoint === 'customer') 
@@ -141,6 +134,11 @@ class Connect extends MY_Controller {
 		return;
 	}
 
+
+    /**
+     * Receives a request from ajax and saves the current order of the items 
+     * @return null     Does not return anything but echoes a JSON Object with a response
+     */
 	public function sortable()
 	{	
 		$items = $this->input->post(NULL, TRUE);
@@ -151,23 +149,15 @@ class Connect extends MY_Controller {
 			$i++;
 		}
 		echo json_encode(array('response' => TRUE));
-	}
-
-	public function user_availability()
-	{	
-		$post  = $this->input->post();
-		$data  = (isset($post['email']) ? $post['email'] : $post['username']); 
-		$_msg  = (isset($post['email']) ? 'email' : 'username'); 
-
-		$email = $this->user_model->readByEmail($data);
-		if ($email) {
-			echo json_encode('<small>'.lang($_msg.'_notavailable').'</small>', JSON_FORCE_OBJECT);
-			return;
-		}
-		echo json_encode(true, JSON_FORCE_OBJECT);
-		return;
 	} 
 
+
+    /**
+     * Deletes items from the database, request is sent from ajax
+     * @param  string 	$endpoint_id	Specifies the id of the content receiving the image record
+     * @param  string 	$endpoint		Specifies the type of content receiving the image record
+     * @return null     Does not return anything but echoes a JSON Object with the current status of the upload
+     */
 	public function deleteItem()
 	{
 		$type = $this->input->post('type');
@@ -195,7 +185,7 @@ class Connect extends MY_Controller {
 
 
     /**
-     * Fetch data from the locale model and helpers
+     * Receives ajax request for country, state, and cities worldwide
      * @param  string   $local   	specifies the local to return [countries|states|cities]
      * @param  string   $parent_id  If set will return the local for the set parent
      * @return NULL     Echoes a json string containing the data presented by the relevant helper

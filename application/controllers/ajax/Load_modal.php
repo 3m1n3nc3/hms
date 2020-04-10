@@ -7,7 +7,12 @@ class Load_modal extends MY_Controller {
 	{
 		$this->load->view('welcome_message');
 	} 
+    
 
+    /**
+     * Loads the view dynamically for the upload modal 
+     * @return null     Does not return anything but echoes a JSON Object with the response
+     */
 	public function upload_image()
 	{
 		$data = $this->input->post(NULL, TRUE); 

@@ -1,11 +1,23 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-class Datatables extends MY_Controller {
+
+/**
+ * Sends response with data records to jquery datatable
+ */ 
+class Datatables extends MY_Controller 
+{ 
+    
     public function index()
     {
         // $this->load->view('datatable');
     } 
     
+
+    /**
+     * Get the inventory
+     * @param  string   $id 
+     * @return null     Does not return anything but echoes a JSON Object with the response
+     */
     public function inventory($id = null)
     {
         $draw = intval($this->input->post("draw"));
@@ -103,7 +115,13 @@ class Datatables extends MY_Controller {
         echo json_encode($output);
         exit();
     }
+    
 
+    /**
+     * Get count of the inventory
+     * @param  string   $id 
+     * @return Object 
+     */
     public function total_inventory($id = null)
     {      
         $query = $this->db->select("COUNT(item_id) as num")->get("sales_service_stock");
@@ -112,6 +130,12 @@ class Datatables extends MY_Controller {
         return 0;
     }
     
+
+    /**
+     * Get the sales records
+     * @param  string   $id 
+     * @return Object
+     */
     public function sales_records($id = null)
     {
         $draw = intval($this->input->post("draw"));
@@ -214,7 +238,13 @@ class Datatables extends MY_Controller {
         echo json_encode($output);
         exit();
     }
+    
 
+    /**
+     * Get count of the the sales records
+     * @param  string   $id 
+     * @return Object
+     */
     public function total_sales_records($id = null)
     {      
         $query = $this->db->select("COUNT(id) as num")->get("sales_service_orders");
@@ -223,6 +253,12 @@ class Datatables extends MY_Controller {
         return 0;
     }
     
+
+    /**
+     * Get the cashier report
+     * @param  string   $show_btn 
+     * @return null     Does not return anything but echoes a JSON Object with the response
+     */
     public function cashier_report($show_btn = TRUE)
     {
         $draw = intval($this->input->post("draw"));
@@ -336,7 +372,13 @@ class Datatables extends MY_Controller {
         echo json_encode($output);
         exit();
     }
+    
 
+    /**
+     * Get count of the  the cashier report
+     * @param  string   $id 
+     * @return Object
+     */
     public function total_cashier_report($get_query)
     {       
         if ($get_query) 
@@ -358,6 +400,12 @@ class Datatables extends MY_Controller {
         return 0;
     }
     
+
+    /**
+     * Get the payment report
+     * @param  string   $show_btn 
+     * @return null     Does not return anything but echoes a JSON Object with the response
+     */
     public function payment_report($show_btn = TRUE)
     {
         $draw = intval($this->input->post("draw"));
@@ -466,7 +514,13 @@ class Datatables extends MY_Controller {
         echo json_encode($output);
         exit();
     }
+    
 
+    /**
+     * Get the count of the total payment report
+     * @param  string   $get_query 
+     * @return Object
+     */
     public function total_payment_report($get_query)
     {       
         if ($get_query) 
@@ -488,6 +542,12 @@ class Datatables extends MY_Controller {
         return 0;
     }
     
+
+    /**
+     * Get the room sales report
+     * @param  string   $show_btn 
+     * @return null     Does not return anything but echoes a JSON Object with the response
+     */
     public function room_sales_report($show_btn = TRUE)
     {
         $draw = intval($this->input->post("draw"));
@@ -602,7 +662,13 @@ class Datatables extends MY_Controller {
         echo json_encode($output);
         exit();
     }
+    
 
+    /**
+     * Get count of the total the room sales
+     * @param  string   $get_query 
+     * @return Object
+     */
     public function total_room_sales_report($get_query)
     {       
         if ($get_query) 

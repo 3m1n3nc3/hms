@@ -1,7 +1,12 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Cashier extends Admin_Controller {
+class Cashier extends Admin_Controller 
+{
 
+    /**
+     * Manages the hotels cashier reporting 
+     * @return null           Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function index()
 	{ 
         // Check if the user has permission to access this method
@@ -47,6 +52,11 @@ class Cashier extends Admin_Controller {
 		}
 	} 
 
+
+    /**
+     * Manages the hotels online payments records 
+     * @return null           Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function payments()
 	{ 
         // Check if the user has permission to access this method
@@ -92,13 +102,20 @@ class Cashier extends Admin_Controller {
 		}
 	} 
 
+
+    /**
+     * Manages the hotels room sale records
+     * Record filters are dates specifying the record date 
+     * ranges to fetch, the request is made through get queries
+     * @return null           Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function room_sales()
 	{ 
         // Check if the user has permission to access this method
         error_redirect(has_privilege('room-sales'), '401');
 
-		$filter_from = $this->input->get('from');
-		$filter_to = $this->input->get('to');
+		$filter_from = $this->input->get('from', TRUE);
+		$filter_to = $this->input->get('to', TRUE);
 		$filter = array();
 		if ($filter_from) 
 		{
@@ -137,6 +154,12 @@ class Cashier extends Admin_Controller {
 		}
 	} 
 
+
+    /**
+     * Manages the hotels expense register
+     * @param  string $record_id	This specified for a particular record to be returned
+     * @return null           Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function expenses_register($record_id = '')
 	{
         // Check if the user has permission to access this method
@@ -173,6 +196,12 @@ class Cashier extends Admin_Controller {
 		$this->load->view($this->h_theme.'/footer');
 	} 
 
+
+    /**
+     * Deletes an expense record
+     * @param  string $id     The id of the record to be deleted
+     * @return null           Does not return anything but uses code igniter's view() method to render the page
+     */
 	function delete_expenses($record_id)
 	{
         // Check if the user has permission to access this method
@@ -183,6 +212,12 @@ class Cashier extends Admin_Controller {
 		redirect("accounting/cashier");
 	}
 
+
+    /**
+     * Deletes a payment record
+     * @param  string $id     The id of the record to be deleted
+     * @return null           Does not return anything but uses code igniter's view() method to render the page
+     */
 	function delete_payment($record_id)
 	{
         // Check if the user has permission to access this method
@@ -198,6 +233,12 @@ class Cashier extends Admin_Controller {
 		redirect("accounting/cashier/payments");
 	}
 
+
+    /**
+     * Deletes a room sale record
+     * @param  string $id     The id of the record to be deleted
+     * @return null           Does not return anything but uses code igniter's view() method to render the page
+     */
 	function delete_room_sale($record_id)
 	{
         // Check if the user has permission to access this method
@@ -212,7 +253,4 @@ class Cashier extends Admin_Controller {
 		$this->reservation_model->deleteReservation($reservation['reservation_id']);
 		redirect("accounting/cashier/room_sales");
 	}
-}
-
-/* End of file welcome.php */
-/* Location: ./application/controllers/welcome.php */
+} 

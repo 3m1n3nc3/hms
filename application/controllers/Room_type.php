@@ -3,6 +3,11 @@
 class Room_type extends Admin_Controller 
 {  
 
+
+    /**
+     * This methods list all the available room types
+     * @return null                 Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function index()
 	{
         // Check if employee has permission to take this action
@@ -19,6 +24,10 @@ class Room_type extends Admin_Controller
 	}
 
 
+    /**
+     * This methods adds a new room type
+     * @return null                 Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function add()
 	{
         // Check if employee has permission to take this action
@@ -69,6 +78,12 @@ class Room_type extends Admin_Controller
 		redirect("room-type");
 	}
 
+
+    /**
+     * This methods edits the specified room type
+     * @param string 	$room_type 		Id of the room type to edit
+     * @return null                 	Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function edit($room_type)
 	{
         // Check if employee has permission to take this action
@@ -105,7 +120,4 @@ class Room_type extends Admin_Controller
 
 		$this->load->view($this->h_theme.'/footer');
 	}
-}
-
-/* End of file welcome.php */
-/* Location: ./application/controllers/welcome.php */
+} 

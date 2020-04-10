@@ -2,42 +2,54 @@
 
 class Admin extends Admin_Controller { 
 
+    /**
+     * Displays the dashboard, the default landing page for administrators 
+     * @return null           Does not return anything but uses code igniter's view() method to render the page
+     */
     public function dashboard()
     { 
         // Check if the user has permission to access this module and redirect to 401 if not
         error_redirect(has_privilege('dashboard'), '401');
          
-        $customer_pay_list = $this->report_model->get_customer_freq_list();
+        $customer_pay_list  = $this->report_model->get_customer_freq_list();
         $customer_most_paid = $this->report_model->get_customer_most_paid();
-        $next_week_freq = $this->report_model->get_next_week_freq();
-        $sales_stats = $this->accounting_model->statistics(/*['service' => 'Wine Bar']*/);
+        $next_week_freq     = $this->report_model->get_next_week_freq();
+        $sales_stats        = $this->accounting_model->statistics(/*['service' => 'Wine Bar']*/);
         
-        $data = array('title' => my_config('site_name'), 'page' => 'dashboard', 'has_calendar' => TRUE);
+        $data = array(
+            'title'        => my_config('site_name'), 
+            'page'         => 'dashboard', 
+            'has_calendar' => TRUE
+        );
         $this->load->view($this->h_theme.'/header', $data);
  
         $viewdata = array( 
-            'customer_pay_list' => $customer_pay_list,
+            'customer_pay_list'  => $customer_pay_list,
             'customer_most_paid' => $customer_most_paid,
-            'next_week_freq' => $next_week_freq,
-            'sales_stats' => $sales_stats
+            'next_week_freq'     => $next_week_freq,
+            'sales_stats'        => $sales_stats
         );
         $this->load->view($this->h_theme.'/welcome_message', $viewdata);
         $this->load->view($this->h_theme.'/footer', array("next_week_freq"=>$next_week_freq));
         $this->session->set_userdata('show_guide',true);
     }
 
+
+    /**
+     * This methods handles the global configuration of the the whole system
+     * @param  string   $step   The configuration forms are broken down into 
+     *                          steps for maintainability, this will set the current step   
+     * @return null             Does not return anything but uses code igniter's view() method to render the page
+     */
     public function configuration($step = 'main')
     { 
         // Check if the user has permission to access this module and redirect to 401 if not        
-        error_redirect(has_privilege('manage-configuration'), '401'); 
-
-        // $data['profile']       = $this->passcontest->basic_profile($data['id']); 
+        error_redirect(has_privilege('manage-configuration'), '401');  
 
         $data = array(
-            'title' => 'Site Configuration - ' . my_config('site_name'), 
-            // 'sub_page_title' => lang('manage_pages'),
-            'page' => 'configuration',
-            'step' => $this->input->post('step') ? $this->input->post('step') : $step,
+            'title'        => 'Site Configuration - ' . my_config('site_name'),  
+            'page'         => 'configuration',
+            'step'         => $this->input->post('step') ? $this->input->post('step') : $step,
             'enable_steps' => 1
         ); 
 
@@ -79,8 +91,8 @@ class Admin extends Admin_Controller {
         else 
         { 
             unset($_POST['step']);
-            $resize = ['width' => 150, 'height' => 150];
-            $x_resize = ['width' => 30, 'height' => 30];
+            $resize = ['width'   => 150, 'height' => 150];
+            $x_resize = ['width' => 30, 'height'  => 30];
             $b_resize = ['width' => 800, 'height' => 800]; 
             $this->creative_lib->upload('features_banner', my_config('features_banner'), 'features_banner', NULL, $b_resize, ['value' => 'features_banner']);
             $this->creative_lib->upload('breadcrumb_banner', my_config('breadcrumb_banner'), 'breadcrumb_banner', NULL, $b_resize, ['value' => 'breadcrumb_banner']);
@@ -116,9 +128,9 @@ class Admin extends Admin_Controller {
         error_redirect(has_privilege('manage-configuration'), '401'); 
  
         $data = array(
-            'title' => 'Hotel Facilities - ' . my_config('site_name'), 
-            'page' => 'facilities',
-            'action' => $action,
+            'title'          => 'Hotel Facilities - ' . my_config('site_name'), 
+            'page'           => 'facilities',
+            'action'         => $action,
             'sub_page_title' => lang($action . '_facilities')
         );
         $this->load->view($this->h_theme.'/header', $data);
@@ -197,9 +209,9 @@ class Admin extends Admin_Controller {
         $parent = $this->input->get('parent');  
 
         // configure and initialize the pagination
-        $get_query = ($parent ? '?parent='.$parent : '');
-        $set_parent = (!$parent ? 'null' : '');
-        $config['suffix'] = $get_query;
+        $get_query            = ($parent ? '?parent='.$parent : '');
+        $set_parent           = (!$parent ? 'null' : '');
+        $config['suffix']     = $get_query;
         $config['base_url']   = site_url('manage/admin/pages/page');
         $config['total_rows'] = count($this->content_model->get(['parent' => $set_parent, 'manage' => TRUE])); 
 
@@ -210,13 +222,13 @@ class Admin extends Admin_Controller {
 
 		$viewdata = array(
 			'pagination' => $this->pagination->create_links(),
-			'contents' => $this->content_model->get($query)
+			'contents'   => $this->content_model->get($query)
 		);  
 
 		$data = array(
-			'title' => 'Manage Pages - ' . my_config('site_name'), 
+			'title'          => 'Manage Pages - ' . my_config('site_name'), 
 			'sub_page_title' => lang('manage_pages'),
-			'page' => 'pages'
+			'page'           => 'pages'
 		);
 
         $this->load->view($this->h_theme.'/header', $data);       
@@ -288,23 +300,20 @@ class Admin extends Admin_Controller {
         }
 
 		$viewdata = array( 
-			'content' => $content,
+			'content'  => $content,
 			'children' => $this->content_model->get(['parent' => $parent]),
-            'parent' => $content['parent'],
+            'parent'   => $content['parent'],
 			'children_title' => $item_id ? 'Page Content' : 'Pages'
 		);  
 
 		$data = array(
-			'title' => lang('create_page') . ' - ' . my_config('site_name'), 
+			'title'          => lang('create_page') . ' - ' . my_config('site_name'), 
 			'sub_page_title' => $item_id == '' ? lang('create_page') : lang('update_page'),
-			'page' => 'create_page'
+			'page'           => 'create_page'
 		);
 
         $this->load->view($this->h_theme.'/header', $data);       
         $this->load->view($this->h_theme.'/dashboard/create_page', $viewdata);       
         $this->load->view($this->h_theme.'/footer', $data);  
     }
-}
-
-/* End of file welcome.php */
-/* Location: ./application/controllers/welcome.php */
+} 

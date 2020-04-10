@@ -169,7 +169,8 @@ class Homepage extends Frontsite_Controller {
         $this->load->view($this->h_theme.'/homepage/account_holder', $data);  
         $this->load->view($this->h_theme.'/homepage/footer', $data);  
     }
-
+ 
+ 
     /**
      * Renders the users payments page
      * @param  string   $id   id or safelink of the parent content to render
@@ -542,7 +543,4 @@ class Homepage extends Frontsite_Controller {
         $this->load->view($this->h_theme.'/homepage/room_info', $data); 
         $this->load->view($this->h_theme.'/homepage/footer', $data);  
     }
-}
-
-/* End of file welcome.php */
-/* Location: ./application/controllers/welcome.php */
+} 

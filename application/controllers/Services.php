@@ -2,6 +2,11 @@
 
 class Services extends Admin_Controller { 
 
+
+    /**
+     * This methods lists all the available services 
+     * @return null                 Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function index()
 	{
         error_redirect(has_privilege('sales-services'), '401');
@@ -17,6 +22,12 @@ class Services extends Admin_Controller {
 		$this->load->view($this->h_theme.'/footer');
 	}
 
+
+    /**
+     * This methods lists all room sales records
+     * @param string 	$set_service 	The service with the records to list
+     * @return null                 	Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function sales_records($set_service = '')
 	{  
         error_redirect(has_privilege('sales-records'), '401');
@@ -47,6 +58,12 @@ class Services extends Admin_Controller {
 		$this->load->view($this->h_theme.'/footer', $viewdata);
 	}
 
+
+    /**
+     * This methods lists all inventory records
+     * @param string 	$set_service 	The service with the records to list
+     * @return null                 	Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function inventory($set_service = '')
 	{
         error_redirect(has_privilege('inventory'), '401');
@@ -70,6 +87,12 @@ class Services extends Admin_Controller {
 		$this->load->view($this->h_theme.'/footer', $viewdata);
 	}
 
+
+    /**
+     * This methods allows for adding or updating new items to the inventory
+     * @param string 	$set_item_id 	The Id of the item to edit if updating
+     * @return null                 	Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function add_inventory($set_item_id = '')
 	{
         error_redirect(has_privilege('inventory'), '401');
@@ -120,6 +143,11 @@ class Services extends Admin_Controller {
 		$this->load->view($this->h_theme.'/footer');
 	}
 
+
+    /**
+     * This methods allows for adding new sales services (Department) 
+     * @return null                 	Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function add()
 	{
         error_redirect(has_privilege('sales-services'), '401');
@@ -151,6 +179,11 @@ class Services extends Admin_Controller {
 		$this->load->view($this->h_theme.'/footer');
 	}
 
+
+    /**
+     * This methods allows for selling services 
+     * @return null                 	Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function sale()
 	{
         error_redirect(has_privilege('service-point') || has_privilege('inventory') || has_privilege('sales-services') || service_point_access_session(TRUE), '401');
@@ -224,6 +257,12 @@ class Services extends Admin_Controller {
 		redirect("services");
 	}
 
+
+    /**
+     * Delete a service
+     * @param string 	$service_name 	The service with the records to delete
+     * @return null                 	redirect to services
+     */
 	function delete($service_name)
 	{
         error_redirect(has_privilege('sales-services'), '401');
@@ -234,6 +273,13 @@ class Services extends Admin_Controller {
 		redirect("services");
 	}
 
+
+    /**
+     * Delete a service record
+     * @param string 	$type 	The type of service record to delete {inventory} or {sales_records} item
+     * @param string 	$item 	The id of the service record to delete  
+     * @return null             Redirect to service/inventory or services/sales_records methods
+     */
 	function delete_record($type = '', $item = '')
 	{
         error_redirect(has_privilege('inventory'), '401');
@@ -243,13 +289,20 @@ class Services extends Admin_Controller {
 			$this->services_model->delete_stock(['item_id' => $item]);
 			redirect("services/inventory");
  		}
- 		elseif ($type === 'sales_records') {
+ 		elseif ($type === 'sales_records') 
+ 		{
 			$this->session->set_flashdata('message', alert_notice('Sales record deleted', 'success')); 
 			$this->services_model->delete_order(['id' => $item]);
 			redirect("services/sales_records");
  		}
 	}
 
+
+    /**
+     * This methods allows for editing services 
+     * @param string	$get_service_name	The name of the service to edit 
+     * @return null                 		Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function edit($get_service_name)
 	{
         error_redirect(has_privilege('sales-services'), '401');
@@ -284,15 +337,12 @@ class Services extends Admin_Controller {
 		$this->load->view($this->h_theme.'/footer'); 
 	}
 
-	public function calculator()
-	{	
-        error_redirect(has_privilege('service-point'), '401');
 
-		$item_id = $this->input->post('item_id');
-		$stock_item = $this->services_model->get_stock(['item_id' => $item_id]);
-		print_r($stock_item);
-	}
-
+    /**
+     * This methods lists service stocks for sale
+     * @param string	$service	The name of the service with stock to edit 
+     * @return null     			Does not return anything but echoes a JSON Object with a response
+     */
 	public function list_stock($service = "")
 	{         
 		$get_service_name = urldecode($service);
@@ -346,6 +396,7 @@ class Services extends Admin_Controller {
 			{
 			$stock_item_array[] = '<div class="col-12">'.alert_notice('This store has no items on stock', 'error', FALSE, FALSE).'</div>';
 		}
+		
 		$script = '
 		<script> 
 			$(\'input[name="stock_qty[]"]\').change(function() {
@@ -364,7 +415,4 @@ class Services extends Admin_Controller {
 		}
 		echo json_encode($stock_item_blocks, JSON_FORCE_OBJECT); 
 	}
-}
-
-/* End of file welcome.php */
-/* Location: ./application/controllers/welcome.php */
+} 
