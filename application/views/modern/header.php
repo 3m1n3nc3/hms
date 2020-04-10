@@ -123,7 +123,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       <aside class="main-sidebar sidebar-light-warning elevation-4">
         <!-- Brand Logo -->
         <a href="<?= site_url() ?>" class="brand-link text-sm">
-          <img src="<?= $this->creative_lib->fetch_image(my_config('site_logo'), 4); ?>" alt="<?=my_config('site_name')?> Logo" class="brand-image elevation-3"
+          <img src="<?= $this->creative_lib->fetch_image(my_config('site_logo'), 2); ?>" alt="<?=my_config('site_name')?> Logo" class="brand-image elevation-3"
           style="opacity: .8">
           <span class="brand-text font-weight-light"></i> <?=my_config('site_name_abbr') ?? '&nbsp;'?></span>
         </a>
