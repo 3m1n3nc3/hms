@@ -31,7 +31,7 @@ class Errors extends My_Controller
 
         $data['view_data']  = $data; 
         echo $this->load->view($this->h_theme.'/extra_layout/error_page', $data, TRUE); 
-        // exit(1);
+        exit(1);
     } 
 
 
@@ -53,6 +53,6 @@ class Errors extends My_Controller
 
         $data['view_data']  = $data; 
         echo $this->load->view($this->h_theme.'/extra_layout/error_page', $data, TRUE); 
-        // exit(1);
+        exit(1);
     } 
 }
