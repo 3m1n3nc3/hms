@@ -4,8 +4,7 @@ class MY_Controller extends CI_Controller
 { 
     public function __construct()
     {
-        parent::__construct();  
-        $this->CI =& get_instance();  
+        parent::__construct();   
 
         // $CI->output->enable_profiler(TRUE);
         if ($this->input->get('set_theme')) 
@@ -22,15 +21,15 @@ class MY_Controller extends CI_Controller
             $this->h_theme = 'modern';
         }
 
-        $this->uid      = $this->CI->session->userdata('uid');
-        $this->username = $this->CI->session->userdata('username');
-        $this->fullname = $this->CI->session->userdata('fullname');
+        $this->uid      = $this->session->userdata('uid');
+        $this->username = $this->session->userdata('username');
+        $this->fullname = $this->session->userdata('fullname');
         $this->logged_user = $this->employee_model->getEmployee($this->uid, 1);
-        $this->show_guide  = !$this->CI->session->userdata('show_guide');
-        $this->department_name = $this->CI->session->userdata('department_name');
+        $this->show_guide  = !$this->session->userdata('show_guide');
+        $this->department_name = $this->session->userdata('department_name');
 
-        $this->cuid     = $this->CI->session->userdata('cuid');
-        $this->username = $this->CI->session->userdata('cusername');
+        $this->cuid     = $this->session->userdata('cuid');
+        $this->username = $this->session->userdata('cusername');
         $this->logged_customer = $this->cuid ? $this->customer_model->get_customer(['id' => $this->cuid]) : [];
 
         $this->currency = 'NGN';
