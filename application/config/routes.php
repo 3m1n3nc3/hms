@@ -84,6 +84,6 @@ $route['customer']                 = "customer/list";
 
 $route['service']                  = "services";
 
-$route['404_override']             = '';
+$route['404_override']             = 'errors/page404'; 
 
  

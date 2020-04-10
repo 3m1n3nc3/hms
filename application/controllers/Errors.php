@@ -18,8 +18,10 @@ class Errors extends My_Controller
      */
     public function page404() 
     { 
+        header('HTTP/1.1 404 Page Not Found.', TRUE, 404);
+
         $data = $this->data ;
-        $data['page_title'] = 'Error 404';  
+        $data['page_title'] = 'Error 404';
 
         $data['class']   = 'text-warning'; 
         $data['code']   = '404'; 
@@ -29,6 +31,7 @@ class Errors extends My_Controller
 
         $data['view_data']  = $data; 
         $this->load->view($this->h_theme.'/extra_layout/error_page', $data); 
+        exit(1);
     } 
 
 
@@ -38,6 +41,7 @@ class Errors extends My_Controller
      */
     public function page401() 
     { 
+        header('HTTP/1.1 401 Unauthorized Access.', TRUE, 401);
         $data = $this->data ;
         $data['page_title'] = 'Error 401';   
 
@@ -49,5 +53,6 @@ class Errors extends My_Controller
 
         $data['view_data']  = $data; 
         $this->load->view($this->h_theme.'/extra_layout/error_page', $data); 
+        exit(1);
     } 
 }
