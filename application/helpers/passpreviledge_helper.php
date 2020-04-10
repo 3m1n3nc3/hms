@@ -19,7 +19,7 @@ if ( ! function_exists('has_privilege'))
     {
     	global $CI; 
  
-        if ($CI->logged_user['role'] == 2)
+        if ($CI->logged_user['role'] >= 2)
         {
             return true;
         }

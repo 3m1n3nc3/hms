@@ -18,7 +18,7 @@ class Employee_model extends CI_Model {
     {        
         if (!isset($data['bypass_role']) && isset($this->this_role))
         {
-            $this->db->where('employee.roles <=', $this->this_role);
+            $this->db->where('employee.role <=', $this->this_role);
         }
 
         if (isset($data['page'])) {
