@@ -28,7 +28,7 @@
             <span class="text-info">Theme: <?=ucwords($this->h_theme)?></span> 
           </span> -->
 
-          Hoolicon Tech HMS 1.0.0 <?php echo  (ENVIRONMENT === 'development') ?  ' | Page rendered in <strong>{elapsed_time}</strong> seconds. CodeIgniter Version <strong>' . CI_VERSION . '</strong>' : '' ?>
+          <?php echo HMS_NAME . ' ' . HMS_VERSION ?> <?php echo  (ENVIRONMENT === 'development') ?  ' | Page rendered in <strong>{elapsed_time}</strong> seconds. CodeIgniter Version <strong>' . CI_VERSION . '</strong>' : '' ?>
         </div>
         <!-- Default to the left -->
         <strong>Copyright &copy; <?= date('Y'); ?> <a href="https://adminlte.io"><?= my_config('site_name'); ?></a>.</strong> All rights reserved.
