@@ -30,7 +30,7 @@ class Errors extends My_Controller
         $data['message'] = 'The page you requested was not found on this server.'; 
 
         $data['view_data']  = $data; 
-        $this->load->view($this->h_theme.'/extra_layout/error_page', $data); 
+        echo $this->load->view($this->h_theme.'/extra_layout/error_page', $data, TRUE); 
         // exit(1);
     } 
 
@@ -52,7 +52,7 @@ class Errors extends My_Controller
         $data['message'] = 'You do not have access to the resource you have requested.'; 
 
         $data['view_data']  = $data; 
-        $this->load->view($this->h_theme.'/extra_layout/error_page', $data); 
+        echo $this->load->view($this->h_theme.'/extra_layout/error_page', $data, TRUE); 
         // exit(1);
     } 
 }
