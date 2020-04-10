@@ -20,7 +20,7 @@ class Customer_model extends CI_Model {
     {
         if (isset($data['id']) || isset($data['email']) || isset($data['username']) || isset($data['customer_id']) || isset($data['customer_TCno'])) 
         {
-            $this->db->select('customer_id, customer_firstname, customer_lastname, customer_TCno, customer_address, customer_state, customer_city, customer_country, customer_telephone,  customer_email')->from('customer');
+            $this->db->select('customer_id, customer_username, customer_firstname, customer_lastname, image, customer_TCno, customer_address, customer_state, customer_city, customer_country, customer_telephone,  customer_email')->from('customer');
         
             if (isset($data['username'])) 
             {
@@ -81,6 +81,12 @@ class Customer_model extends CI_Model {
         return $query->result();
     }
 
+
+    /**
+     * This function will add a new customer to the customer table
+     * @param array $data
+     * @return object    Returns a standard object
+     */
     function add_customer($data)
     {
         if (isset($data['cid'])) 

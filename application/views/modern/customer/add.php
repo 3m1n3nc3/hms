@@ -12,7 +12,7 @@
           	<div class="card-header">
             	<h5 class="m-0">
             		<i class="fa fa-user mx-2 text-gray"></i>
-            		Add a new customer
+            		<?=$action_title?>
             	</h5>
           	</div>
           	<div class="card-body">
@@ -23,7 +23,7 @@
 	                <div class="col-md-6">
 	                  	<!-- text input -->
 	                  	<div class="form-group">
-	                    	<label for="firstname">First Name</label>
+	                    	<label for="firstname"><?=lang('firstname')?></label>
 	                    	<input type="text" id="firstname" name="customer_firstname" class="form-control" value="<?= set_value('customer_firstname') ?>" required>
 	                  		<?= form_error('customer_firstname'); ?>
 	                  	</div>
@@ -32,7 +32,7 @@
 	                <div class="col-md-6">
 	                  	<!-- text input -->
 	                  	<div class="form-group">
-	                    	<label for="lastname">Last Name</label>
+	                    	<label for="lastname"><?=lang('lastname')?></label>
 	                    	<input type="text" id="lastname" name="customer_lastname" class="form-control" value="<?= set_value('customer_lastname') ?>" required>
 	                  		<?= form_error('customer_lastname'); ?>
 	                  	</div>
@@ -41,7 +41,7 @@
 	                <div class="col-md-6">
 	                  	<!-- text input -->
 	                  	<div class="form-group">
-	                    	<label for="email">Email Address</label>
+	                    	<label for="email"><?=lang('email_address')?></label>
 	                    	<input type="text" id="email" name="customer_email" class="form-control" value="<?= set_value('customer_email') ?>">
 	                  		<?= form_error('customer_email'); ?>
 	                  	</div>
@@ -50,7 +50,7 @@
 	                <div class="col-md-6">
 	                  	<!-- text input -->
 	                  	<div class="form-group">
-	                    	<label for="telephone">Phone</label>
+	                    	<label for="telephone"><?=lang('phone')?></label>
 	                    	<input type="text" id="telephone" name="customer_telephone" class="form-control" value="<?= set_value('customer_telephone') ?>" required>
 	                  		<?= form_error('customer_telephone'); ?>
 	                  	</div>
@@ -59,38 +59,39 @@
                     <div class="col-md-12">
                         <!-- text input -->
                         <div class="form-group">
-                            <label for="address">Address</label>
+                            <label for="address"><?=lang('address')?></label>
                             <textarea id="address" name="customer_address" class="form-control"><?= set_value('customer_address') ?></textarea>
                             <?= form_error('customer_address'); ?>
                         </div>
-                    </div>   
+                    </div>  
 
                     <div class="col-md-4">
-                        <!-- text input -->
                         <div class="form-group">
-                            <label for="city">City</label>
-                            <input type="text" id="city" name="customer_city" class="form-control" value="<?= set_value('customer_city') ?>" required>
-                            <?= form_error('customer_city'); ?>
+                            <label for="country"><?=lang('country')?></label>
+                            <select id="country" name="customer_country" class="form-control select-country" data-target="state" required>
+                                <?=select_countries(set_value('customer_country'))?>
+                            </select>  
+                            <?= form_error('customer_country'); ?>
+                        </div>
+                    </div>  
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="country"><?=lang('state')?></label>
+                            <select id="state" name="customer_state" class="form-control select-state" data-target="city" required> 
+                            </select>  
+                            <?= form_error('customer_state'); ?>
                         </div>
                     </div> 
 
                     <div class="col-md-4">
-                        <!-- text input -->
                         <div class="form-group">
-                            <label for="state">State</label>
-                            <input type="text" id="state" name="customer_state" class="form-control" value="<?= set_value('customer_state') ?>" required>
-                            <?= form_error('customer_state'); ?>
+                           <label for="country"><?=lang('city')?></label>
+                            <select id="city" name="customer_city" class="form-control select-city" required> 
+                            </select>   
+                            <?= form_error('customer_city'); ?>
                         </div>
-                    </div>  
-
-	                <div class="col-md-4">
-	                  	<!-- text input -->
-	                  	<div class="form-group">
-	                    	<label for="country">Country</label>
-	                    	<input type="text" id="country" name="customer_country" class="form-control" value="<?= set_value('customer_country') ?>" required>
-	                  		<?= form_error('customer_country'); ?>
-	                  	</div>
-	                </div>  
+                    </div>    
 
 	                <div class="col-md-12">
 	                  	<!-- text input -->

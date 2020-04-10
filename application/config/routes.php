@@ -58,6 +58,12 @@ $route['account/login/(:any)']     = "homepage/access/$1";
 $route['account']                  = "homepage/account";
 $route['account/(:any)']           = "homepage/account/$1";
 
+$route['reservations']             = "homepage/reservations";
+$route['reservations/(:any)']      = "homepage/reservations/$1";
+
+$route['my-payments']             = "homepage/payments";
+$route['my-payments/(:any)']      = "homepage/payments/$1";
+
 // For this route, the id as the first parameter is routed as the second parameter
 $route['page/rooms/(:any)/(:any)'] = "homepage/rooms/$2/$1/";
 // ----------------------------------------------------------------------------------
@@ -69,6 +75,14 @@ $route['dashboard/(:any)']         = "admin/$1";
 $route['room-type']                = "room_type";
 $route['room-type/(:any)']         = "room_type/$1";
 $route['room-type/edit/(:any)']    = "room_type/edit/$1";
+
+$route['admin']                    = "admin/configuration";
+
+$route['accounting']               = "accounting/cashier";
+
+$route['customer']                 = "customer/list";
+
+$route['service']                  = "services";
 
 $route['404_override']             = '';
 

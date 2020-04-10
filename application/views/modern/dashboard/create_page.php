@@ -9,10 +9,8 @@
                 <?php if (!$content['parent'] && $content['safelink']): ?>
                   <?= form_open('admin/create_page'); ?>
                     <input type="hidden" name="parent" value="<?= $content['safelink']; ?>">
-                    <button type="submit" class="btn btn-primary text-white mr-1">Link to New Content</button>
-                  <?= form_close() ?>
-                <?php else: ?>
-                  <a href="<?= site_url('admin/create_page')?>" class="btn btn-primary text-white mr-1">Create New Page</a>
+                    <button type="submit" class="btn btn-primary text-white mr-1">Link with New Content</button>
+                  <?= form_close() ?> 
                 <?php endif ?>
               </div>
                 <h5 class="card-title">
@@ -53,7 +51,7 @@
                       <div class="form-group">
                         <label for="icon">Icon</label> 
                         <select class="form-control" id="icon" name="icon">
-                           <?= pass_icon(1, $content['icon'], TRUE); ?>
+                           <?= pass_icon(1, set_value('icon', $content['icon']), TRUE); ?>
                         </select>
                         <?= form_error('icon'); ?>
                       </div>
@@ -91,26 +89,8 @@
                       </div> 
                     </div>
 
-                    <?php if (!set_value('parent')): ?> 
-         <!--             <div class="col-md-6">
-                      <div class="form-group">
-                        <label for="parent">Parent</label>
-                        <select class="form-control" id="parent" name="parent">
-                          <option value="" <?= set_select('parent', '', int_bool($content['parent'])) ?>>No Parent</option> 
-                          <?php foreach($this->content_model->get(['parent' => 'non']) AS $parent): ?> 
-                            <?php
-                             $pager = $this->content_model->get(['safelink' => $parent['safelink']]);
-                             if($parent['safelink'] != '' && $parent['id'] != $content['id']): ?>
-                              <?= '<option value="'.$parent['safelink'].'"'.set_select('parent', $parent['safelink'], int_bool(($content['parent'] ?? set_value('parent')) == $parent['safelink'] ? 1 : 0)).'>'.ucwords($pager['title']).'</option>' ?>   
-                            <?php endif; ?>
-                          <?php endforeach; ?> 
-                        </select>
-                      </div>
-                    </div>   -->
-                    <?php endif ?>
-
                     <?php if (set_value('parent')): ?> 
-                        <input type="hidden" name="parent" id="parent" value="<?= set_value('parent') ?>"> 
+                      <input type="hidden" name="parent" id="parent" value="<?= set_value('parent') ?>"> 
                     <?php else: ?>
                       <input type="hidden" name="parent" id="parent" value=""> 
                     <?php endif ?>
@@ -128,7 +108,7 @@
                       <hr class="border-danger">
                     </div>
 
-                    <div class="form-group col-12 m-0 p-0 <?= $content['parent'] ? 'd-none' : '';?>">
+                    <div class="form-group col-12 m-0 p-0 <?= $content['parent'] || set_value('parent') ? 'd-none' : '';?>">
                       <div class="form-check">
                         <label class="form-check-label mr-5" for="in_footer">
                           <input name="in_footer" class="form-check-input text-primary" type="checkbox" value="1"<?= set_checkbox('in_footer', '1', int_bool($content['in_footer'])) ?> id="in_footer">
@@ -140,7 +120,7 @@
 
                         <label class="form-check-label mr-5" for="in_header">
                           <input name="in_header" class="form-check-input text-primary" type="checkbox" value="1"<?= set_checkbox('in_header', '1', int_bool($content['in_header'])) ?> id="in_header">
-                          Show in Footer
+                          Show in Header
                           <span class="form-check-sign">
                             <span class="check"></span>
                           </span>
@@ -179,9 +159,10 @@
                         </label>
                       </div>
                     </div>
-                  </div>
 
-                  <hr class="border-danger">
+                    <hr class="border-danger">
+
+                  </div>
 
                   <div class="row">
                     <div class="col-md-12">
@@ -200,7 +181,7 @@
                     <div class="col-md-12">
                       <div>
                         <?php if ($content): ?>
-                        <button type="submit" class="btn btn-success">UpdateContent</button>
+                        <button type="submit" class="btn btn-success">Update Content</button>
                         <?php else: ?>
                         <button type="submit" class="btn btn-success">Create Content</button>
                         <?php endif; ?>
@@ -214,23 +195,84 @@
           </div>
           
           <div class="col-md-4">
+            <div class="card card-primary card-outline"> 
+              <div class="card-header"> 
+                <h5 class="card-title"><?= lang('content_image') ?></h5> 
+              </div>
+              <div class="card-body box-profile"> 
+                <div class="text-center mb-3">
+                  <a href="<?//= $link ?>">
+                    <img class="profile-user-img img-fluid border-gray" src="<?= $this->creative_lib->fetch_image($content['banner']); ?>" alt="...">
+                  </a>
+                </div>
+                
+                <?php if ($content): ?>
+                <div id="upload_resize_image" data-endpoint="page" data-endpoint_id="<?= $content['id']; ?>" class="d-none"></div>
+                <button type="button" id="upload_resize_image_button" class="btn btn-success btn-block text-white upload_resize_image" data-endpoint="page" data-endpoint_id="<?= $content['id']; ?>" data-toggle="modal" data-target="#uploadModal"><b><?=lang('change_image')?></b></button> 
+                <?php else: ?>
+                <?php alert_notice(lang('save_to_upload'), 'info', TRUE, 'FLAT') ?>
+                <?php endif; ?>
+
+              </div>
+            </div>
+
             <div class="card"> 
               <div class="card-header"> 
-                <h5 class="title"><?= $children_title ?></h5> 
+                <h5 class="card-title"><?= $children_title ?></h5> 
               </div>
-              <div class="card-body">
+              <div class="card-body px-0"> 
+
+                <ul class="todo-list" data-widget="todo-list">
                 <?php if ($children): ?>
+                  <?php $i = 0 ?>
                   <?php foreach ($children AS $child): ?>
-                  <div class="list-group list-group-flush">
-                    <a href="<?= site_url('admin/create_page/edit/'.$child['id'])?>" class="list-group-item list-group-item-action<?= $content['id'] === $child['id'] ? ' active' : ''?>"><?= $child['title'] ?></a> 
-                  </div>
+                  <?php $i++ ?>
+                  <li id="item-<?= $child['id']?>">
+                    <!-- drag handle -->
+                    <span class="handle">
+                      <i class="fas fa-ellipsis-v"></i>
+                      <i class="fas fa-ellipsis-v"></i>
+                    </span>
+                    <!-- checkbox -->
+                    <div  class="icheck-primary d-inline ml-2">
+                      <input type="checkbox" value="" name="todo<?= $child['id']?>" id="SortItem-<?= $child['id']?>" disabled <?= $content['id'] === $child['id'] ? ' checked' : ''?>>
+                      <label for="todoCheck1"></label>
+                    </div>
+                    <!-- todo text -->
+                    <span class="text">
+                      <a href="<?= site_url('admin/create_page/edit/'.$child['id'])?>"><?= $child['title'] ?></a>
+                    </span> 
+                    <!-- General tools such as edit or delete-->
+                    <div class="tools">
+                      <a href="<?= site_url('admin/create_page/edit/'.$child['id'])?>"><i class="far fa-edit"></i></a>
+                      <button class="btn btn-danger text-white m-1 deleter btn-sm" 
+                          onclick="deleteItem({type: 'page', action: 1, id: '<?= $child['id'];?>', init: 'list'})">
+                          <i class="fa fa-trash fa-fw"></i>
+                      </button>
+                    </div>
+                  </li>     
                   <?php endforeach; ?>
                 <?php else: ?>
                 <?=alert_notice('This page has no content', 'info')?>
                 <?php endif; ?>
+                </ul>
+                <span id="sort_message"></span>
               </div> 
             </div>
           </div>
           
         </div>
       </div>
+  
+      <?php
+          $param = array(
+              'modal_target' => 'uploadModal',
+              'modal_title' => 'Upload Image',
+              'modal_size' => 'modal-md',
+              'modal_content' => ' 
+                <div class="m-0 p-0 text-center" id="upload_loader">
+                    <div class="loader"><div class="spinner-grow text-warning"></div></div> 
+                </div>'
+          );
+          $this->load->view($this->h_theme.'/modal', $param);
+      ?>

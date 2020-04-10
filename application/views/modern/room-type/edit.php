@@ -3,7 +3,7 @@
 	<div class="container-fluid">
 		<div class="row">
 			<!-- /.col-md-6 Important Shortcuts -->
-			<div class="col-lg-12"> 
+			<div class="col-md-8"> 
 
 				<?= $this->session->flashdata('message') ?? '' ?>
 
@@ -86,8 +86,43 @@
 				</div>
 			</div>
 			<!-- /.col-md-6 -->
+          
+			<div class="col-md-4">
+				<div class="card card-primary card-outline">
+					<div class="card-header">
+						<h5 class="card-title"><?= lang('content_image') ?></h5>
+					</div>
+					<div class="card-body box-profile">
+						<div class="text-center mb-3">
+							<a href="<?//= $link ?>">
+								<img class="profile-user-img img-fluid border-gray" src="<?= $this->creative_lib->fetch_image($room_type->image); ?>" alt="...">
+							</a>
+						</div>
+						
+						<?php if ($room_type): ?>
+						<div id="upload_resize_image" data-endpoint="room" data-endpoint_id="<?= $room_type->room_type; ?>" class="d-none"></div>
+						<button type="button" id="upload_resize_image_button" class="btn btn-success btn-block text-white upload_resize_image" data-endpoint="room" data-endpoint_id="<?= $room_type->room_type; ?>" data-toggle="modal" data-target="#uploadModal"><b><?=lang('change_image')?></b></button>
+						<?php else: ?>
+						<?php alert_notice(lang('save_to_upload'), 'info', TRUE, 'FLAT') ?>
+						<?php endif; ?>
+					</div>
+				</div>
+			</div>
 		</div>
 		<!-- /.row -->
 	</div><!-- /.container-fluid -->
 </div>
 <!-- /.content -->
+  
+<?php
+	$param = array(
+	  	'modal_target' => 'uploadModal',
+	  	'modal_title' => 'Upload Image',
+	  	'modal_size' => 'modal-md',
+	  	'modal_content' => ' 
+	    	<div class="m-0 p-0 text-center" id="upload_loader">
+	        	<div class="loader"><div class="spinner-grow text-warning"></div></div> 
+	    	</div>'
+	);
+	$this->load->view($this->h_theme.'/modal', $param);
+?>

@@ -1,7 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Service extends Admin_Controller { 
-
+class Service extends Admin_Controller 
+{ 
 
   /**
    * This method saves and processes orders placed from the point method
@@ -9,23 +9,25 @@ class Service extends Admin_Controller {
    */
   public function order()
   { 
+    error_redirect(has_privilege('service-point') || has_privilege('sales-services') || service_point_access_session(TRUE), '401');
+
     $service = $this->input->post("service");
     $customer = $this->input->post("customer");
     $date = $this->input->post("date"); 
     $price = $this->input->post("price");
 
     $data = array(
-        'service_name' => $service,
-        'customer_id' => $customer,
-        'order_date' => $date, 
-        'ordered_datetime' => date('Y-m-d H:i:s'), 
-        'order_price' => $price
+      'service_name' => $service,
+      'customer_id' => $customer,
+      'order_date' => $date, 
+      'ordered_datetime' => date('Y-m-d H:i:s'), 
+      'order_price' => $price
     );
 
     if ($this->input->post()) {
-        $this->restaurant_model->add_service($data);
-        $this->session->set_flashdata('message', alert_notice('Service request placed', 'success'));
-        redirect('services');
+      $this->restaurant_model->add_service($data);
+      $this->session->set_flashdata('message', alert_notice('Service request placed', 'success'));
+      redirect('services');
     } 
   } 
 
@@ -35,8 +37,8 @@ class Service extends Admin_Controller {
    * @return null             uses codeigniters view method to display a page
    */
   public function point($service_id = '')
-  {  
-    $service_id = urldecode($service_id);
+  {   
+    $service_id = urldecode($service_id); 
 
     $inventory = $this->services_model->get_stock();  
     $list_services = $this->services_model->get_service();
@@ -47,25 +49,23 @@ class Service extends Admin_Controller {
     error_redirect(has_privilege('service-point') OR service_point_access($service[0]->id), '401'); 
 
     $data = array(
-        'page' => 'service-point', 
-        'active_page' => $service_id,
-        'title' => 'Service Point - ' . HOTEL_NAME,
-        'sub_page_title' => $service[0]->service_name
+      'page' => 'service-point', 
+      'active_page' => $service_id,
+      'title' => 'Service Point - ' . my_config('site_name'),
+      'sub_page_title' => $service[0]->service_name
     );
 
     $viewdata = array(
-        'inventory' => $inventory, 
-        'list_services' => $list_services, 
-        'service' => $service[0] ?? [], 
-        'customers' => $customers,  
+      'inventory' => $inventory, 
+      'list_services' => $list_services, 
+      'service' => $service[0] ?? [], 
+      'customers' => $customers,  
     );  
 
     $this->load->view($this->h_theme.'/header', $data);
     $this->load->view($this->h_theme.'/services/service_point', $viewdata);
     $this->load->view($this->h_theme.'/footer');
   }
-
-
 }
 
 /* End of file welcome.php */

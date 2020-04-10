@@ -43,15 +43,12 @@ class Creative_lib {
 			} 
 			else 
 			{
-				return FALSE;
-			}
-			chmod($path, 0777);
-			
+				return chmod($path, 0777) OR FALSE;
+			}  
 		}
 		elseif (!$error) 
 		{	
-			$mkdir = mkdir($path, 0777, TRUE); 
-			return $mkdir;
+			return mkdir($path, 0777, TRUE);  
 		}
 		
 		return FALSE;
@@ -59,7 +56,8 @@ class Creative_lib {
 
 	public function delete_file($path = '')
 	{
-		if (file_exists($path) && is_file($path)) {
+		if (file_exists($path) && is_file($path)) 
+        {
 			chmod($path, 0777);
 			return unlink($path);
 		}
@@ -68,78 +66,138 @@ class Creative_lib {
 
 	public function fetch_image($src = '', $type = 1)
 	{	  
-		if ($src && file_exists('./'.$src)) {
+		if ($src && file_exists('./'.$src)) 
+        {
 			return base_url().$src;
-		} else {
-			return base_url().'backend/img/default'.$type.'.jpg';
+		} 
+        else 
+        {
+			return base_url().'backend/img/default'.$type.'.png';
 		}
 	}
+   
+    public function upload($index, $previous = NULL, $new_name = NULL, $folder = NULL, $resize = array(), $set_post = FALSE)
+    {
+        if (isset($_FILES[$index]) && $_FILES[$index]['name']) 
+        { 
+            $upload_data = array();
+            $upload_errors = FALSE;
+            $fileInfo    = pathinfo($_FILES[$index]["name"]);
 
-	public function get_section($name = '', $key = '')
-	{
-		$section = $this->CI->content_model->get_sections(['name' => $name], true);
-		if ($section) {
-			if ($key) {
-				if (isset($section[$key])) {
-					$data = $section[$key];
-				} else {
-					$data = ucwords($name);
-				}
-			} else {
-				$data = $section;
-			}
-		} else {
-			$data = ucwords($name);
-		}
-		return $data;
-	}
+            // Set the new name for the upload
+            if (!$new_name) 
+            {
+                $new_name = 'img_'.rand().'_'.rand();
+            }
 
-	public function yearly_sales($year = '')
-	{
+            $new_name   = $new_name.'.' . $fileInfo['extension'];
+            $new_folder = ($folder) ? $folder . '/' : 'sites/';
+            $directory  = 'uploads/' . $new_folder;
 
-        $year_data = [];
-        $years = $this->CI->dashboard_model->sales_stats_year();
-        
-        if ($years) { 
-            foreach ($years as $yd) { 
-            	$last_year_stats = $stats_month1 = [];
-            	$this_year_stats = $stats_month2 = [];
-            	$last_year = $this->CI->dashboard_model->sales_stats(['year' => $yd['last_year']]); 
-                $this_year = $this->CI->dashboard_model->sales_stats(['year' => $yd['this_year']]); 
-    
-            	foreach ($last_year as $lastm) { 
-            		$last_year_stats[] .= $lastm['sales'];
-            		$stats_month1[] .= '\''.$this->int_to_month($lastm['month']).'\'';
-            	}
-            	foreach ($this_year as $thism) { 
-            		$this_year_stats[] .= $thism['sales'];
-            		$stats_month2[] .= '\''.$this->int_to_month($thism['month']).'\'';
-            	}
+            // Set the parameters for this upload
+            $_config['upload_path']      = './' . $directory;
+            $_config['allowed_types']    = 'jpg|png|jpeg';
+            $_config['max_size']         = '1500'; 
+            $_config['file_name']        = $new_name;
+            $_config['overwrite']        = TRUE;
+            $_config['remove_spaces']    = TRUE;
+            $_config['file_ext_tolower'] = TRUE; 
+
+            // Initialize the upload
+            $this->CI->upload->initialize($_config);
+
+            // Create a directory for this upload, if it doesn't exist
+            if ( ! $this->create_dir($_config['upload_path']) ) 
+            {
+                $this->CI->upload->set_error('upload_unable_to_write_file', 'debug');
+                $upload_errors = $this->CI->upload->display_errors(); 
+            } 
+            else 
+            {
+                // Delete any previous file if set
+                $this->delete_file('./' . $previous);
+            }
+
+            // Do the upload
+            if ( ! $this->CI->upload->do_upload($index) )
+            {
+                $upload_errors = $this->CI->upload->display_errors(); 
+            }
+            else
+            {
+                // Fetch the upload data
+                $upload_data             = $this->CI->upload->data(); 
+                $upload_data['new_path'] = $directory . $new_name;  
+                $upload_data['errors']   = $upload_errors;  
+                chmod($_config['upload_path'] . $new_name, 0777);
+
+                // Set post data for this upload (important if you do not 
+                // intend to retrieve upload file directory from upload_data)
+                if ($set_post) 
+                {
+                    if ($set_post === TRUE) 
+                    {
+                        $_POST[$index]    = $upload_data['new_path'];
+                    }
+                    else
+                    {
+                        if (is_array($set_post))
+                        { 
+                            foreach ($set_post as $key => $value) 
+                            { 
+                                $param = array($value => $upload_data['new_path']);
+                                $_NEWPOST[$key] = $param;
+                            }
+                            if (isset($_POST)) 
+                            {
+                                $_POST = array_merge($_POST, $_NEWPOST);
+                            }
+                            else
+                            {
+                                $_POST = $_NEWPOST;
+                            }
+                        }
+                        else
+                        {
+                            $_POST[$set_post] = $upload_data['new_path'];
+                        } 
+                    }
+                }
+
+                 // Array ( [value] => Array ( [site_name] => Hayatt Regency Suited ) [site_logo] => uploads/sites/site_logo.png )
+                // Resize this image file
+                if ($resize) 
+                {
+                    // $resize['width'], $resize['height']
+                    $this->resize_image($_config['upload_path'].$new_name, $resize); 
+                }
             }
             
-            $labels = array_unique(array_merge($stats_month1, $stats_month2));
-            $labels = $this->month_rearray($labels);
-            $stats_data = 
-    	    'data: {
-    	        labels: ['.implode(', ',$labels).'],
-    	        datasets: [ 
-    	        	{     		
-    			        backgroundColor: \'#ced4da\',
-    			        borderColor    : \'#ced4da\',  
-    	        		data: ['.implode(', ', $last_year_stats).']
-    	        	},
-    	        	{
-    			        backgroundColor: \'#007bff\',
-    			        borderColor    : \'#007bff\',   
-    					data: ['.implode(', ', $this_year_stats).']
-    	        	}
-    	        ]
-    	    }';
-    	    
-            return $stats_data;
+            $this->upload_errors = array();
+            if ($upload_errors) 
+            {
+                $this->upload_errors[$index] = $upload_errors;
+            }
+
+            // Return the upload data array
+            if (isset($upload_data)) 
+            {
+                return $upload_data;    
+            }
+
+            return FALSE;
         }
-        return;
-	}
+    }
+
+    public function upload_errors($index = NULL, $prefix = '<p>', $suffix = '</p>')
+    {
+        if (isset($this->upload_errors[$index])) 
+        {
+            return $prefix . $this->upload_errors[$index] . $suffix;
+        } 
+
+        return FALSE;
+    } 
 
 	public function month_rearray($months = array(), $lt = "'", $rt = "'")
 	{	
@@ -183,55 +241,6 @@ class Creative_lib {
 		}
 
     	return array_values($key_data);
-		
-	}
-
-	public function int_to_month($int = 1, $short = False) 
-	{
-		switch ($int) {
-			case 1:
-				$month = 'January';
-				break;
-			case 2:
-				$month = 'February';
-				break;
-			case 3:
-				$month = 'March';
-				break;
-			case 4:
-				$month = 'April';
-				break;
-			case 5:
-				$month = 'May';
-				break;
-			case 6:
-				$month = 'June';
-				break;
-			case 7:
-				$month = 'July';
-				break;
-			case 8:
-				$month = 'August';
-				break;
-			case 9:
-				$month = 'September';
-				break;
-			case 10:
-				$month = 'October';
-				break;
-			case 11:
-				$month = 'November';
-				break;
-			
-			default:
-				$month = 'December';
-				break;
-		}
-
-		if ($short) {
-			return date('M', strtotime($month));
-		}
-		return $month;
 	}
 
 }

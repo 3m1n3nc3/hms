@@ -1,7 +1,7 @@
 <?php 
 defined('BASEPATH') OR exit('No direct script access allowed'); 
 
-class Errors extends Frontsite_Controller 
+class Errors extends My_Controller 
 { 
     public function __construct() 
     { 

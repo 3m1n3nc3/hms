@@ -46,7 +46,7 @@ class Account_Data {
         } 
         else 
         {
-            $this->CI->session->userdata('redirect_to', current_url());
+            $this->CI->session->set_userdata('redirect_to', current_url());
             redirect('login');
         }
     }
@@ -69,7 +69,7 @@ class Account_Data {
         } 
         else 
         {
-            $this->CI->session->userdata('redirect_customer_to', current_url());
+            $this->CI->session->set_userdata('redirect_customer_to', current_url());
             redirect('account/login');
         }
     }
@@ -192,7 +192,7 @@ class Account_Data {
             'username' => $data['employee_username'],
             'fullname' => $fullname,
             'department_name' => $dept[0]->service_name
-        );
+        ); 
         $this->CI->session->set_userdata($data);
     }
 

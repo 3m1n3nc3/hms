@@ -49,7 +49,7 @@
                         <a href="<?= site_url('customer/add/'.$customer->customer_id.'/update') ?>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Edit">
                           <i class="btn-icon-only fa fa-edit text-white"></i>
                         </a>
-                        <a href="<?= site_url('customer/delete/'.$customer->customer_id) ?>" onclick="return confirm('Are you sure ?')" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Delete">
+                        <a href="javascript:void(0)" onclick="return confirmDelete('<?= site_url('customer/delete/'.$customer->customer_id) ?>', 1)" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Delete">
                           <i class="btn-icon-only fa fa-trash text-white"></i>
                         </a>
                         <?php endif; ?>

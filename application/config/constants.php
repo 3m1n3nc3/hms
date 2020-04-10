@@ -1,7 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
-
-define('HOTEL_NAME', "Hayatt Regency Suites"); 
+defined('BASEPATH') OR exit('No direct script access allowed'); 
 
 /*
 |--------------------------------------------------------------------------

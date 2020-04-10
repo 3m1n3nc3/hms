@@ -1,3 +1,4 @@
+			<?php if ($post['invoice_id']): ?>
 			<div class="container border p-0 m-5">
 				<div class="row">
 					<div class="col-12"> 
@@ -33,7 +34,7 @@
 								</div>
 								<!-- /.col -->
 								<div class="col-sm-4 invoice-col">
-									<b class="text-info">Invoice #<?= $post['room_id'].date('ymdHm') ?></b><br>
+									<b class="text-info">Invoice #<?= $post['invoice'] ?? $post['room_id'].date('ymdHm') ?></b><br>
 									<br>
 									<b class="text-info">Order ID:</b> <?= $post['invoice_id'] ?><br>
 									<b class="text-info">Payment <?= $post['invoice_id'] == 'pending' ? 'Due' : 'Date' ?>:</b> <?= $post['date']?><br>
@@ -120,7 +121,7 @@
 									</button>   
 								<?php endif; ?>
 
-									<a href="<?php echo site_url('homepage/invoice/'.$post['payment_ref'].'/?print=true') ?>" target="_blank" class="btn btn-default">
+									<a href="<?php echo $action ?? site_url('homepage/invoice/'.$post['payment_ref'].'/?print=true') ?>" target="_blank" class="btn btn-default">
 										<i class="fas fa-print"></i> Print
 									</a>
 
@@ -133,7 +134,7 @@
 				</div>
 			</div>
 
-			<?php if($post['invoice_id'] == 'pending'): ?>
+			<?php if($post['invoice_id'] == 'pending'):?>
 				<?=$this->hms_payments->payment_processor_loader(
 					'paystack', ['post' => $post, 'customer' => $customer, 'room' => $room]
 				)?>
@@ -153,3 +154,4 @@
 		</body>
 	</html>
 	<?php endif; ?>
+<?php endif;?>

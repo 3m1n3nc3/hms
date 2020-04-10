@@ -53,7 +53,7 @@
                               <a href="<?= site_url('room-type/edit/'.$rt->room_type)?>" class="btn btn-sm btn-primary">
                                   <i class="btn-icon-only fa fa-edit text-white"></i>
                               </a>
-                              <a href="<?= site_url('room-type/delete/'.$rt->room_type)?>" onclick="return confirm('Are you sure ?')" class="btn btn-danger btn-sm">
+                              <a href="javascript:void(0)" onclick="return confirmDelete('<?= site_url('room-type/delete/'.$rt->room_type)?>', 1)" class="btn btn-danger btn-sm">
                                   <i class="btn-icon-only fa fa-trash text-white"></i>
                               </a>
           							    </td>

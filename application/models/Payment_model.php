@@ -18,38 +18,55 @@ class Payment_model extends CI_Model {
      * @return array
      */
     public function get_payments($data = null, $row = false) 
-    {
-        $this->db->select('*')->from('payments');
-        if (is_array($data)) 
+    { 
+        $x_query = " WHERE 1=1";
+        
+        if (isset($data['reference'])) 
         {
-            if (isset($data['reference'])) 
-            {
-                $this->db->where('reference', $data['reference']); 
-            } 
-
-            if (isset($data['customer_id'])) 
-            {
-                $this->db->where('customer_id', $data['customer_id']); 
-            }  
-
-            if (isset($data['id'])) 
-            {
-                $this->db->where('id', $data); 
-            }
-         
-            if (isset($data['page'])) 
-            {
-                $this->db->limit($this->config->item('per_page'), $data['page']);
-            }
+            $this->db->where('reference', $data['reference']); 
+            $x_query .= " AND reference = '{$data['reference']}'";
         } 
-        else 
+
+        if (isset($data['customer_id'])) 
         {
-            $this->db->order_by('id');
+            $this->db->where('payments.customer_id', $data['customer_id']); 
+            $x_query .= " AND payments.customer_id = '{$data['customer_id']}'";
+        }  
+
+        if (isset($data['id'])) 
+        {
+            $this->db->where('id', $data['id']); 
+            $x_query .= " AND id = '{$data['id']}'";
         }
+        
+        if (isset($data['from'])) 
+        {
+            $this->db->where('date >=', $data['from']); 
+            $x_query .= " AND date >= '{$data['from']}'";
+        } 
+        
+        if (isset($data['to'])) 
+        {
+            $this->db->where('date <=', $data['to']); 
+            $x_query .= " AND date <= '{$data['to']}'";
+        } 
+
+        $this->db->select('*')->from('payments');
+        $this->db->select('
+            (SELECT SUM(amount) FROM payments '.$x_query.') AS total,
+            (SELECT COUNT(id) FROM payments '.$x_query.') AS entries');
+        $this->db->join('reservation', 'payments.reference = reservation.reservation_ref'); 
+         
+        if (isset($data['page'])) 
+        {
+            $this->db->limit($this->config->item('per_page'), $data['page']);
+        }
+
+        $this->db->order_by('id');
 
         $query = $this->db->get();
 
-        if ($data != null && !isset($data['customer_id']) || $row === true) 
+        if (isset($data['id']) || isset($data['reference']) || $row === TRUE) 
         {
             return $query->row_array();
         } 
@@ -58,6 +75,15 @@ class Payment_model extends CI_Model {
             return $query->result_array();
         }
     }
+
+    function min_max($min_max = 0)
+    {   
+        $order = $min_max ? 'DESC' : 'ASC';
+        $this->db->limit('1'); 
+        $this->db->order_by('date '.$order); 
+        $query = $this->db->select('date')->from('payments')->get();
+        return $query->row_array();
+    } 
 
 
     /**

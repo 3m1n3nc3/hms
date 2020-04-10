@@ -4,11 +4,14 @@ class Room extends Admin_Controller {
 
 	public function index()
 	{
+		// Check of employee has permission to take this action
+        error_redirect(has_privilege('rooms'), '401');
+
 		$rooms = $this->room_model->get_rooms();
 
 		$viewdata = array('rooms' => $rooms);
 
-		$data = array('title' => 'Rooms - ' . HOTEL_NAME, 'page' => 'room');
+		$data = array('title' => 'Rooms - ' . my_config('site_name'), 'page' => 'room');
 		$this->load->view($this->h_theme.'/header', $data);
 		$this->load->view($this->h_theme.'/room/list',$viewdata);
 		$this->load->view($this->h_theme.'/footer');
@@ -16,6 +19,9 @@ class Room extends Admin_Controller {
 
 	public function reserved()
 	{
+		// Check of employee has permission to take this action
+        error_redirect(has_privilege('rooms') OR has_privilege('room-sales'), '401');
+
 		$config['base_url']   = site_url('room/reserved/'); 
         $config['total_rows'] = count($this->reservation_model->reserved_rooms()); 
 
@@ -27,7 +33,7 @@ class Room extends Admin_Controller {
 		$viewdata = array('rooms' => $rooms);
         $viewdata['pagination'] = $this->pagination->create_links();
 
-		$data = array('title' => 'Rooms - ' . HOTEL_NAME, 'page' => 'reserved');
+		$data = array('title' => 'Rooms - ' . my_config('site_name'), 'page' => 'reserved');
 		$this->load->view($this->h_theme.'/header', $data);
 		$this->load->view($this->h_theme.'/room/reserved',$viewdata);
 		$this->load->view($this->h_theme.'/footer');
@@ -35,6 +41,9 @@ class Room extends Admin_Controller {
 
 	public function reserved_room($room_id = '', $customer_id = '')
 	{ 
+		// Check of employee has permission to take this action
+        error_redirect(has_privilege('rooms'), '401');
+
 		$reservation = $this->reservation_model->reserved_rooms(['room' => $room_id, 'customer' => $customer_id, 'uncheck' => TRUE], 1);
 		$rooms = $this->reservation_model->reserved_rooms(['room' => $room_id, 'uncheck' => TRUE]);
 
@@ -44,7 +53,7 @@ class Room extends Admin_Controller {
 
         $viewdata['pagination'] = $this->pagination->create_links();
 
-		$data = array('title' => 'Rooms - ' . HOTEL_NAME, 'page' => 'reserved');
+		$data = array('title' => 'Rooms - ' . my_config('site_name'), 'page' => 'reserved');
 		$this->load->view($this->h_theme.'/header', $data);
 		$this->load->view($this->h_theme.'/room/reserved_room',$viewdata);
 		$this->load->view($this->h_theme.'/footer');
@@ -52,6 +61,9 @@ class Room extends Admin_Controller {
 
 	public function add()
 	{
+		// Check of employee has permission to take this action
+        error_redirect(has_privilege('rooms'), '401');
+
 		$viewdata = array();
 		if($this->input->post("room_type") && $this->input->post("min_id") && $this->input->post("max_id"))
 		{
@@ -72,7 +84,7 @@ class Room extends Admin_Controller {
 			}
 		}
 		$data = array(
-			'title' => 'Add Rooms - ' . HOTEL_NAME, 
+			'title' => 'Add Rooms - ' . my_config('site_name'), 
 			'page' => 'room',
         	'sub_page_title' => 'Add Rooms'
         );
@@ -87,6 +99,9 @@ class Room extends Admin_Controller {
 
 	function delete($min_id, $max_id)
 	{
+		// Check of employee has permission to take this action
+        error_redirect(has_privilege('rooms'), '401');
+
 		$this->session->set_flashdata('message', alert_notice('All rooms numbered from '. $min_id.' to '.$max_id.' have been deleted')); 
 		$this->room_model->deleteRoomRange($min_id, $max_id);
 		redirect("room");
@@ -94,6 +109,9 @@ class Room extends Admin_Controller {
 
 	function delete_reservation($reservation_id = '')
 	{
+		// Check of employee has permission to take this action
+        error_redirect(has_privilege('reservation'), '401');
+
 		$this->session->set_flashdata('message', alert_notice('Reservation Deleted')); 
 		$this->reservation_model->deleteReservation($reservation_id);
 		redirect("room/reserved");
@@ -101,6 +119,9 @@ class Room extends Admin_Controller {
 
 	public function edit($room_type, $min_id, $max_id)
 	{
+		// Check of employee has permission to take this action
+        error_redirect(has_privilege('rooms'), '401');
+
 		$viewdata = array();
 		if($this->input->post("room_type") && $this->input->post("min_id") && $this->input->post("max_id"))
 		{
@@ -127,7 +148,7 @@ class Room extends Admin_Controller {
 			}
 		}
 
-		$data = array('title' => 'Edit Rooms - ' . HOTEL_NAME, 'page' => 'room');
+		$data = array('title' => 'Edit Rooms - ' . my_config('site_name'), 'page' => 'room');
 		$this->load->view($this->h_theme.'/header', $data);
 
 		$room_types = $this->room_model->get_room_types();

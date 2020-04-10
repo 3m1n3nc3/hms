@@ -86,17 +86,13 @@ class Content_model extends CI_Model {
 
         if (!isset($data['safelink']) && !isset($data['id'])) 
         {
-            if (isset($data['manage'])) 
-            {
-                $this->db->order_by('parent ASC');
-            }
-            elseif (isset($data['order_field']))  
+            if (isset($data['order_field']))  
             {
                 $this->db->order_by('FIELD(`'.$data["order_field"]["name"].'`, "'.$data["order_field"]["id"].'") DESC'); 
             }
             else
             {
-                $this->db->order_by('priority DESC');
+                $this->db->order_by('priority ASC');
             }
         }
  
@@ -110,6 +106,7 @@ class Content_model extends CI_Model {
             return $query->result_array();
         }
     }
+
 
     public function get_parent($data = null, $row = 0) 
     {
@@ -152,7 +149,7 @@ class Content_model extends CI_Model {
             $insert_id = $this->db->insert_id();
             return $insert_id;
         }
-    }  
+    }   
 
 
     /**
@@ -183,16 +180,61 @@ class Content_model extends CI_Model {
         }
         $this->db->delete('content');
         return $this->db->affected_rows();
-    }
+    } 
 
 
     /**
      * This function fetch data from the facilities table
      * @param $id
      */
-    public function get_facilities() 
+    public function get_facilities($data = null) 
     {
-        $query = $this->db->get('facilities');  
-        return $query->result_array(); 
+        $this->db->select('*')->from('facilities'); 
+
+        if (isset($data['id'])) 
+        {
+            $this->db->where('id', $data['id']);  
+        } 
+ 
+        $this->db->order_by('id DESC');
+ 
+        $query = $this->db->get();
+        if (isset($data['id'])) 
+        {
+            return $query->row_array();
+        } 
+        else 
+        {
+            return $query->result_array();
+        }
     }
+
+
+    /**
+     * This function will add new records to the facilities table
+     * If id is present, then it will do an update
+     * else an insert. One function doing both add and edit.
+     * @param $data
+     */
+    public function add_facility($data) {
+        if (isset($data['id'])) {
+            $this->db->where('id', $data['id']);
+            $this->db->update('facilities', $data);
+            return $this->db->affected_rows();
+        } else {
+            $this->db->insert('facilities', $data);
+            $insert_id = $this->db->insert_id();
+            return $insert_id;
+        }
+    }  
+
+    /**
+     * This function will delete the record based on the id
+     * @param $id
+     */
+    public function remove_facility($id) {  
+        $this->db->where('id', $id);  
+        $this->db->delete('facilities');
+        return $this->db->affected_rows();
+    } 
 }

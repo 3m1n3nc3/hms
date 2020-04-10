@@ -35,11 +35,6 @@ class MY_Controller extends CI_Controller
 
         $this->currency = 'NGN';
         $this->cr_symbol = $this->intl->currency(3, $this->currency);
-    }
-
-    function check_login()
-    {
-        $this->account_data->is_logged_in();
     } 
 }
 
@@ -48,7 +43,8 @@ class Admin_Controller extends MY_Controller
     public function __construct()
     {
         parent::__construct(); 
-        $this->check_login();  
+        $this->account_data->is_logged_in();
+        service_point_access_session(); 
     } 
 } 
 

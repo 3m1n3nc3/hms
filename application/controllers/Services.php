@@ -4,12 +4,14 @@ class Services extends Admin_Controller {
 
 	public function index()
 	{
+        error_redirect(has_privilege('sales-services'), '401');
+
 		$services = $this->services_model->get_service();
 		$customers = $this->customer_model->get_active_customers();  
 
 		$viewdata = array('services' => $services, 'customers' => $customers);
 
-		$data = array('title' => 'Sales Services - ' . HOTEL_NAME, 'page' => 'sales-services');
+		$data = array('title' => 'Sales Services - ' . my_config('site_name'), 'page' => 'sales-services');
 		$this->load->view($this->h_theme.'/header', $data);
 		$this->load->view($this->h_theme.'/services/list',$viewdata);
 		$this->load->view($this->h_theme.'/footer');
@@ -17,6 +19,8 @@ class Services extends Admin_Controller {
 
 	public function sales_records($set_service = '')
 	{  
+        error_redirect(has_privilege('sales-records'), '401');
+
 		$services = $this->services_model->get_service();
 		$customers = $this->customer_model->get_active_customers(); 
 
@@ -37,7 +41,7 @@ class Services extends Admin_Controller {
 		);  
         $viewdata['pagination'] = $this->pagination->create_links();
 
-		$data = array('title' => 'Sales Records - ' . HOTEL_NAME, 'page' => 'sales-records');
+		$data = array('title' => 'Sales Records - ' . my_config('site_name'), 'page' => 'sales-records');
 		$this->load->view($this->h_theme.'/header', $data);
 		$this->load->view($this->h_theme.'/services/sales_records',$viewdata);
 		$this->load->view($this->h_theme.'/footer', $viewdata);
@@ -45,6 +49,8 @@ class Services extends Admin_Controller {
 
 	public function inventory($set_service = '')
 	{
+        error_redirect(has_privilege('inventory'), '401');
+
 		$inventory = $this->services_model->get_stock();  
 
 		$config['base_url']   = site_url('services/inventory/');
@@ -58,7 +64,7 @@ class Services extends Admin_Controller {
 		$viewdata = array('inventory' => $inventory, 'use_table' => TRUE, 'table_method' => 'inventory');  
         $viewdata['pagination'] = $this->pagination->create_links();
 
-		$data = array('title' => 'Inventory - ' . HOTEL_NAME, 'page' => 'inventory');
+		$data = array('title' => 'Inventory - ' . my_config('site_name'), 'page' => 'inventory');
 		$this->load->view($this->h_theme.'/header', $data);
 		$this->load->view($this->h_theme.'/services/inventory',$viewdata);
 		$this->load->view($this->h_theme.'/footer', $viewdata);
@@ -66,6 +72,8 @@ class Services extends Admin_Controller {
 
 	public function add_inventory($set_item_id = '')
 	{
+        error_redirect(has_privilege('inventory'), '401');
+
 		$services = $this->services_model->get_service();
 		$inventory_item = $this->services_model->get_stock(['item_id' => $set_item_id]);  
 
@@ -105,7 +113,7 @@ class Services extends Admin_Controller {
 			'tl' => $tl
 		);  
 
-		$data = array('title' => $tl.' Inventory - ' . HOTEL_NAME, 'page' => 'inventory');
+		$data = array('title' => $tl.' Inventory - ' . my_config('site_name'), 'page' => 'inventory');
 
 		$this->load->view($this->h_theme.'/header', $data);
 		$this->load->view($this->h_theme.'/services/add_inventory', $viewdata);
@@ -114,6 +122,8 @@ class Services extends Admin_Controller {
 
 	public function add()
 	{
+        error_redirect(has_privilege('sales-services'), '401');
+
 		if($this->input->post("ServiceName"))
 		{
 			$service_name = $this->input->post("ServiceName");
@@ -135,7 +145,7 @@ class Services extends Admin_Controller {
 			redirect("services");
 		}
 
-		$data = array('title' => 'Add Service - ' . HOTEL_NAME, 'page' => 'sales-services');
+		$data = array('title' => 'Add Service - ' . my_config('site_name'), 'page' => 'sales-services');
 		$this->load->view($this->h_theme.'/header', $data);
 		$this->load->view($this->h_theme.'/services/add');
 		$this->load->view($this->h_theme.'/footer');
@@ -143,6 +153,8 @@ class Services extends Admin_Controller {
 
 	public function sale()
 	{
+        error_redirect(has_privilege('service-point') || has_privilege('inventory') || has_privilege('sales-services') || service_point_access_session(TRUE), '401');
+
 		$post = $this->input->post();
 
 		if(!$this->input->post("stock_item"))
@@ -214,22 +226,34 @@ class Services extends Admin_Controller {
 
 	function delete($service_name)
 	{
+        error_redirect(has_privilege('sales-services'), '401');
+
 		$service_name = urldecode($service_name);
 		$this->session->set_flashdata('message', alert_notice('Sales Service Item deleted', 'success')); 
 		$this->services_model->deleteService($service_name);
 		redirect("services");
 	}
 
-	function delete_inventory($item)
+	function delete_record($type = '', $item = '')
 	{
-		$service_name = urldecode($service_name);
-		$this->session->set_flashdata('message', alert_notice('Inventory Item deleted', 'success')); 
-		$this->services_model->delete_stock(['item_id' => $item]);
-		redirect("services/inventory");
+        error_redirect(has_privilege('inventory'), '401');
+ 		if ($type === 'inventory') 
+ 		{
+			$this->session->set_flashdata('message', alert_notice('Inventory Item deleted', 'success')); 
+			$this->services_model->delete_stock(['item_id' => $item]);
+			redirect("services/inventory");
+ 		}
+ 		elseif ($type === 'sales_records') {
+			$this->session->set_flashdata('message', alert_notice('Sales record deleted', 'success')); 
+			$this->services_model->delete_order(['id' => $item]);
+			redirect("services/sales_records");
+ 		}
 	}
 
 	public function edit($get_service_name)
 	{
+        error_redirect(has_privilege('sales-services'), '401');
+
 		$get_service_name = urldecode($get_service_name);
 		if($this->input->post("serviceName"))
 		{
@@ -251,7 +275,7 @@ class Services extends Admin_Controller {
 			$this->services_model->AddService($save);
 			redirect("services");
 		}
-		$data = array('title' => 'Edit Sales Service - ' . HOTEL_NAME, 'page' => 'sales-services');
+		$data = array('title' => 'Edit Sales Service - ' . my_config('site_name'), 'page' => 'sales-services');
 		$this->load->view($this->h_theme.'/header', $data);
 		$service = $this->services_model->getService($get_service_name); 
 		$viewdata = array('service'  => $service[0]);
@@ -262,13 +286,15 @@ class Services extends Admin_Controller {
 
 	public function calculator()
 	{	
+        error_redirect(has_privilege('service-point'), '401');
+
 		$item_id = $this->input->post('item_id');
 		$stock_item = $this->services_model->get_stock(['item_id' => $item_id]);
 		print_r($stock_item);
 	}
 
 	public function list_stock($service = "")
-	{
+	{         
 		$get_service_name = urldecode($service);
 		$stock_list = $this->services_model->get_stock(['item_service' => $get_service_name]);
 
@@ -328,7 +354,14 @@ class Services extends Admin_Controller {
 		</script>';
 
 		$stock_item = implode('', $stock_item_array);
-		$stock_item_blocks = array_merge($stock_list, array('stock_item' => $stock_item.$script));
+		if (has_privilege('inventory') || has_privilege('service-point') || has_privilege('sales-services') || service_point_access_session(TRUE)) 
+		{
+			$stock_item_blocks = array_merge($stock_list, array('stock_item' => $stock_item.$script));
+		}
+		else
+		{
+			$stock_item_blocks = array_merge([], array('stock_item' => 'Error 401: Access Denied'.$script));
+		}
 		echo json_encode($stock_item_blocks, JSON_FORCE_OBJECT); 
 	}
 }

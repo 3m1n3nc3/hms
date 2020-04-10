@@ -85,12 +85,11 @@
         <!--================ About History Area  =================--> 
         <?php if ($infochildren): ?>
             <?php 
-                $i = 0;
-                $infochildren = array_reverse($infochildren);
+                $i = 0; 
                 foreach ($infochildren AS $info): 
                 $i++;
             ?>
-            <section class="about_history_area <?= ($i%2) ? 'section_gap' : '' ?>">
+            <section class="about_history_area <?= ($i%2 === 0) ? 'section_gap' : '' ?>">
                 <div class="container">
                     <div class="row">
 

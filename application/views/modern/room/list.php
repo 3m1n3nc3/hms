@@ -44,7 +44,7 @@
 							    	<a href="<?= site_url('room/edit/'.$rm->room_type.'/'.$rm->min_id)?>/<?=$rm->max_id?>" class="btn btn-sm btn-primary">
                                         <i class="btn-icon-only fa fa-edit text-white"></i>
                                     </a>
-							    	<a href="<?= site_url('room/delete/'.$rm->min_id.'/'.$rm->max_id)?>" onclick="return confirm('Are you sure ?')" class="btn btn-danger btn-sm">
+							    	<a href="javascript:void()" onclick="return confirmDelete('<?= site_url('room/delete/'.$rm->min_id.'/'.$rm->max_id)?>', 1)" class="btn btn-danger btn-sm">
                                         <i class="btn-icon-only fa fa-trash text-white"></i>
                                     </a>
 							    </td>

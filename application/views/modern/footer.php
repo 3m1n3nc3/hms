@@ -2,7 +2,21 @@
       </div> 
       <?php endif;?>
       <!-- /.content-wrapper (Opened at view/classic/header.php)-->
-
+      
+      <!-- Load the actions modal here -->
+      <?php
+        $param = array(
+          'modal_target' => 'actionModal',
+          'modal_title' => 'Action Modal',
+          'modal_size' => 'modal-sm',
+          'modal_content' => ' 
+            <div class="m-0 p-0 text-center" id="upload_loader">
+                <div class="loader"><div class="spinner-grow text-warning"></div></div> 
+            </div>'
+        );
+        $this->load->view($this->h_theme.'/modal', $param);
+      ?>
+ 
       <!-- Main Footer -->
       <footer class="main-footer text-sm">
         <!-- To the right -->
@@ -14,10 +28,10 @@
             <span class="text-info">Theme: <?=ucwords($this->h_theme)?></span> 
           </span> -->
 
-          Hoolicon Tech HMS 1.0.0
+          Hoolicon Tech HMS 1.0.0 <?php echo  (ENVIRONMENT === 'development') ?  ' | Page rendered in <strong>{elapsed_time}</strong> seconds. CodeIgniter Version <strong>' . CI_VERSION . '</strong>' : '' ?>
         </div>
         <!-- Default to the left -->
-        <strong>Copyright &copy; <?= date('Y'); ?> <a href="https://adminlte.io"><?= HOTEL_NAME; ?></a>.</strong> All rights reserved.
+        <strong>Copyright &copy; <?= date('Y'); ?> <a href="https://adminlte.io"><?= my_config('site_name'); ?></a>.</strong> All rights reserved.
       </footer>
 
     </div>
@@ -28,10 +42,16 @@
     <!-- =============================================== -->
     <!-- jQuery -->
     <script src="<?= base_url('backend/modern/plugins/jquery/jquery.min.js'); ?>"></script>
+    <!-- Croppie -->
+    <script src="<?= base_url('backend/js/plugins/croppie.js'); ?>"></script>
+    <!-- jQuery UI -->
+    <script src="<?= base_url('backend/modern/plugins/jquery-ui/jquery-ui.min.js'); ?>"></script>
     <!-- Bootstrap 4 -->
     <script src="<?= base_url('backend/modern/plugins/bootstrap/js/bootstrap.bundle.min.js'); ?>"></script>
     <!-- AdminLTE App -->
     <script src="<?= base_url('backend/modern/dist/js/adminlte.min.js'); ?>"></script>
+    <!-- Hotel Management System -->
+    <script src="<?= base_url('backend/js/hhms.js?time='.strtotime('NOW')); ?>"></script>
 
     <!-- Tooltips and toggle Initialization -->
     <script type="text/javascript"> 
@@ -51,7 +71,7 @@
     <script src="<?= base_url('backend/modern/plugins/fullcalendar-daygrid/main.min.js');?>"></script>
     <script src="<?= base_url('backend/modern/plugins/fullcalendar-timegrid/main.min.js');?>"></script>
     <script src="<?= base_url('backend/modern/plugins/fullcalendar-bootstrap/main.min.js');?>"></script>
-    <script src="<?= base_url('backend/modern/plugins/fullcalendar-interaction/main.min.js'); ?>"></script>
+    <script src="<?= base_url('backend/modern/plugins/fullcalendar-interaction/main.min.js'); ?>"></script> 
     <?php endif; ?>
     <!-- =============================================== -->
 
@@ -59,8 +79,6 @@
     <script src="<?= base_url('backend/js/chart.min.js'); ?>" type="text/javascript"></script> 
     <script language="javascript" type="text/javascript" src="<?= base_url('backend/js/full-calendar/fullcalendar.min.js'); ?>"></script>
     <script src="<?= base_url('backend/js/base.js'); ?>"></script> 
-
-    <script src="<?= base_url('backend/js/hhms.js?time='.strtotime('NOW')); ?>"></script>
 
     <!-- Datatables -->
     <?php if (isset($use_table) && $use_table): ?>
@@ -75,7 +93,7 @@
             "serverSide": true,
             "order": [[0, "asc" ]],
             "ajax":{
-                  url :  '<?= site_url('tables/datatables/'.$table_method); ?>',
+                  url :  '<?= site_url('ajax/datatables/'.$table_method); ?>',
                   type : 'POST'
               },
               rowId: 20
@@ -83,7 +101,7 @@
         })
       </script>
     <?php endif ?>
-    
+
     <?php if (isset($has_calendar)): ?>  
     <script>
       function date2string(date) {
@@ -147,14 +165,7 @@
 
         var lineChartData = {
           labels: <?= json_encode($next_week_freq['dates']);?>,
-          datasets: [
-          /*{
-              fillColor: "rgba(220,220,220,0.5)",
-              strokeColor: "rgba(220,220,220,1)",
-              pointColor: "rgba(220,220,220,1)",
-              pointStrokeColor: "#fff",
-              data: [65, 59, 90, 81, 56, 55, 40]
-          },*/
+          datasets: [ 
             {
               fillColor: "rgba(151,187,205,0.5)",
               strokeColor: "rgba(151,187,205,1)",
@@ -187,42 +198,42 @@
       </script><!-- /Calendar -->
         <!-- Welcome Guide -->
       <?php if(SHOW_GUIDE): ?>
-        <script src="<?= base_url('backend/js/guidely/guidely.min.js'); ?>"></script>
+        <!-- <script src="<?= base_url('backend/js/guidely/guidely.min.js'); ?>"></script> -->
 
         <script>
           $(function () {
             
-            guidely.add ({
-              attachTo: '#target-1', 
-              anchor: 'top-left', 
-              title: 'Today \'s Stats', 
-              text: 'You can see how many services are registered today. We used stored procedure here.'
-            });
+          //   guidely.add ({
+          //     attachTo: '#target-1', 
+          //     anchor: 'top-left', 
+          //     title: 'Today \'s Stats', 
+          //     text: 'You can see how many services are registered today. We used stored procedure here.'
+          //   });
             
-            guidely.add ({
-              attachTo: '#target-2', 
-              anchor: 'top-left', 
-              title: 'Next Week Reservations Chart', 
-              text: 'You can see next week\'s hotel situation. It shows how many customers will be hosted next week.'
-            });
+          //   guidely.add ({
+          //     attachTo: '#target-2', 
+          //     anchor: 'top-left', 
+          //     title: 'Next Week Reservations Chart', 
+          //     text: 'You can see next week\'s hotel situation. It shows how many customers will be hosted next week.'
+          //   });
 
-            guidely.add ({
-              attachTo: '#target-3', 
-              anchor: 'top-left', 
-              title: 'Top Customer', 
-              text: 'Here, you can see the customer who spend most money to our hotel. We used MAX, SUM, GROUP BY functions on our database.'
-            });
+          //   guidely.add ({
+          //     attachTo: '#target-3', 
+          //     anchor: 'top-left', 
+          //     title: 'Top Customer', 
+          //     text: 'Here, you can see the customer who spend most money to our hotel. We used MAX, SUM, GROUP BY functions on our database.'
+          //   });
             
             
-            guidely.add ({
-              attachTo: '#target-4', 
-              anchor: 'top-left', 
-              title: 'Most Frequent Customers', 
-              text: 'Here, you can see most visited customers. We used GROUP BY, ORDER functions here.'
-            });
+          //   guidely.add ({
+          //     attachTo: '#target-4', 
+          //     anchor: 'top-left', 
+          //     title: 'Most Frequent Customers', 
+          //     text: 'Here, you can see most visited customers. We used GROUP BY, ORDER functions here.'
+          //   });
             
-            guidely.init ({ welcome: true, startTrigger: true });
-          });
+          //   guidely.init ({ welcome: true, startTrigger: true });
+          // });
         </script>
       <?php endif; ?>
         <!--/Welcome Guide-->

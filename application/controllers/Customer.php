@@ -4,37 +4,59 @@ class Customer extends Admin_Controller
 { 
 	public function add($ref="", $action = "create")
 	{
+        error_redirect(has_privilege('customers'), '401');
+
 		// 	customer_id	customer_firstname	customer_lastname	customer_TCno	customer_city	customer_country	customer_telephone	customer_email
-		$data = $this->input->post();
+		$data = $this->input->post(NULL, TRUE);
+
+		if ($action === 'update') 
+		{
+			$customer = $this->customer_model->get_customer(['id' => $ref]); 
+		}
+
 		if ($data) 
 		{
+			$u_email = (($customer['customer_email'] ?? '') !== $data['customer_email'] ? '|is_unique[customer.customer_email]' : '');
+			$u_tel = (($customer['customer_telephone'] ?? '') !== $data['customer_telephone'] ? '|is_unique[customer.customer_telephone]' : '');
+			$u_TCn = (($customer['customer_TCno'] ?? '') !== $data['customer_TCno'] ? '|is_unique[customer.customer_TCno]' : '');
+
 			if($data["customer_TCno"])
 			{
         		$this->form_validation->set_error_delimiters('<small class="text-danger pt-0">', '</small>');
-				$this->form_validation->set_rules('customer_TCno', 'Customer Identity Code', 'trim|required|is_unique[customer.customer_TCno]'); 
-				$this->form_validation->set_rules('customer_firstname', 'First Name', 'trim|required|alpha'); 
-				$this->form_validation->set_rules('customer_lastname', 'Last Name', 'trim|required|alpha'); 
-				$this->form_validation->set_rules('customer_email', 'Email', 'trim|valid_email|is_unique[customer.customer_email]'); 
-				$this->form_validation->set_rules('customer_telephone', 'Phone', 'trim|required|numeric|is_unique[customer.customer_telephone]'); 
-				$this->form_validation->set_rules('customer_address', 'Address', 'trim|required|alpha_dash'); 
-				$this->form_validation->set_rules('customer_city', 'City', 'trim|required|alpha_dash'); 
-				$this->form_validation->set_rules('customer_state', 'State', 'trim|required|alpha_dash'); 
-				$this->form_validation->set_rules('customer_country', 'Country', 'trim|required|alpha_dash'); 
+				$this->form_validation->set_rules('customer_TCno', lang('customer_id_code'), 'trim|required' . $u_TCn); 
+				$this->form_validation->set_rules('customer_firstname', lang('firstname'), 'trim|required|alpha'); 
+				$this->form_validation->set_rules('customer_lastname', lang('lastname'), 'trim|required|alpha'); 
+				$this->form_validation->set_rules('customer_email', lang('email_address'), 'trim|valid_email' . $u_email); 
+				$this->form_validation->set_rules('customer_telephone', lang('phone'), 'trim|required|numeric' . $u_tel); 
+				$this->form_validation->set_rules('customer_address', lang('address'), 'trim|required'); 
+				$this->form_validation->set_rules('customer_city', lang('city'), 'trim|required'); 
+				$this->form_validation->set_rules('customer_state', lang('state'), 'trim|required'); 
+				$this->form_validation->set_rules('customer_country', lang('country'), 'trim|required'); 
 
 		        if ($this->form_validation->run() !== FALSE) 
 		        {
+					$msg = lang('new_customer_added');
+		        	if ($action === 'update') 
+					{
+						$msg = lang('customer_updated');
+						$data['cid'] = $customer['customer_id'];
+					}
 					$this->customer_model->add_customer($data);
-					$this->session->set_flashdata('message', alert_notice('New Customer added', 'success')); 
-					redirect("$ref");
+					$this->session->set_flashdata('message', alert_notice($msg, 'success')); 
+					redirect("customer/add/$ref/$action");
 				} 
 			}
 		}
 
 		if ($action === 'update') 
-		{
-			$customer = $this->customer_model->get_customer(['id' => $ref]); 
-			$page_title = "Update Customer ({$customer['customer_firstname']})";
-			$data = array('title' => $page_title . ' - ' . HOTEL_NAME, 'page' => 'reservation'); 
+		{  
+			$page_title = lang('update_customer') . " ({$customer['customer_firstname']})";
+			$data = array(
+				'title' => $page_title . ' - ' . my_config('site_name'), 
+				'page' => 'customers', 
+				'action_title' => $page_title,
+				'action' => $action === 'update' ? 'Update' : 'Add'
+			); 
 
 			$this->load->view($this->h_theme.'/header', $data);
 
@@ -47,9 +69,11 @@ class Customer extends Admin_Controller
 		{
 			$page_title = "Add Customer";
 			$data = array(
-				'title' => $page_title . ' - ' . HOTEL_NAME, 
-				'page' => 'reservation',
-        		'sub_page_title' => $page_title
+				'title' => $page_title . ' - ' . my_config('site_name'), 
+				'page' => 'customers',
+        		'sub_page_title' => $page_title, 
+				'action_title' => $page_title,
+				'action' => $action === 'update' ? 'Update' : 'Add'
         	); 
 
 			$this->load->view($this->h_theme.'/header', $data);
@@ -61,26 +85,30 @@ class Customer extends Admin_Controller
 		$this->load->view($this->h_theme.'/footer');
 	} 
 
+
 	public function data($id = "")
 	{	
+        error_redirect(has_privilege('customers'), '401');
+
 		$customer = $this->customer_model->get_customer(['id' => $id]); 
-		$viewdata = array('customer' => $customer); 
+    	$statistics = $this->accounting_model->statistics(['customer' => $customer['customer_id']]);
+
+		$viewdata = array('customer' => $customer, 'statistics' => $statistics); 
  
-		$post = $this->input->post();
+		$post = $this->input->post(NULL, TRUE);
 		if ($post) 
 		{  
 			$unique_email = ($customer['customer_email'] !== $post['customer_email'] ? '|is_unique[customer.customer_email]' : '');
-			$unique_tel = ($customer['customer_telephone'] !== $post['customer_telephone'] ? '|is_unique[customer.customer_telephone]' : '');
+			$unique_tel = ($customer['customer_telephone'] !== $post['customer_telephone'] ? '|is_unique[customer.customer_telephone]' : ''); 
 
-        	$this->form_validation->set_error_delimiters('<small class="text-danger pt-0">', '</small>'); 
-			$this->form_validation->set_rules('customer_firstname', 'First Name', 'trim|required|alpha'); 
-			$this->form_validation->set_rules('customer_lastname', 'Last Name', 'trim|required|alpha'); 
-			$this->form_validation->set_rules('customer_email', 'Email', 'trim|valid_email'.$unique_email); 
-			$this->form_validation->set_rules('customer_telephone', 'Phone', 'trim|required|numeric'.$unique_tel); 
-			$this->form_validation->set_rules('customer_address', 'Address', 'trim|required'); 
-			$this->form_validation->set_rules('customer_city', 'City', 'trim|required|alpha_dash'); 
-			$this->form_validation->set_rules('customer_state', 'State', 'trim|required|alpha_dash'); 
-			$this->form_validation->set_rules('customer_country', 'Country', 'trim|required|alpha_dash'); 
+			$this->form_validation->set_rules('customer_firstname', lang('firstname'), 'trim|required|alpha'); 
+			$this->form_validation->set_rules('customer_lastname', lang('lastname'), 'trim|required|alpha'); 
+			$this->form_validation->set_rules('customer_email', lang('email_address'), 'trim|valid_email' . $unique_email); 
+			$this->form_validation->set_rules('customer_telephone', lang('phone'), 'trim|required|numeric' . $unique_tel); 
+			$this->form_validation->set_rules('customer_address', lang('address'), 'trim|required'); 
+			$this->form_validation->set_rules('customer_city', lang('city'), 'trim|required'); 
+			$this->form_validation->set_rules('customer_state', lang('state'), 'trim|required'); 
+			$this->form_validation->set_rules('customer_country', lang('country'), 'trim|required'); 
 
 	        if ($this->form_validation->run() !== FALSE) 
 	        {	
@@ -88,20 +116,23 @@ class Customer extends Admin_Controller
 	        	$post['cid'] = $customer['customer_id'];
 
 				$this->customer_model->add_customer($post);
-				$this->session->set_flashdata(array('update_profile'=> TRUE, 'message' => alert_notice('Profile Updated', 'success'))); 
+				$this->session->set_flashdata(array('update_profile'=> TRUE, 'message' => alert_notice(lang('profile_updated'), 'success'))); 
 				redirect('customer/data/'.$customer['customer_id']);
 			}  
 		}
 
-		$data = array('title' => 'Customer ('.$customer['customer_firstname'].' '.$customer['customer_lastname'].') - ' . HOTEL_NAME, 'page' => 'customer');
+		$data = array('title' => 'Customer ('.$customer['customer_firstname'].' '.$customer['customer_lastname'].') - ' . my_config('site_name'), 'page' => 'customer');
 
 		$this->load->view($this->h_theme.'/header', $data);
 		$this->load->view($this->h_theme.'/customer/view',$viewdata);
 		$this->load->view($this->h_theme.'/footer');
 	} 
 
+
 	public function list($id = "")
 	{	
+        error_redirect(has_privilege('customers'), '401');
+
 		$config['base_url']   = site_url('customer/list/');
         $config['total_rows'] = count($this->customer_model->list_customers()); 
 
@@ -112,22 +143,28 @@ class Customer extends Admin_Controller
 		$viewdata  = array('customers' => $customers); 
         $viewdata['pagination'] = $this->pagination->create_links();
 
-		$data = array('title' => 'Customers - ' . HOTEL_NAME, 'page' => 'customers');
+		$data = array('title' => 'Customers - ' . my_config('site_name'), 'page' => 'customers');
 
 		$this->load->view($this->h_theme.'/header', $data);
 		$this->load->view($this->h_theme.'/customer/list',$viewdata);
 		$this->load->view($this->h_theme.'/footer');
 	} 
 
+
 	function delete($customer_id)
 	{
-		$this->session->set_flashdata(array('message' => alert_notice('Customer Deleted', 'success'))); 
+        error_redirect(has_privilege('customers'), '401');
+
+		$this->session->set_flashdata(array('message' => alert_notice(lang('customer_deleted'), 'success'))); 
 		$this->customer_model->delete_customer($customer_id);
 		redirect("customer/list");
 	}
 
+
 	function reserve($customer_id)
 	{ 
+        error_redirect(has_privilege('customers'), '401');
+
 		$this->session->set_flashdata('customer_TCno', $customer_id);
 		redirect("reservation");
 	}

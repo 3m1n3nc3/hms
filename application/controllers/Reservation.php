@@ -4,10 +4,12 @@ class Reservation extends Admin_Controller {
 
 	public function index()
 	{ 
+        error_redirect(has_privilege('reservation'), '401');
+        
 		$room_types = $this->room_model->get_room_types();
 		$viewdata = array('room_types' => $room_types);
 		$data = array(
-			'title' => 'Reservation - ' . HOTEL_NAME, 
+			'title' => 'Reservation - ' . my_config('site_name'), 
 			'page' => 'reservation', 
 			'has_calendar' => TRUE
 		);
@@ -22,7 +24,10 @@ class Reservation extends Admin_Controller {
 		$this->load->view($this->h_theme.'/footer');
 	}
 
-	public function check($ref="") {
+	public function check($ref="") 
+	{
+        error_redirect(has_privilege('reservation'), '401');
+
 		$viewdata = $rooms = [];
 
 		$post = $this->input->post();
@@ -53,7 +58,7 @@ class Reservation extends Admin_Controller {
 		
 		$viewdata = array();
 
-		$data = array('title' => 'Add Customer - ' . HOTEL_NAME, 'page' => 'reservation');
+		$data = array('title' => 'Add Customer - ' . my_config('site_name'), 'page' => 'reservation');
 		$this->load->view($this->h_theme.'/header', $data);
 
 		if(isset($viewdata['error']))
@@ -78,6 +83,8 @@ class Reservation extends Admin_Controller {
 	
 	public function make()
 	{
+        error_redirect(has_privilege('reservation'), '401');
+        
 		$post = $this->input->post();
 		
 		$this->form_validation->set_rules('customer_TCno', 'Customer Identity Code', 'trim|required');
@@ -135,7 +142,7 @@ class Reservation extends Admin_Controller {
 		$viewdata['room_types'] = $room_types;
 
 		$data = array(
-			'title' => 'Reservation - ' . HOTEL_NAME, 
+			'title' => 'Reservation - ' . my_config('site_name'), 
 			'page' => 'reservation', 
 			'has_calendar' => TRUE
 		);

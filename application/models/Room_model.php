@@ -52,6 +52,58 @@ class Room_model extends CI_Model {
         return false;
     }
 
+    public function room_sales($data = array())
+    {
+        $x_query = " WHERE 1=1";
+        if (isset($data['reservation_id']))
+        {
+            $this->db->where('room_sales.reservation_id', $data['reservation_id']);
+        }
+        
+        if (isset($data['reservation_ref']))
+        {
+            $this->db->where('reservation.reservation_ref', $data['reservation_ref']);
+        }
+        
+        if (isset($data['from'])) 
+        {
+            $this->db->where('reservation.reservation_date >=', $data['from']); 
+            $x_query .= " AND reservation.reservation_date >= '{$data['from']}'";
+        } 
+        
+        if (isset($data['to'])) 
+        {
+            $this->db->where('reservation.reservation_date <=', $data['to']); 
+            $x_query .= " AND reservation.reservation_date <= '{$data['to']}'";
+        } 
+
+        $this->db->select('*')->from('room_sales');
+        $this->db->select('
+            (SELECT SUM(room_sales_price) FROM room_sales '.$x_query.') AS total,
+            (SELECT COUNT(reservation_id) FROM room_sales '.$x_query.') AS entries');
+        $this->db->join('reservation', 'room_sales.reservation_id = reservation.reservation_id', 'LEFT');
+ 
+        $this->db->order_by('room_sales.checkin_date', 'ASC');
+        $query = $this->db->get();
+
+        if (isset($data['reservation_id']) || isset($data['reservation_ref']))
+        {
+            return $query->row_array();
+        }
+
+        return $query->result_array();
+    }
+
+    function min_max($min_max = 0)
+    {   
+        $order = $min_max ? 'DESC' : 'ASC';
+        $this->db->limit('1'); 
+        $this->db->order_by('reservation_date '.$order); 
+        $this->db->select('reservation.reservation_date AS date')->from('room_sales');
+        $query = $this->db->join('reservation', 'room_sales.reservation_id = reservation.reservation_id', 'LEFT')->get();
+        return $query->row_array();
+    } 
+
     function addRoomType($data)
     { 
         $this->db->insert('room_type', $data);
@@ -64,9 +116,14 @@ class Room_model extends CI_Model {
         return $this->db->affected_rows();
     }
 
-    function getRoomType($room_type)
+    function getRoomType($room_type, $array = FALSE)
     {
         $query = $this->db->get_where('room_type', array('room_type' => $room_type));
+
+        if ($array) 
+        { 
+            return $query->row_array();
+        }
         return $query->result();
     }
 

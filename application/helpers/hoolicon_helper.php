@@ -60,16 +60,7 @@ if ( ! function_exists('alert_notice'))
         }
         return;
     }
-}
-
-if ( ! function_exists('check_login'))
-{
-    function check_login()
-    {
-        if(!UID)
-            redirect("login");
-    } 
-}
+} 
 
 if ( ! function_exists('supr_replace'))
 {
@@ -99,11 +90,11 @@ if ( ! function_exists('service_point_access'))
      */
     function service_point_access($department_id = '')
     {
-        global $CI; 
+        $CI = & get_instance(); 
  
         if ($CI->logged_user['role'] == 2)
         {
-            return true;
+           return true;
         }
 
         if ($CI->logged_user['department_id'] === $department_id) 
@@ -114,6 +105,56 @@ if ( ! function_exists('service_point_access'))
         return false; 
     } 
 }
+
+    
+if ( ! function_exists('service_point_access_session'))
+{ 
+    /** 
+     *
+     * Checks if a user has any privileges
+     *
+     * @param   mixed      $check   TRUE: Check, FALSE: Set Session, Anything Else: Clear Session   
+     * @return  boolen
+     */
+    function service_point_access_session($check = FALSE)
+    {
+        $CI = & get_instance(); 
+
+        if ($check === TRUE) 
+        { 
+            if (isset($_SESSION['service_point_access'])) 
+            {
+                return TRUE;
+            } 
+        }
+        elseif ($check === FALSE) 
+        { 
+            $list_services = $CI->services_model->get_service();
+            if ($list_services)
+            {              
+                $service_point_access = [];
+                foreach ($list_services AS $service)
+                { 
+                    if (service_point_access($service->id))
+                    {
+                        $service_point_access[] .= $service->id; 
+                    }
+                }
+
+                if ($service_point_access && !isset($_SESSION['service_point_access'])) 
+                    $CI->session->set_userdata('service_point_access', $service_point_access);
+            }
+        }
+        else
+        {   
+            if (isset($_SESSION['service_point_access'])) 
+            {
+                $CI->session->unset_userdata('service_point_access');
+            }
+        }
+    }
+}
+
 
 if ( ! function_exists('showBBcodes'))
 { 
@@ -167,4 +208,37 @@ if ( ! function_exists('showBBcodes'))
     // $bbtext = "This is [b]bold[/b] and this is [u]underlined[/u] and this is in [i]italics[/i] with a [color=red] red color[/color]";
     // $htmltext = showBBcodes($bbtext);
     // echo $htmltext; 
+}
+
+if ( ! function_exists('social_link_fix') ) 
+{
+    function social_link_fix($link = '')
+    {
+        $match = preg_match(
+            '|(https?://)?(www\.)?([a-z0-9]*.[a-z0-9]*)?\/(#!/)?@?([^/]*)|', $link, $matches
+        );
+
+        if ($matches) 
+        {
+            return ($matches[1] ?? '') . ($matches[3] ?? '') . '/'. ($matches[5] ?? '');
+        }
+
+        return $link;
+    }
+}
+
+
+if ( ! function_exists('social_link') ) 
+{
+    function social_link($link = '', $site = '')
+    {
+        $link = social_link_fix($link);
+
+        if ( ! $link ) 
+        { 
+            return 'https://' . $site . '.com/' . $link; 
+        }
+
+        return $link;
+    }
 }

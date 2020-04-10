@@ -7,6 +7,7 @@
 		<title><?=$title?></title>
 		<!-- Tell the browser to be responsive to screen width -->
 		<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"> 
+        <link rel="icon" href="<?= $this->creative_lib->fetch_image(my_config('favicon'), 2); ?>" type="image/png">
 		<!-- Font Awesome -->
 		<link rel="stylesheet" href="<?= base_url('backend/modern/plugins/fontawesome-free/css/all.min.css'); ?>">  
 		<!-- Theme style -->
@@ -24,9 +25,9 @@
 			<nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
 				<div class="container">
 					<a href="<?php echo base_url() ?>" class="navbar-brand">
-						<img src="<?= base_url('backend/modern/dist/img')?>/AdminLTELogo.png" alt="<?=HOTEL_NAME?> Logo" class="brand-image img-circle elevation-3"
+						<img src="<?= $this->creative_lib->fetch_image(my_config('site_logo'), 2); ?>" alt="<?=my_config('site_name')?> Logo" class="brand-image"
 						style="opacity: .8">
-						<span class="brand-text font-weight-light"><?=HOTEL_NAME?></span>
+						<span class="brand-text font-weight-light"><?=my_config('site_name')?></span>
 					</a>
 	 				
 					<button class="navbar-toggler order-1" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,7 +40,7 @@
 								<a href="<?php echo base_url() ?>" class="nav-link">Home</a>
 							</li>
 							<li class="nav-item">
-								<a href="#" class="nav-link">Contact</a>
+								<a href="<?= site_url('contact-us')?>" class="nav-link">Contact</a>
 							</li> 
 						</ul> 
 					</div> 

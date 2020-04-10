@@ -138,6 +138,11 @@ if ( ! function_exists('imploder'))
      */
     function imploder($array = array(), $index = 'id', $delimiter = ',')
     {
+        if (is_object($array)) 
+        {
+            $array = json_decode(json_encode($array), TRUE);
+        } 
+
         $new_array = [];
         foreach ($array as $value) {
             $new_array[] .= $value[$index];

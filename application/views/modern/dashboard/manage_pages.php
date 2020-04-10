@@ -63,7 +63,7 @@
                     <tr id="table_row_<?= $content['id'] ?>">
                       <td class="text-center"><?= $i; ?></td>
                       <?php if(!$content['parent']): ?> 
-                      <td class="text-info font-weight-bold"><a href="<?= site_url('home/page/'.$content['safelink']) ?>"><?= $content['title'] ?></a></td>
+                      <td class="text-info font-weight-bold"><a href="<?= site_url('page/'.$content['safelink']) ?>"><?= $content['title'] ?></a></td>
                       <?php else: ?> 
                       <td><?= $content['title'] ?></td>
                       <?php endif; ?> 
@@ -72,10 +72,12 @@
                         <a href="<?= site_url('admin/create_page/edit/'.$content['id']);?>" class="btn btn-info text-white m-1">
                             <i class="fa fa-edit fa-fw"></i>
                         </a> 
+                        <?php if($content['safelink'] !== 'homepage'): ?> 
                         <button class="btn btn-danger text-white m-1 deleter" 
                           onclick="deleteItem({type: 'page', action: 1, id: '<?= $content['id'];?>', init: 'table'})">
                           <i class="fa fa-trash fa-fw"></i>
                         </button>
+                        <?php endif; ?> 
                       </td>
                     </tr>  
                   </tbody>

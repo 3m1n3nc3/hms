@@ -57,7 +57,7 @@
                         <a href="<?= site_url('employee/permissions/assign/'.$employee->employee_id) ?>" class="btn btn-sm btn-warning m-1" data-toggle="tooltip" title="Change Permissions">
                           <i class="btn-icon-only fa fa-key text-danger fa-fw"></i>
                         </a>
-                        <a href="<?= site_url('employee/delete/'.$employee->employee_id) ?>" onclick="return confirm('Are you sure ?')" class="btn btn-danger btn-sm m-1" data-toggle="tooltip" title="Delete">
+                        <a href="javascript:void(0)" onclick="return confirmDelete('<?= site_url('employee/delete/'.$employee->employee_id) ?>', 1)" class="btn btn-danger btn-sm m-1" data-toggle="tooltip" title="Delete">
                           <i class="btn-icon-only fa fa-trash text-white fa-fw"></i>
                         </a>
                         <?php endif; ?>

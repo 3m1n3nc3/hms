@@ -3,74 +3,66 @@
         <div class="content">
           <div class="container-fluid">
 
-          <!-- Info boxes -->
-          <div class="row" id="target-1">
-            <div class="col-12 col-sm-6 col-md-3">
-              <div class="info-box">
-                <span class="info-box-icon bg-info elevation-1"><i class="fas fa-credit-card"></i></span>
-
-                <div class="info-box-content">
-                  <span class="info-box-text">Total Payments</span>
-                  <span class="info-box-number">
-                    <?=$this->cr_symbol.number_format($sales_stats["payments"], 2);?>
-                  </span>
+            <!-- Small boxes (Stat box) -->
+            <div class="row">
+              <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-info">
+                  <div class="inner">
+                    <h3><?=$this->cr_symbol.number_format($sales_stats["payments"]);?></h3>
+                    <p>Online Payments</p>
+                  </div>
+                  <div class="icon">
+                    <i class="far fa-credit-card"></i>
+                  </div>
+                  <a href="<?= site_url('accounting/cashier/payments')?>" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
-                <!-- /.info-box-content -->
               </div>
-              <!-- /.info-box -->
-            </div>
-            <!-- /.col -->
-            <div class="col-12 col-sm-6 col-md-3">
-              <div class="info-box mb-3">
-                <span class="info-box-icon bg-danger elevation-1"><i class="fas fa-store"></i></span>
-
-                <div class="info-box-content">
-                  <span class="info-box-text">Service Sales</span>
-                  <span class="info-box-number">
-                    <?=$this->cr_symbol.number_format($sales_stats["sales"], 2);?>
-                  </span>
+              <!-- ./col -->
+              <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-success">
+                  <div class="inner">
+                    <h3><?=$this->cr_symbol.number_format($sales_stats["sales"]);?></h3>
+                    <p>Service Sales</p>
+                  </div>
+                  <div class="icon">
+                    <i class="fas fa-store"></i>
+                  </div>
+                  <a href="<?= site_url('services/sales_records')?>" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
-                <!-- /.info-box-content -->
               </div>
-              <!-- /.info-box -->
-            </div>
-            <!-- /.col -->
-
-            <!-- fix for small devices only -->
-            <div class="clearfix hidden-md-up"></div>
-
-            <div class="col-12 col-sm-6 col-md-3">
-              <div class="info-box mb-3">
-                <span class="info-box-icon bg-success elevation-1"><i class="fas fa-bed"></i></span>
-
-                <div class="info-box-content">
-                  <span class="info-box-text">Room Sales</span>
-                  <span class="info-box-number">
-                    <?=$this->cr_symbol.number_format($sales_stats["room_sales"], 2);?>
-                  </span>
+              <!-- ./col -->
+              <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-warning">
+                  <div class="inner">
+                    <h3><?=$this->cr_symbol.number_format($sales_stats["room_sales"]);?></h3>
+                    <p>Room Sales</p>
+                  </div>
+                  <div class="icon">
+                    <i class="fas fa-bed"></i>
+                  </div>
+                  <a href="<?= site_url('accounting/cashier/room_sales')?>" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
-                <!-- /.info-box-content -->
               </div>
-              <!-- /.info-box -->
-            </div>
-            <!-- /.col -->
-            <div class="col-12 col-sm-6 col-md-3">
-              <div class="info-box mb-3">
-                <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-users"></i></span>
-
-                <div class="info-box-content">
-                  <span class="info-box-text">Customers</span>
-                  <span class="info-box-number">
-                    <?=$sales_stats["customers"];?>
-                  </span>
+              <!-- ./col -->
+              <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-danger">
+                  <div class="inner">
+                    <h3><?=$sales_stats["customers"];?></h3>
+                    <p>Customers</p>
+                  </div>
+                  <div class="icon">
+                    <i class="fa fa-users"></i>
+                  </div>
+                  <a href="<?= site_url('customer/list')?>" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
-                <!-- /.info-box-content -->
               </div>
-              <!-- /.info-box -->
+              <!-- ./col -->
             </div>
-            <!-- /.col -->
-          </div>
-          <!-- /.row -->
+            <!-- /.row --> 
 
             <div class="row">
               <div class="col-lg-6">

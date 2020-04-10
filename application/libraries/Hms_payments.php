@@ -49,6 +49,7 @@ class Hms_payments {
             if (!$this->CI->payment_model->get_payments(['reference' => $this->post['payment_ref']])) 
             { 
                 $save['reference']    = $this->post['payment_ref']; 
+                $save['invoice']      = $this->post['invoice']; 
                 $save['customer_id']  = $this->customer['customer_id']; 
                 $save['payment_type'] = 'reservation'; 
                 $save['amount']       = $sessioned['reservation_price']; 

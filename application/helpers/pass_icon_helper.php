@@ -814,9 +814,11 @@ if ( ! function_exists('pass_icon'))
             784 => 'fa-youtube-play',
             785 => 'fa-youtube-square',
         );
-
+ 
         // Find the particular icon
-        $search = str_replace($ic, 'fa-'.$ic, $ic); 
+        $ic = str_replace('fa fa-', '', $ic) ;
+        $ic = str_replace($ic, 'fa-'.$ic, $ic);
+        $search = $ic; 
 
         $icon = array_search($search, $all_icons, true);
 
@@ -883,15 +885,19 @@ if ( ! function_exists('pass_icon'))
         {
             foreach($all_icons as $key => $name) 
             {
-                if($icon_value == $name) 
-                {
-                    return $key;
-                }
+                  if($icon_value == $name) 
+                  {
+                        return $key;
+                  } 
             }
         } 
         elseif($type == 3) 
         {
             return $icon_value;
+        } 
+        elseif($type == 4) 
+        {
+            return '<i class="fa '.$icon_value.'"></i>';
         } 
         else 
         { 

@@ -116,6 +116,12 @@ class Services_model extends CI_Model {
         $this->db->delete('sales_service_stock'); 
     }
 
+    function delete_order($data = array())
+    { 
+        $this->db->where($data); 
+        $this->db->delete('sales_service_orders'); 
+    }
+
     function getSalesEntry($service_name)
     {
         $query = $this->db->get_where('sales_services', array('service_name' => $service_name));

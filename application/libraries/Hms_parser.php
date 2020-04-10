@@ -118,10 +118,13 @@ class Hms_parser
             <div class="overlay bg-parallax" data-stellar-ratio="0.8" data-stellar-vertical-offset="0" data-background="">  
             </div>
             <div class="container">
-                <div class="section_title text-center">
-                    <h2 class="title_w">'.HOTEL_NAME.' Facilities</h2>
-                    <p>We have all it takes to give you all you need!</p>
-                </div>
+                '.(
+                    my_config('facilities_title') ? '
+                    <div class="section_title text-center">
+                        <h2 class="title_w">'.my_config('facilities_title').'</h2>
+                        <p>'.my_config('facilities_content').'</p>
+                    </div> ' : ''
+                ).'
                 <div class="row mb_30">';
             
                 $facility_format = [];
@@ -194,7 +197,7 @@ class Hms_parser
     } 
 
 
-    public function navbar_links($page = '', $show = TRUE)
+    public function navbar_links($page = '', $subpage = '', $show = TRUE)
     {   
         $links = [];
         foreach($this->CI->content_model->get(['parent' => 'non', 'order_field' => ['name' => 'safelink', 'id' => 'homepage']]) AS $navbar_link)
@@ -212,6 +215,8 @@ class Hms_parser
                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">'.lang('my_account').'</a>
                 <ul class="dropdown-menu">
                     <li class="nav-item"><a class="nav-link" href="'.site_url('account').'">'.lang('account').'</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="'.site_url('reservations').'">'.lang('reservations').'</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="'.site_url('my-payments').'">'.lang('my_payments').'</a></li>
                     <li class="nav-item"><a class="nav-link" href="'.site_url('account/login/logout').'">'.lang('signout').'</a></li>
                 </ul>
             </li> ';

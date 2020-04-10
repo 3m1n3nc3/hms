@@ -11,13 +11,13 @@ class Employee extends Admin_Controller {
         $config['total_rows'] = count($this->employee_model->get_employees()); 
 
         $this->pagination->initialize($config);
-        $_page = $this->uri->segment(3, 0);
+        $_page = $this->uri->segment(3, 0); 
 
 		$employees = $this->employee_model->get_employees(['page' => $_page]); 
 		$viewdata  = array('employees' => $employees); 
         $viewdata['pagination'] = $this->pagination->create_links(); 
 
-		$data = array('title' => 'Employees - '. HOTEL_NAME, 'page' => 'employee');
+		$data = array('title' => 'Employees - '. my_config('site_name'), 'page' => 'employee');
 		$this->load->view($this->h_theme.'/header', $data);
 		$this->load->view($this->h_theme.'/employee/list',$viewdata);
 		$this->load->view($this->h_theme.'/footer');
@@ -38,7 +38,7 @@ class Employee extends Admin_Controller {
 		$viewdata  = array('employees' => $employees); 
         $viewdata['pagination'] = $this->pagination->create_links(); 
 
-		$data = array('title' => 'Employees - '. HOTEL_NAME, 'page' => 'employee');
+		$data = array('title' => 'Employees - '. my_config('site_name'), 'page' => 'employee');
 		$this->load->view($this->h_theme.'/header', $data);
 		$this->load->view($this->h_theme.'/employee/list',$viewdata);
 		$this->load->view($this->h_theme.'/footer');
@@ -59,7 +59,7 @@ class Employee extends Admin_Controller {
 		$departments = $this->services_model->get_service(); 
 		$employee = $this->employee_model->getEmployee($employee_id, 1);
 		$viewdata = array('departments' => $departments, 'employee' => $employee);
-		$data = array('title' => 'Add Employee - '. HOTEL_NAME, 'page' => 'employee');
+		$data = array('title' => 'Add Employee - '. my_config('site_name'), 'page' => 'employee');
 
 		if ($this->input->post()) {
             $up  = $this->input->post('telephone') != $employee['employee_telephone'] ? '|is_unique[employee.employee_telephone]' : '';
@@ -68,10 +68,10 @@ class Employee extends Admin_Controller {
             $require_pass = !$employee['employee_id'] ? '|required' : '';
 
 	        $this->form_validation->set_error_delimiters('<div class="text-danger">', '</div>');
-	        $this->form_validation->set_rules('username', 'Username', 'trim|alpha_dash|required'.$uus); 
-	        $this->form_validation->set_rules('password', 'Password', 'trim'.$require_pass);
-	        $this->form_validation->set_rules('email', 'Email', 'trim|required'.$ue);
-            $this->form_validation->set_rules('telephone', 'Phone number', 'trim|numeric|required|min_length[6]|regex_match[/^[0-9]{11}$/]'.$up); 
+	        $this->form_validation->set_rules('username', lang('username'), 'trim|alpha_dash|required'.$uus); 
+	        $this->form_validation->set_rules('password', lang('password'), 'trim'.$require_pass);
+	        $this->form_validation->set_rules('email', lang('email_address'), 'trim|required'.$ue);
+            $this->form_validation->set_rules('telephone', lang('phone'), 'trim|numeric|required|min_length[6]|regex_match[/^[0-9]{11}$/]'.$up); 
 	        $this->form_validation->set_rules('department_id', 'Department', 'trim|required');
 
 	        if ($this->form_validation->run() !== FALSE) 
@@ -98,7 +98,7 @@ class Employee extends Admin_Controller {
 	        	$msg = 'New employee added';
 				if ($employee['employee_id']) 
 				{
-					$msg = $employee['employee_username'] . ' Has been Updated';
+					$msg = $employee['employee_username'] . lang('has_been_updated');
 					$save['employee_id'] = $employee['employee_id'];
 				} 
 
@@ -128,7 +128,7 @@ class Employee extends Admin_Controller {
 		$employee = $this->employee_model->getEmployee($employee_id, 1);
 		$department = $this->employee_model->employee_department($employee['department_id']);
 		$viewdata = array('department' => $department, 'employee' => $employee);
-		$data = array('title' => $employee['employee_firstname'] . ' ' .$employee['employee_lastname'] .' - '. HOTEL_NAME, 'page' => 'employee');
+		$data = array('title' => $employee['employee_firstname'] . ' ' .$employee['employee_lastname'] .' - '. my_config('site_name'), 'page' => 'employee');
  
 		$post = $this->input->post();
 		if ($post) 
@@ -148,7 +148,7 @@ class Employee extends Admin_Controller {
 	        	$msg = 'New employee added';
 				if ($employee['employee_id']) 
 				{
-					$msg = $employee['employee_id'] === $this->uid ? 'Your profile has been Updated' : 'Employee profile Updated';
+					$msg = $employee['employee_id'] === $this->uid ? lang('your_profile_updated') : lang('employee_updated');
 					$save['employee_id'] = $employee['employee_id'];
 				}  
 
@@ -170,7 +170,7 @@ class Employee extends Admin_Controller {
 
 		if ($this->employee_model->deleteEmployee($employee_id)) 
 		{
-			$this->session->set_flashdata('message', alert_notice('Employee Deleted', 'success'));
+			$this->session->set_flashdata('message', alert_notice(lang('employee_deleted'), 'success'));
 			redirect("employee");
 		}
 	} 
@@ -191,13 +191,13 @@ class Employee extends Admin_Controller {
             $this->form_validation->set_error_delimiters('<div class="text-danger form-text text-muted">', '</div>'); 
             if ($action == 'assign') 
             {
-                $this->form_validation->set_rules('id', 'Employee ID', 'trim|numeric|required'); 
+                $this->form_validation->set_rules('id', lang('employee_id'), 'trim|numeric|required'); 
             }
             elseif ($action == 'create') 
             {
-                $this->form_validation->set_rules('title', 'title', 'trim|required'); 
-                $this->form_validation->set_rules('permissions', 'Permissions', 'trim|required'); 
-                $this->form_validation->set_rules('info', 'Description', 'trim'); 
+                $this->form_validation->set_rules('title', lang('title'), 'trim|required'); 
+                $this->form_validation->set_rules('permissions', lang('permission'), 'trim|required'); 
+                $this->form_validation->set_rules('info', lang('description'), 'trim'); 
             } 
 
             if ($this->form_validation->run() !== FALSE) 
@@ -206,7 +206,7 @@ class Employee extends Admin_Controller {
                 if ($action == 'assign') 
                 { 
                     $p = $this->privilege_model->get($save['role_id']);
-                    $u = $this->account_data->fetch($save['id']);
+                    $u = $this->account_data->fetch($save['id']); 
                     $msg = sprintf(lang('user_granted_privilege'), $u['name'], $p['title']);
 
                     $save['employee_id'] = $u['employee_id'];
@@ -241,9 +241,9 @@ class Employee extends Admin_Controller {
         }
  
 		$head_data = array(
-			'title' => 'Add Employee - '. HOTEL_NAME, 
-			'page' => 'employee', 
-			'sub_page_title' => 'Privileges'
+			'title' => 'Privileges - '. my_config('site_name'), 
+			'page' => 'privilege', 
+			'sub_page_title' => lang('privileges')
 		);
 
 		$this->load->view($this->h_theme.'/header', $head_data);

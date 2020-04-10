@@ -135,7 +135,7 @@
                         <a href="<?= site_url('services/edit/'.$rest->service_name) ?>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Edit">
                           <i class="btn-icon-only fa fa-edit text-white"></i>
                         </a>
-                        <a href="<?= site_url('services/delete/'.$rest->service_name) ?>" onclick="return confirm('Are you sure ?')" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Delete">
+                        <a href="javascript:void(0)" onclick="return confirmDelete('<?= site_url('services/delete/'.$rest->service_name) ?>', 1)" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Delete">
                           <i class="btn-icon-only fa fa-trash text-white"></i>
                         </a>
                       </td>

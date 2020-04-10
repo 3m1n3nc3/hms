@@ -79,6 +79,7 @@ class Reservation_model extends CI_Model {
         {
             $this->db->where('reservation_id', $data['id']);
         }
+        
         if (isset($data['reservation_ref']))
         {
             $this->db->where('reservation_ref', $data['reservation_ref']);

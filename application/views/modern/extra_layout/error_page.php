@@ -25,7 +25,7 @@
 
           <p>
             <?=$message?>
-            Meanwhile, you may <a href="<?php echo site_url() ?>">return to homepage</a> or <a href="<?php echo (isset($this->is_admin) ? site_url('admin/admin/dashboard') : site_url('welcome/dashboard')) ?>">head to dashboard</a>!
+            Meanwhile, you may <a href="<?php echo site_url() ?>">return to homepage</a> or <a href="<?php echo (isset($this->is_admin) ? site_url('admin/admin/dashboard') : site_url('dashboard')) ?>">head to dashboard</a>!
           </p> 
 
         </div> 

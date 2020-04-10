@@ -3,9 +3,27 @@
 class Room_type extends Admin_Controller 
 {  
 
+	public function index()
+	{
+        // Check if employee has permission to take this action
+        error_redirect(has_privilege('room-types'), '401');
+        
+		$room_types = $this->room_model->get_room_types();
+
+		$viewdata = array('room_types' => $room_types);
+
+		$data = array('title' => 'Rooms - ' . my_config('site_name'), 'page' => 'room_type');
+		$this->load->view($this->h_theme.'/header', $data);
+		$this->load->view($this->h_theme.'/room-type/list',$viewdata);
+		$this->load->view($this->h_theme.'/footer');
+	}
+
+
 	public function add()
 	{
-		
+        // Check if employee has permission to take this action
+        error_redirect(has_privilege('room-types'), '401');
+
 		$viewdata = array();
 
 		if($this->input->post("type") && $this->input->post("price") /*&& $this->input->post("quantity")*/)
@@ -33,7 +51,7 @@ class Room_type extends Admin_Controller
 		}
 
 		$data = array(
-			'title' => 'Add Room Type - ' . HOTEL_NAME, 
+			'title' => 'Add Room Type - ' . my_config('site_name'), 
 			'page' => 'room_type',
         	'sub_page_title' => 'Add Room Type'
         );
@@ -44,12 +62,18 @@ class Room_type extends Admin_Controller
 
 	function delete($room_type)
 	{
+        // Check if employee has permission to take this action
+        error_redirect(has_privilege('room-types'), '401');
+
 		$this->room_model->deleteRoomType($room_type);
 		redirect("room-type");
 	}
 
 	public function edit($room_type)
 	{
+        // Check if employee has permission to take this action
+        error_redirect(has_privilege('room-types'), '401');
+
 		if($this->input->post("type") && $this->input->post("price") /*&& $this->input->post("quantity")*/)
 		{
 			$save['room_type']  = $this->input->post("type");
@@ -71,7 +95,7 @@ class Room_type extends Admin_Controller
 			redirect("room-type");
 		}
 		
-		$data = array('title' => 'Edit Room Type - ' . HOTEL_NAME, 'page' => 'room_type');
+		$data = array('title' => 'Edit Room Type - ' . my_config('site_name'), 'page' => 'room_type');
 		$this->load->view($this->h_theme.'/header', $data);
 
 		$room_type = $this->room_model->getRoomType($room_type);
@@ -79,18 +103,6 @@ class Room_type extends Admin_Controller
 		$viewdata = array('room_type'  => $room_type[0]);
 		$this->load->view($this->h_theme.'/room-type/edit',$viewdata);
 
-		$this->load->view($this->h_theme.'/footer');
-	}
-
-	public function index()
-	{
-		$room_types = $this->room_model->get_room_types();
-
-		$viewdata = array('room_types' => $room_types);
-
-		$data = array('title' => 'Rooms - ' . HOTEL_NAME, 'page' => 'room_type');
-		$this->load->view($this->h_theme.'/header', $data);
-		$this->load->view($this->h_theme.'/room-type/list',$viewdata);
 		$this->load->view($this->h_theme.'/footer');
 	}
 }

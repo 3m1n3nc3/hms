@@ -8,7 +8,7 @@ class Search extends Admin_Controller {
 
 		$result = $this->report_model->search_customers($word);
 		
-		$data = array('title' => 'Search - ' . HOTEL_NAME, 'page' => 'dashboard');
+		$data = array('title' => 'Search - ' . my_config('site_name'), 'page' => 'dashboard');
 		$this->load->view($this->h_theme.'/header', $data);
 
 		$vdata = array(

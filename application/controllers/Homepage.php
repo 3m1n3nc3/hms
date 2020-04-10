@@ -25,7 +25,7 @@ class Homepage extends Frontsite_Controller {
 
         $data = array(
         	'page' => $content['safelink'],
-        	'page_title' => HOTEL_NAME . ' - ' . $content['title'],
+        	'page_title' => my_config('site_name') . ' - ' . $content['title'],
         	'content' => $content,
         	'has_banner' => $content['banner'] ? TRUE : FALSE 
         ); 
@@ -59,7 +59,7 @@ class Homepage extends Frontsite_Controller {
 
         $data = array(
         	'page' => $content['safelink'],
-        	'page_title' => $content['title'] . ' - ' . HOTEL_NAME,
+        	'page_title' => $content['title'] . ' - ' . my_config('site_name'),
         	'content' => $content,
         	'has_banner' => $content['banner'] ? TRUE : FALSE 
         );  
@@ -84,18 +84,149 @@ class Homepage extends Frontsite_Controller {
          $this->account_data->is_customer_logged_in();
 
     	$customer = $this->account_data->fetch($this->cuid, 1);
+    	$statistics = $this->accounting_model->statistics(['customer' => $customer['customer_id']]);
+
         $data = array(
         	'page' => 'account',
-        	'page_title' => $customer['name'] . ' Account' . ' - ' . HOTEL_NAME,
+        	'page_title' => $customer['name'] . ' Account' . ' - ' . my_config('site_name'),
         	'customer' => $customer,
+        	'statistics' => $statistics,
         	'form_action' => 'account'
         );  
+ 
+		$post = $this->input->post(NULL, TRUE);
+		if ($post) 
+		{ 
+			$unique_email = ($customer['customer_email'] !== $post['customer_email'] ? '|is_unique[customer.customer_email]' : '');
+			$unique_tel = ($customer['customer_telephone'] !== $post['customer_telephone'] ? '|is_unique[customer.customer_telephone]' : '');
+
+        	$this->form_validation->set_error_delimiters('<small class="text-danger pt-0">', '</small>'); 
+			$this->form_validation->set_rules('customer_firstname', 'First Name', 'trim|required|alpha'); 
+			$this->form_validation->set_rules('customer_lastname', 'Last Name', 'trim|required|alpha'); 
+			$this->form_validation->set_rules('customer_email', 'Email', 'trim|valid_email'.$unique_email); 
+			$this->form_validation->set_rules('customer_telephone', 'Phone', 'trim|required|numeric'.$unique_tel); 
+			$this->form_validation->set_rules('customer_address', 'Address', 'trim|required'); 
+			$this->form_validation->set_rules('customer_city', 'City', 'trim|required|alpha_dash'); 
+			$this->form_validation->set_rules('customer_state', 'State', 'trim|required|alpha_dash'); 
+			$this->form_validation->set_rules('customer_country', 'Country', 'trim|required|alpha_dash'); 
+
+	        if ($this->form_validation->run() !== FALSE) 
+	        {	
+	        	unset($post['update_profile']);
+	        	$post['cid'] = $customer['customer_id'];
+
+				$this->customer_model->add_customer($post);
+				$this->session->set_flashdata(
+					array('update_profile'=> TRUE, 'message' => alert_notice('Profile Updated', 'success'))
+				); 
+				redirect('account');
+			}  
+		}
 
 		$data['account_data'] = $this->load->view($this->h_theme.'/customer/view', $data, TRUE);
 
         $this->load->view($this->h_theme.'/homepage/header', $data);    		
         $this->load->view($this->h_theme.'/homepage/account_holder', $data);
         $this->load->view($this->h_theme.'/homepage/footer', $data);  
+    }
+
+
+    /**
+     * Renders the users reservations page
+     * @param  string   $id   id or safelink of the parent content to render
+     * @return null           Does not return anything but uses code igniter's view() method to render the page
+     */
+    public function reservations($room_id = '')
+    { 
+        $this->account_data->is_customer_logged_in();
+        $customer = $this->account_data->fetch($this->cuid, 1);
+
+        $reservation = $this->reservation_model->reserved_rooms(['customer' => $customer['customer_id']], 1);
+        $rooms = $this->reservation_model->reserved_rooms(['customer' => $customer['customer_id'], 'uncheck' => TRUE]); 
+
+        $viewdata['pagination'] = $this->pagination->create_links();
+
+        $data = array('title' => 'Rooms - ' . my_config('site_name'), 'page' => 'reserved'); 
+
+        $customer = $this->account_data->fetch($this->cuid, 1);
+        $statistics = $this->accounting_model->statistics(['customer' => $customer['customer_id']]);
+
+        $data = array(
+            'page' => 'account',
+            'subpage' => 'reservation',
+            'space' => 'person',
+            'page_title' => lang('my_reservations') . ' - ' . my_config('site_name'),
+            'customer' => $customer,
+            'statistics' => $statistics,
+            'reservation' => $reservation,
+            'rooms' => $rooms,
+            'checkin_date' => date('Y-m-d', strtotime($reservation['checkin_date'])),
+            'checkout_date' => date('Y-m-d', strtotime($reservation['checkout_date']))
+        );  
+        $data['account_data'] = $this->load->view($this->h_theme.'/room/reserved_room', $data, TRUE);
+
+        $this->load->view($this->h_theme.'/homepage/header', $data);    
+        $this->load->view($this->h_theme.'/homepage/account_holder', $data);  
+        $this->load->view($this->h_theme.'/homepage/footer', $data);  
+    }
+
+    /**
+     * Renders the users payments page
+     * @param  string   $id   id or safelink of the parent content to render
+     * @return null           Does not return anything but uses code igniter's view() method to render the page
+     */
+    public function payments($action = '')
+    { 
+        $this->account_data->is_customer_logged_in();
+        $customer = $this->account_data->fetch(($this->cuid), 1);
+        $reservation = $this->reservation_model->reserved_rooms(['customer' => $customer['customer_id']], 1);  
+
+        $data = array(
+            'page'          => 'account',
+            'subpage'       => 'payments',
+            'space'         => 'person',
+            'page_title'    => lang('my_payments') . ' - ' . my_config('site_name'),
+            'title'         => lang('my_payments') . ' - ' . my_config('site_name'),
+            'customer'      => $customer, 
+            'reservation'   => $reservation, 
+            'payments'      => $this->payment_model->get_payments(['customer_id' => $customer['customer_id']]),  
+            'checkin_date'  => date('Y-m-d', strtotime($reservation['checkin_date'])),
+            'checkout_date' => date('Y-m-d', strtotime($reservation['checkout_date']))
+        );  
+
+        // Print an invoice of the selected payment
+        if ($action === 'print') 
+        {
+            $reference = $this->input->get('reference');
+
+            $data['action']              = site_url('my-payments/print/?print=true&reference=' . $this->input->get('reference'));
+            $data['show_footer']         = TRUE;
+
+            $fetch_invoice               = $this->payment_model->get_payments(['reference' => $reference]); 
+            $data['post']                = $this->reservation_model->fetch_reservation(['reservation_ref' => $reference]);   
+            $data['post']['invoice_id']  = $fetch_invoice['id'];
+            $data['post']['amount']      = $fetch_invoice['amount'];
+            $data['post']['description'] = $fetch_invoice['description']; 
+            $data['post']['payment_ref'] = $fetch_invoice['reference'];
+            $data['post']['room_id']     = $fetch_invoice['room_id'];
+            $data['post']['date']        = date('Y-m-d', strtotime($fetch_invoice['date'] ?? 'NOW'));
+            
+            $room                        = $this->room_model->getRoom(['id' => $fetch_invoice['room_id'] ?? '']); 
+            $room_type_info              = $this->room_model->getRoomType($room['room_type']); 
+
+            $data['room']                = $room_type_info; 
+            $data['room']['room_type']   = $room['room_type'];  
+            $data['post']['room_type']   = $room['room_type'];  
+            $this->load->view($this->h_theme.'/header_plain', $data); 
+            $this->load->view($this->h_theme.'/homepage/invoice_inline', $data); 
+        }
+        else
+        {
+            $data['account_data'] = $this->load->view($this->h_theme.'/homepage/my_payments', $data, TRUE);
+            $this->load->view($this->h_theme.'/homepage/header', $data);    
+            $this->load->view($this->h_theme.'/homepage/account_holder', $data);  
+            $this->load->view($this->h_theme.'/homepage/footer', $data); 
+        } 
     }
 
 
@@ -108,7 +239,7 @@ class Homepage extends Frontsite_Controller {
     { 
         $data = array(
         	'page' => $action,
-        	'page_title' => ucwords($action) . ' - ' . HOTEL_NAME,
+        	'page_title' => ucwords($action) . ' - ' . my_config('site_name'),
         	'login_box' => $action,
         	'login_action' => 'account/login'
         );  
@@ -137,8 +268,8 @@ class Homepage extends Frontsite_Controller {
 	        $uu = null; 
 	        if ($action == 'register') 
 	        {
-	        	$uu = '|is_unique[customers.customer_username]|alpha_dash';
-	        	$this->form_validation->set_rules('customer_email', lang('email_address'), 'trim|required|is_unique[customer.customer_email]|valid_email');  
+	        	$uu = '|is_unique[customers.customer_username]|is_unique[employee.employee_username]|alpha_dash';
+	        	$this->form_validation->set_rules('customer_email', lang('email_address'), 'trim|required|is_unique[customer.customer_email]|valid_email');
 	        	$this->form_validation->set_rules('customer_telephone', lang('phone'), 'trim|required|is_unique[customer.customer_telephone]');  
 	        }
 	        $this->form_validation->set_rules('username', lang('username'), 'trim|required'.$uu);  
@@ -151,7 +282,16 @@ class Homepage extends Frontsite_Controller {
 					if($user = $this->user_model->customer_login($login_data)) 
 					{
 						$this->account_data->customer_login($user);
-						redirect('account/');
+
+                        // If the user was viewing a page the required login, redirect them to that page now
+                        if (isset($_SESSION['redirect_customer_to'])) 
+                        {
+                            redirect($this->session->userdata('redirect_customer_to'));
+                        }
+                        else
+                        {
+						  redirect('account');
+                        }
 					}
 					else
 					{
@@ -190,24 +330,28 @@ class Homepage extends Frontsite_Controller {
      */
     public function invoice($reference = '')
     {
+        has_privilege('cashier-report') OR $this->account_data->is_customer_logged_in();
     	$fetch_invoice = $this->payment_model->get_payments(['reference' => $reference]); 
     	if (!$fetch_invoice) 
     	{
     		$fetch_invoice = $this->session->userdata('reservation'); 
+            error_redirect($fetch_invoice);
+
     		$cust = $this->customer_model->get_customer(['email' => $fetch_invoice['email']]);
     		$fetch_invoice['customer_id'] = $cust['customer_id'];
     		$fetch_invoice['description'] = 'Reservation payments for ' . $fetch_invoice['room_type'] . ' room ' . $fetch_invoice['room_id'];
 
     	}
-    	$invoice = $fetch_invoice;
+
+        error_redirect($fetch_invoice);
+        
+    	$invoice = $fetch_invoice; 
 
         $customer = $this->account_data->fetch($invoice['customer_id'] ?? '', 1); 
         $post = $this->reservation_model->fetch_reservation(['reservation_ref' => $reference]); 
         $room = $this->room_model->getRoom(['id' => $post['room_id'] ?? $invoice['room_id']]);  
         $room_type_info = $this->room_model->getRoomType($room['room_type']); 
-        $room_info = (array)($room_type_info[0] ?? []);
-
-        error_redirect($invoice);    
+        $room_info = (array)($room_type_info[0] ?? []);   
 
         $post['invoice_id']  = $invoice['id'] ?? 'pending';
         $post['amount']      = $invoice['amount'] ?? $room_info['room_price'];
@@ -215,7 +359,8 @@ class Homepage extends Frontsite_Controller {
         $post['payment_ref'] = $invoice['reference'] ?? $invoice['payment_ref'];
         $post['room_type']   = $invoice['room_type'] ?? $room_info['room_type'];
         $post['room_id']     = $room['room_id'] ?? $invoice['room_id'];
-        $post['date']    = date('Y-m-d', strtotime($fetch_invoice['date'] ?? 'NOW'));
+        $post['invoice']     = $invoice['invoice'] ?? $post['room_id'].date('ymdHm');
+        $post['date']        = date('Y-m-d', strtotime($fetch_invoice['date'] ?? 'NOW'));
 
         $viewdata = [
         	'title' => $post['description'] . ' Invoice',
@@ -252,7 +397,7 @@ class Homepage extends Frontsite_Controller {
 
         $data = array(
         	'page' => 'rooms',
-        	'page_title' => HOTEL_NAME . ' - ' . $content['title'],
+        	'page_title' => my_config('site_name') . ' - ' . $content['title'],
         	'content' => $content,
         	'room' => $this->room_model->getRoomType($room_id)[0] ?? [],
         	'has_banner' => $content['banner'] ? TRUE : FALSE 
@@ -292,7 +437,8 @@ class Homepage extends Frontsite_Controller {
     		if (isset($post['reserve_room']) && !isset($_SESSION['reservation'])) 
     		{
     			// Set the payment reference
-    			$post['payment_ref'] = $this->payment_ref;
+                $post['payment_ref'] = $this->payment_ref;
+    			$post['invoice']     = $post['room_id'].date('ymdHm');
 
     			$this->session->set_userdata('reservation', $post); 
 
@@ -395,31 +541,6 @@ class Homepage extends Frontsite_Controller {
         $this->load->view($this->h_theme.'/homepage/header', $data);    		
         $this->load->view($this->h_theme.'/homepage/room_info', $data); 
         $this->load->view($this->h_theme.'/homepage/footer', $data);  
-    }
-
-
-    /**
-     * Fetch data from the locale model and helpers
-     * @param  string   $local   	specifies the local to return [countries|states|cities]
-     * @param  string   $parent_id  If set will return the local for the set parent
-     * @return NULL     Echoes a json string containing the data presented by the relevant helper
-     */
-    public function fetch_locale($locale = '', $parent_id = '')
-    {
-    	if ($locale == 'countries') 
-    	{
-    		$data['response'] = select_countries();
-    	}
-    	elseif ($locale == 'states') 
-    	{
-    		$data['response'] = select_states($parent_id);
-    	}
-    	elseif ($locale == 'cities') 
-    	{
-    		$data['response'] = select_cities($parent_id);
-    	}
-
-    	echo json_encode($data, JSON_FORCE_OBJECT);
     }
 }
 

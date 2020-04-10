@@ -14,22 +14,22 @@
                             <div class="row">
                                 <!-- text input -->
                                 <label class="col-2 font-weight-bold"> 
-                                    Date: 
+                                    <?=lang('date')?>: 
                                 </label>
                                 <div class="form-group col-4 row"> 
-                                    <label for="checkin_date" class="col-sm-4 col-form-label">From</label>
+                                    <label for="checkin_date" class="col-sm-4 col-form-label"><?=lang('from')?></label>
                                     <input type="date" id="from" name="from" class="form-control form-control-sm col-sm-8" value="<?= $this->input->get('from') ?>" required>
                                 </div>  
 
                                 <!-- text input -->
                                 <div class="form-group col-4 row">
-                                    <label for="checkout_date" class="col-sm-4 col-form-label">To</label>
+                                    <label for="checkout_date" class="col-sm-4 col-form-label"><?=lang('to')?></label>
                                     <input type="date" id="to" name="to" class="form-control form-control-sm col-sm-8" value="<?= $this->input->get('to') ?>">
                                 </div>
 
                                 <!-- text input -->
                                 <div class="form-group col-2"> 
-                                    <button class="button btn btn-info btn-sm">Filter</button>
+                                    <button class="button btn btn-info btn-sm"><?=lang('filter')?></button>
                                 </div>
 
                             </div>  
@@ -52,7 +52,7 @@
                         <div class="card-header">
                             <strong class="m-0 p-0">
                                 <i class="fa fa-receipt mx-2 text-gray"></i>
-                                Cashier's Report
+                                <?=lang('cashier_report')?>
                             </strong>
                             <div class="float-right d-none d-sm-inline text-sm my-0 p-0">
                                 <?//= $pagination ?>
@@ -63,22 +63,39 @@
                             <table class="table table-striped display" id="datatables_table" style="width: 100%">
                                 <thead>
                                     <tr>
-                                        <th> Subject </th>
-                                        <th> Date </th>
-                                        <th> Amount </th> 
-                                        <th> Remark </th>
-                                        <th> Added By </th>
-                                        <th> Added On </th>
-                                        <th class="td-actions"> Actions </th>
+                                        <th> <?=lang('subject')?> </th>
+                                        <th> <?=lang('date')?> </th>
+                                        <th> <?=lang('amount')?> </th> 
+                                        <th> <?=lang('remark')?> </th>
+                                        <th> <?=lang('added_by')?> </th>
+                                        <th> <?=lang('added_on')?> </th>
+                                        <th class="td-actions"> <?=lang('actions')?> </th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                 </tbody>
                             </table>
                             <?php else: ?>
-                                <?php alert_notice('No sales records available', 'info', TRUE, FALSE) ?>
+                                <?php alert_notice(lang('no_sales_records'), 'info', TRUE, FALSE) ?>
                             <?php endif;?>
                         </div>
+                        
+                        <?php if ($expenses): ?>
+                        <div class="card-footer">
+                            <span class="mr-5">
+                                <strong class="p-0"> 
+                                    <?=lang('total')?>: 
+                                </strong> 
+                                <?=$this->cr_symbol.number_format($expenses[0]['total'], 2)?>
+                            </span>
+                            <span class="mr-5">
+                                <strong class="p-0"> 
+                                    <?=lang('total_entries')?>: 
+                                </strong> 
+                                <?=$expenses[0]['entries']?>
+                            </span>
+                        </div>
+                        <?php endif;?>
                     </div>
                 </div>
                 <!-- /.col-md-6 -->
