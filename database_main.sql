@@ -57,8 +57,8 @@ CREATE TABLE IF NOT EXISTS `content` (
 
 INSERT INTO `content` (`id`, `title`, `intro`, `content`, `banner`, `safelink`, `button`, `align`, `icon`, `color`, `in_header`, `in_footer`, `priority`, `rooms`, `booking`, `facilities`, `contact`, `parent`) VALUES
 (1, 'Welcome to Hayatt', 'This is the official toneflix account, follow for good updates!', 'If you use a select menu, this function permits you to display the menu item that was selected.d\r\n\r\nThe first parameter must contain the name of the select menu, the second parameter must contain the value of each item, and the third (optional) parameter lets you set an item as the default (use boolean TRUE/FALSE).', 'uploads/covers/page/318207262_857056997_1769914096_p.png', 'homepage', '[link=https://yahoo.com] red color[/link]', 'left', 'fa fa-500px', 'text-info', 1, 1, 2, 1, 1, 1, 0, ''),
-(8, 'Boostrap classes', 'Official toneflix account, follow for good updates!', 'The first parameter must contain the name of the select menu, the second parameter must contain the value of each item, and the third (optional) parameter lets you set an item as the default (use boolean TRUE/FALSE). [link=https://example.com] Example[/link]', 'uploads/covers/qwqw/1375639490_486482779_1544318135_p.png', 'safelinkercs', '[link=https://example.com] Example[/link]', 'right', 'fa fa-500px', 'danger', 0, 0, 2, 0, 0, 0, 0, 'homepage'),
-(14, 'We put you first', 'Setting preferences in a config file', 'If you prefer not to set preferences using the above method, you can instead put them into a config file. Simply create a new file called the upload.php, add the $config array in that file. Then save the file in: config/upload.php and it will be used automatically.', 'uploads/covers/page/1254578127_838910178_1203441872_p.png', 'we-put-you-first', '', 'left', 'fa fa-users', '', 0, 0, 1, 0, 0, 0, 0, 'homepage');
+(2, 'Boostrap classes', 'Official toneflix account, follow for good updates!', 'The first parameter must contain the name of the select menu, the second parameter must contain the value of each item, and the third (optional) parameter lets you set an item as the default (use boolean TRUE/FALSE). [link=https://example.com] Example[/link]', 'uploads/covers/qwqw/1375639490_486482779_1544318135_p.png', 'safelinkercs', '[link=https://example.com] Example[/link]', 'right', 'fa fa-500px', 'danger', 0, 0, 2, 0, 0, 0, 0, 'homepage'),
+(3, 'We put you first', 'Setting preferences in a config file', 'If you prefer not to set preferences using the above method, you can instead put them into a config file. Simply create a new file called the upload.php, add the $config array in that file. Then save the file in: config/upload.php and it will be used automatically.', 'uploads/covers/page/1254578127_838910178_1203441872_p.png', 'we-put-you-first', '', 'left', 'fa fa-users', '', 0, 0, 1, 0, 0, 0, 0, 'homepage');
 
 -- --------------------------------------------------------
 
@@ -99,38 +99,10 @@ CREATE TABLE IF NOT EXISTS `customer` (
 
 INSERT INTO `customer` (`customer_id`, `customer_username`, `customer_password`, `customer_firstname`, `customer_lastname`, `customer_TCno`, `customer_address`, `customer_state`, `customer_city`, `customer_country`, `customer_telephone`, `customer_email`, `image`) VALUES
 (0, 'generic', NULL, 'Generic Customer', '(Unregistered)', '0', 'NULL', 'NULL', 'NULL', 'NULL', 'NULL', 'NULL', NULL),
-(5, 'wilson', '28f20a02bf8a021fab4fcec48afb584e', 'Wilson', 'Samuel', '12323', 'This is my address', 'Vorarlberg', 'Rankweil', 'Afghanistan', '090233232', 'mygames.ng@gmail.com', 'uploads/avatars/wilson/1552177901_1889236005_1834033459_p.png'),
-(6, 'daniel', NULL, 'Daniel', 'James', '123233', '13 one road ', 'Rivers', 'Port', 'Nigeria', '0903333', 'mygadmes.ng@gmail.com', NULL),
-(8, 'ogulor', NULL, 'Ogulor', 'Mornd', 'HRSC-AHY851', NULL, NULL, 'Lagos', 'Nigeria', '09033332222', 'seemygadmes@gmail.com', NULL),
-(17, 'davidson', '28f20a02bf8a021fab4fcec48afb584e', 'Daniel', 'James', 'HRSC-ZMHNP7347713-PHZ', 'Somewher off town', 'Mugan-Salyan', 'Calilabad', 'Azerbaijan', '09033332434', 'mygadmes.ngo@gmail.com', NULL);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `department`
---
--- Creation: Mar 18, 2020 at 02:49 PM
---
-
-DROP TABLE IF EXISTS `department`;
-CREATE TABLE IF NOT EXISTS `department` (
-  `department_id` int NOT NULL AUTO_INCREMENT,
-  `department_name` varchar(50) NOT NULL,
-  `department_budget` float DEFAULT NULL,
-  PRIMARY KEY (`department_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- RELATIONS FOR TABLE `department`:
---
-
---
--- Dumping data for table `department`
---
-
-INSERT INTO `department` (`department_id`, `department_name`, `department_budget`) VALUES
-(9, 'Restuarants', 1000),
-(10, 'Bar', 1000);
+(1, 'wilson', '28f20a02bf8a021fab4fcec48afb584e', 'Wilson', 'Samuel', '12323', 'This is my address', 'Vorarlberg', 'Rankweil', 'Afghanistan', '090233232', 'mygames.ng@gmail.com', 'uploads/avatars/wilson/1552177901_1889236005_1834033459_p.png'),
+(2, 'daniel', NULL, 'Daniel', 'James', '123233', '13 one road ', 'Rivers', 'Port', 'Nigeria', '0903333', 'mygadmes.ng@gmail.com', NULL),
+(3, 'ogulor', NULL, 'Ogulor', 'Mornd', 'HRSC-AHY851', NULL, NULL, 'Lagos', 'Nigeria', '09033332222', 'seemygadmes@gmail.com', NULL),
+(4, 'davidson', '28f20a02bf8a021fab4fcec48afb584e', 'Daniel', 'James', 'HRSC-ZMHNP7347713-PHZ', 'Somewher off town', 'Mugan-Salyan', 'Calilabad', 'Azerbaijan', '09033332434', 'mygadmes.ngo@gmail.com', NULL);
  
 -- --------------------------------------------------------
 
@@ -178,9 +150,9 @@ CREATE TABLE IF NOT EXISTS `employee` (
 --
 
 INSERT INTO `employee` (`employee_id`, `employee_username`, `employee_password`, `employee_firstname`, `employee_lastname`, `employee_telephone`, `employee_email`, `employee_address`, `employee_country`, `employee_state`, `employee_city`, `department_id`, `image`, `role`, `role_id`, `employee_type`, `employee_salary`, `employee_hiring_date`) VALUES
-(0, 'generic', '', 'Generic', 'Employee', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, '', NULL, NULL), 
-(1, 'root', '28f20a02bf8a021fab4fcec48afb584e', 'Root', 'Admin', '', 'root@root', NULL, NULL, NULL, NULL, 9, '', 3, 0, 'Root', 1000, '2012/2/1'),
-(2, 'admin', '5f4dcc3b5aa765d61d8327deb882cf99', 'Default', 'Admin', '', 'admin@admin', '', '', '', '', 10, '', 2, 5, 'Administrator', 1000, '2020-03-31');
+(0, 'generic', '', 'Generic', 'Employee', NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, 1, 0, '', NULL, NULL), 
+(1, 'root', '28f20a02bf8a021fab4fcec48afb584e', 'Root', 'Admin', '', 'root@root', NULL, NULL, NULL, NULL, 1, '', 3, 0, 'Root', 1000, '2012/2/1'),
+(2, 'admin', '5f4dcc3b5aa765d61d8327deb882cf99', 'Default', 'Admin', '', 'admin@admin', '', '', '', '', 1, '', 2, 5, 'Administrator', 1000, '2020-03-31');
 
 -- --------------------------------------------------------
 
@@ -212,8 +184,8 @@ CREATE TABLE IF NOT EXISTS `expenses` (
 --
 
 INSERT INTO `expenses` (`id`, `subject`, `amount`, `remark`, `employee_id`, `date`) VALUES
-(1, 'Welcome Fire', 1000, 'Check if the domain worked yesterdays before it was modified', 49, '2020-03-30'),
-(3, 'Food was sold', 500, 'This is one entry', 49, '2020-04-15');
+(1, 'Welcome Fire', 1000, 'Check if the domain worked yesterdays before it was modified', 2, '2020-03-30'),
+(3, 'Food was sold', 500, 'This is one entry', 2, '2020-04-15');
 
 -- --------------------------------------------------------
 
@@ -274,7 +246,7 @@ CREATE TABLE IF NOT EXISTS `payments` (
 --
 
 INSERT INTO `payments` (`id`, `customer_id`, `payment_type`, `reference`, `invoice`, `amount`, `description`) VALUES
-(4, 5, 'reservation', 'HRSPR-NHBAM1420531-SVT', '1212121212333333', '10000.00', 'Reservation payments for Presidential room 103');
+(4, 2, 'reservation', 'HRSPR-NHBAM1420531-SVT', '1212121212333333', '10000.00', 'Reservation payments for Presidential room 103');
 
 -- --------------------------------------------------------
 
@@ -349,8 +321,8 @@ CREATE TABLE IF NOT EXISTS `reservation` (
 --
 
 INSERT INTO `reservation` (`reservation_id`, `customer_id`, `room_id`, `checkin_date`, `checkout_date`, `employee_id`, `reservation_price`, `reservation_ref`, `status`) VALUES
-(23, 5, 103, '2020-04-15 13:45:00', '2020-04-30 18:50:00', 0, 10000, 'HRSPR-NHBAM1420531-SVT', 1),
-(24, 5, 2, '2020-04-07 00:00:00', '2020-04-09 00:00:00', 49, 5000, NULL, NULL);
+(23, 2, 103, '2020-04-15 13:45:00', '2020-04-30 18:50:00', 0, 10000, 'HRSPR-NHBAM1420531-SVT', 1),
+(24, 2, 2, '2020-04-07 00:00:00', '2020-04-09 00:00:00', 2, 5000, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -449,8 +421,8 @@ CREATE TABLE IF NOT EXISTS `room_sales` (
 --
 
 INSERT INTO `room_sales` (`customer_id`, `room_id`, `reservation_id`, `checkin_date`, `checkout_date`, `employee_id`, `room_sales_price`, `total_service_price`) VALUES
-(5, 2, 24, '2020-04-07', '2020-04-09', 49, 5000, 0),
-(5, 103, 23, '2020-04-15 13:45', '2020-04-30 18:50', 0, 10000, 0);
+(2, 2, 24, '2020-04-07', '2020-04-09', 2, 5000, 0),
+(2, 103, 23, '2020-04-15 13:45', '2020-04-30 18:50', 0, 10000, 0);
 
 -- --------------------------------------------------------
 
@@ -520,9 +492,10 @@ CREATE TABLE IF NOT EXISTS `sales_services` (
 --
 
 INSERT INTO `sales_services` (`id`, `service_name`, `service_open_time`, `service_close_time`, `service_details`, `table_count`, `icon`) VALUES
-(10, 'Gym', '00:32', '15:33', 'Come and try to look good', 3, NULL),
-(8, 'Restuarant', '00:21', '12:21', 'Eat good food always', 10, 'utensils'),
-(9, 'Wine Bar', '00:11', '12:22', 'Drink to stupor', 1, 'fa-glass');
+(1, 'Admin', '00:01', '23:59', 'All administrative functions are done here', 3, 'fa-user-secret'),
+(2, 'Restuarant', '00:21', '12:21', 'Eat good food always', 10, 'utensils'),
+(3, 'Wine Bar', '00:11', '12:22', 'Drink to stupor', 1, 'fa-glass'),
+(4, 'Gym', '00:32', '15:33', 'Come and try to look good', 3, NULL);
 
 -- --------------------------------------------------------
 
@@ -562,7 +535,7 @@ CREATE TABLE IF NOT EXISTS `sales_service_orders` (
 --
 
 INSERT INTO `sales_service_orders` (`id`, `service_name`, `customer_id`, `order_items`, `order_quantity`, `order_date`, `order_price`, `employee_id`) VALUES
-(60, 'Wine Bar', 5, '6,9', '1,1', '2020-04-01', 1600, 49);
+(1, 'Wine Bar', 2, '6,9', '1,1', '2020-04-01', 1600, 49);
 
 --
 -- Triggers `sales_service_orders`
@@ -616,8 +589,8 @@ CREATE TABLE IF NOT EXISTS `sales_service_stock` (
 --
 
 INSERT INTO `sales_service_stock` (`item_id`, `item_name`, `item_details`, `item_quantity`, `item_price`, `item_service`, `employee_id`) VALUES
-(6, 'Corona Extra', 'Get High even faster', 3, '600.00', 'Wine Bar', 49),
-(7, 'Pounded Yam', 'Eat heavily pounded food', 4, '1500.00', 'Restuarant', NULL);
+(1, 'Corona Extra', 'Get High even faster', 1, '600.00', 'Wine Bar', 2),
+(2, 'Pounded Yam', 'Eat heavily pounded food', 1, '1500.00', 'Restuarant', 2);
 
 -- --------------------------------------------------------
 

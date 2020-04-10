@@ -6,8 +6,7 @@ class Admin extends Admin_Controller {
     { 
         // Check if the user has permission to access this module and redirect to 401 if not
         error_redirect(has_privilege('dashboard'), '401');
-        
-        $today_stats = $this->report_model->today_stats();
+         
         $customer_pay_list = $this->report_model->get_customer_freq_list();
         $customer_most_paid = $this->report_model->get_customer_most_paid();
         $next_week_freq = $this->report_model->get_next_week_freq();
@@ -16,8 +15,7 @@ class Admin extends Admin_Controller {
         $data = array('title' => my_config('site_name'), 'page' => 'dashboard', 'has_calendar' => TRUE);
         $this->load->view($this->h_theme.'/header', $data);
  
-        $viewdata = array(
-            'today_stats' => $today_stats,
+        $viewdata = array( 
             'customer_pay_list' => $customer_pay_list,
             'customer_most_paid' => $customer_most_paid,
             'next_week_freq' => $next_week_freq,

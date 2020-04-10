@@ -103,21 +103,7 @@ class Customer_model extends CI_Model {
             $this->db->insert('customer', $data);
             return $this->db->insert_id();
         }
-    }
-
-    // function _get_active_customers()
-    // {
-    //     $date = date('Y-m-d');
-    //     $q = $this->db->free;
-    //     $q = $this->db->query("CALL get_customers('$date')");
-
-    //     $data = array();
-    //     foreach ($q->result() as $customer) {
-    //         $data[] = $customer;
-    //     }
-    //     return $data;
-    // } 
-
+    } 
 
     /**
      * This function will fetch return data of all active customers currently logged 

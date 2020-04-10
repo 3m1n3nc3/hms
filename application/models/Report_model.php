@@ -6,24 +6,7 @@ class Report_model extends CI_Model {
     {
         // Call the Model constructor
         parent::__construct();
-    }
-    
-    function today_stats()
-    {
-        $date = date('Y-m-d');
-        $query = $this->db->query("CALL todays_service_count('$date')");
-        $data = array();
-
-        if ($query) {
-            foreach ($query->result() as $row)
-            {
-                $data[$row->type] = $row->amount;
-            }
-            if(count($data))
-                return $data;
-        }
-        return false;
-    }
+    } 
 
     function search_customers($query)
     {
