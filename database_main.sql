@@ -179,8 +179,8 @@ CREATE TABLE IF NOT EXISTS `employee` (
 
 INSERT INTO `employee` (`employee_id`, `employee_username`, `employee_password`, `employee_firstname`, `employee_lastname`, `employee_telephone`, `employee_email`, `employee_address`, `employee_country`, `employee_state`, `employee_city`, `department_id`, `image`, `role`, `role_id`, `employee_type`, `employee_salary`, `employee_hiring_date`) VALUES
 (0, 'generic', '', 'Generic', 'Employee', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0, '', NULL, NULL), 
-(1, 'root', '28f20a02bf8a021fab4fcec48afb584e', 'Root', 'Admin', '', '', NULL, NULL, NULL, NULL, 9, '', 3, 0, 'Root', 1000, '2012/2/1'),
-(2, 'admin', '5f4dcc3b5aa765d61d8327deb882cf99', 'Default', 'Admin', '', '', '', '', '', '', 10, '', 2, 5, 'Administrator', 1000, '2020-03-31');
+(1, 'root', '28f20a02bf8a021fab4fcec48afb584e', 'Root', 'Admin', '', 'root@root', NULL, NULL, NULL, NULL, 9, '', 3, 0, 'Root', 1000, '2012/2/1'),
+(2, 'admin', '5f4dcc3b5aa765d61d8327deb882cf99', 'Default', 'Admin', '', 'admin@admin', '', '', '', '', 10, '', 2, 5, 'Administrator', 1000, '2020-03-31');
 
 -- --------------------------------------------------------
 
