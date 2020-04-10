@@ -43,7 +43,7 @@
                       </td>
                       <td> <?=$employee->employee_username;?> </td>
                       <td> <?=$employee->employee_telephone;?> </td>
-                      <td> <?=$employee->department_name;?> </td>
+                      <td> <?=$employee->service_name;?> </td>
                       <td> <?=$employee->employee_type;?> </td>
                       <td> <?=$employee->employee_email;?> </td> 
                       <td class="td-actions p-0">
