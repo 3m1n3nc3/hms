@@ -126,7 +126,7 @@ class Employee extends Admin_Controller {
         }
 
 		$employee = $this->employee_model->getEmployee($employee_id, 1);
-		$department = $this->employee_model->employee_department($employee['department_id']);
+		$department = $this->services_model->getService($employee['department_id'], 1);
 		$viewdata = array('department' => $department, 'employee' => $employee);
 		$data = array('title' => $employee['employee_firstname'] . ' ' .$employee['employee_lastname'] .' - '. my_config('site_name'), 'page' => 'employee');
  

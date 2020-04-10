@@ -37,7 +37,7 @@
 								<b>Basic Salary</b> <a class="float-right"><?=$employee['employee_salary']?></a>
 							</li>
 							<li class="list-group-item">
-								<b>Department</b> <a class="float-right"><?=$department['department_name']?></a>
+								<b>Department</b> <a class="float-right"><?=$department['service_name']?></a>
 							</li>
 						</ul> 
 						<a href="<?=site_url('employee/add/'.$employee['employee_id'])?>" class="btn btn-primary btn-block text-white"><b>Update Employee Data</b></a> 

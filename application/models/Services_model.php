@@ -47,10 +47,14 @@ class Services_model extends CI_Model {
         return $this->db->affected_rows();
     }
 
-    function getService($service_id)
+    function getService($service_id, $array = FALSE)
     {
         $this->db->select('*')->from('sales_services');
         $query = $this->db->where('service_name', $service_id)->or_where('id', $service_id)->get();
+        if ($array)
+        {
+            return $query->row_array();
+        }
         return $query->result();
     }
 

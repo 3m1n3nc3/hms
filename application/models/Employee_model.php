@@ -26,7 +26,7 @@ class Employee_model extends CI_Model {
         }
 
         $this->db->order_by('employee_id DESC');
-        $query = $this->db->from('employee')->join('department', 'department.department_id=employee.department_id')->get();
+        $query = $this->db->from('employee')->join('sales_services', 'sales_services.id=employee.department_id')->get();
         $data = array();
 
         foreach (@$query->result() as $row)
@@ -99,27 +99,10 @@ class Employee_model extends CI_Model {
         return $query->result();
     }
 
-    function employee_department($employee_id)
+    function employee_department($department_id)
     {
-        $this->db->where('department_id', $employee_id);
-        $query = $this->db->from('department')->get(); 
+        $this->db->where('id', $employee_id);
+        $query = $this->db->from('sales_services')->get(); 
         return $query->row_array();
-    }
-
-    function getDepartments()
-    {
-        $query = $this->db->from('department')->get();
-        $data = array();
-
-        foreach ($query->result() as $row)
-        {
-            $data[] = $row;
-            // $row->customer_id
-            // $row->customer_username
-            // $data[0]->customer_id
-        }
-        if(count($data))
-            return $data;
-        return false;
-    }   
+    }  
 }
