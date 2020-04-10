@@ -1,8 +1,9 @@
 # Hotel Pass - Hotel Management System
 
 Hotel Pass - Hotel Management System is the most comprehensive and versatile hotel management system available in 
-the market, it is designed to handle almost every aspect of your hotel and eliminate the need for paper documentation
-and accounting.
+the market, it is designed to handle almost every aspect of your hotel from bookings through inventory records and employee 
+management to store sales. The system is designed to eliminate the need for paper documentation and accounting and will on the long 
+run eliminate the need for certain employees as certain functions of your hotel can be conveniently managed by fewer persons.
 
 
 ## Features
