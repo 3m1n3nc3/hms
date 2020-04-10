@@ -183,7 +183,7 @@ class Datatables extends MY_Controller {
         {  
             $item_name = [];
             foreach (explode(',', $rows->order_items) as $sid) {
-                $items = $this->CI->services_model->get_stock(array('item_id' => $sid));
+                $items = $this->services_model->get_stock(array('item_id' => $sid));
                 $item_name[] = $items['item_name'];
             }
 
