@@ -101,7 +101,7 @@ class Customer extends Admin_Controller
 	{	
         error_redirect(has_privilege('customers'), '401');
 
-        $id = urldecode($id));
+        $id = urldecode($id);
 
 		$customer = $this->customer_model->get_customer(['id' => $id]); 
     	$statistics = $this->accounting_model->statistics(['customer' => $customer['customer_id']]);
