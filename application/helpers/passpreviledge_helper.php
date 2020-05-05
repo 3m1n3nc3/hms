@@ -117,3 +117,13 @@ if ( ! function_exists('list_permissions'))
         }
     }
 }
+
+
+if ( ! function_exists('verify_permision'))
+{
+    function verify_permision($role = '')
+    {    
+        $privileges = perfect_privilege($role);
+        return in_array($role, $privileges);
+    }
+}
