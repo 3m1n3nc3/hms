@@ -176,7 +176,7 @@ class Customer extends Admin_Controller
 	function delete($customer_id)
 	{
         error_redirect(has_privilege('customers'), '401');
-        $customer_id = urldecode($customer_id));
+        $customer_id = urldecode($customer_id);
 
 		$this->session->set_flashdata(array('message' => alert_notice(lang('customer_deleted'), 'success'))); 
 		$this->customer_model->delete_customer($customer_id);
@@ -192,7 +192,7 @@ class Customer extends Admin_Controller
 	function reserve($customer_id)
 	{ 
         error_redirect(has_privilege('customers'), '401');
-        $customer_id = urldecode($customer_id));
+        $customer_id = urldecode($customer_id);
 
 		$this->session->set_flashdata('customer_TCno', $customer_id);
 		redirect("reservation");
