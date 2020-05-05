@@ -89,9 +89,9 @@ class Hms_parser
                         <div class="accomodation_item text-center">
                             <div class="hotel_img">
                                 <img src="'.$this->CI->creative_lib->fetch_image($type->image).'" alt="" style="max-height:250px;">
-                                <a href="'.site_url('page/rooms/book/'.urlencode($type->room_type)).'" class="btn theme_btn button_hover">Book Now</a>
+                                <a href="'.site_url('page/rooms/book/'.$type->room_type).'" class="btn theme_btn button_hover">Book Now</a>
                             </div>
-                            <a href="'.site_url('page/rooms/'.urlencode($type->room_type)).'"><h4 class="sec_h4">'.$type->room_type.'</h4></a> 
+                            <a href="'.site_url('page/rooms/'.$type->room_type).'"><h4 class="sec_h4">'.$type->room_type.'</h4></a> 
                             <h5>'.$this->CI->cr_symbol.number_format($type->room_price, 2).'<small>/night</small></h5>
                         </div>
                     </div>';
