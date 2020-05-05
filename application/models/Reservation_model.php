@@ -118,7 +118,7 @@ class Reservation_model extends CI_Model {
         }
 
         $this->db->select('*')->from('reservation');
-        $this->db->join('customer', "reservation.customer_id=customer.customer_id", "LEFT");
+        $this->db->join('customer', "customer.customer_id=reservation.customer_id", "LEFT");
         $this->db->join('room', "room.room_id=reservation.room_id", "LEFT");
          
         if (isset($data['page']) && !$row) 
