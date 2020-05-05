@@ -2,14 +2,21 @@
 <section class="content">
     <div class="container-fluid">
         <?= $this->session->flashdata('message') ?? '' ?>
-        <?php $active_reservation = date('Y-m-d', strtotime($reservation['checkin_date'])) <= date('Y-m-d', strtotime('NOW')) && date('Y-m-d', strtotime($reservation['checkout_date'])) >= date('Y-m-d', strtotime('NOW')) ? 1 : 0 ?>
+        <?php 
+            $active_reservation = 
+                $reservation['checkin_date'] <= date('Y-m-d H:i:s', strtotime('NOW')) && 
+                $reservation['checkout_date'] >= date('Y-m-d H:i:s', strtotime('NOW')) ? TRUE : FALSE;
+
+            $expired_reservation = $reservation['checkout_date'] < date('Y-m-d H:i:s', strtotime('NOW')) && 
+                $reservation['status'] ? TRUE : FALSE;
+        ?>
         <div class="row">
             <div class="col-md-4">
                 <!-- Profile Image -->
-                <div class="card <?= $active_reservation ? 'card-success' : 'card-secondary' ?> card-outline">
+                <div class="card <?= $active_reservation && $reservation['status'] ? 'card-success' : 'card-secondary' ?> card-outline">
                     <div class="card-body box-profile">
                         <div class="text-center">
-                            <img class="profile-user-img img-fluid img-circle <?= $active_reservation ? 'border-success' : '' ?>" src="<?= $this->creative_lib->fetch_image($reservation['image'], 3); ?>" alt="User profile picture">
+                            <img class="profile-user-img img-fluid img-circle <?= $active_reservation && $reservation['status'] ? 'border-success' : '' ?>" src="<?= $this->creative_lib->fetch_image($reservation['image'], 3); ?>" alt="User profile picture">
                         </div>
                         <h3 class="profile-username text-center">
                             <?=$reservation['customer_firstname'] . ' ' .$reservation['customer_lastname']?>
@@ -37,12 +44,16 @@
                                 <a class="float-right"><?= $reservation ? date('D d M Y', strtotime($reservation['reservation_date'])) : 'N/A'?></a>
                             </li>
                         </ul>
-                        <?php if (isset($this->uid)):?>
+                        <a href="<?=site_url($invoice_link)?>" class="btn btn-success btn-block text-white mt-1"><b>Print Invoice</b></a>
+                        <?php if (isset($this->uid) && ($active_reservation || $reservation['status'])):?>
                             <?=form_open('reservation')?>
                                 <input type="hidden" name="customer_TCno" value="<?=$reservation['customer_TCno']?>">
                                 <input type="hidden" name="change_booking" value="<?=$reservation['reservation_id']?>">
-                                <button class="btn btn-primary btn-block"><b><?= lang('change_reservation') ?></b></button>
+                                <button class="btn btn-primary btn-block mt-1"><b><?= lang('change_reservation') ?></b></button>
                             <?=form_close()?>
+                        <?php endif;?>
+                        <?php if ($active_reservation || $reservation['status']): ?>
+                            <a href="<?=site_url('room/checkout/'.$reservation['reservation_id'])?>" class="btn btn-danger btn-block text-white mt-1"><b>Checkout</b></a>
                         <?php endif;?>
                     </div>
                     <!-- /.card-body -->
@@ -51,6 +62,11 @@
             </div>
             <!-- /.col -->
             <div class="col-md-8">
+
+                <?php if ($expired_reservation):?>
+                    <?= alert_notice(sprintf(lang('customer_overstay'), dateDifference(date('Y-m-d', strtotime($reservation['checkout_date'])), date('Y-m-d', strtotime('NOW')))), 'warning')?>
+                <?php endif;?>
+
                 <div class="card">
                     <div class="card-header p-2">
                         <h5 class="m-0">
@@ -91,7 +107,7 @@
                                         <a href="<?= site_url('room/reserved_room/'.$rm->room_id.'/'.$rm->customer_id)?>" class="btn btn-sm btn-primary">
                                             <i class="btn-icon-only fa fa-calendar-check text-white"></i>
                                         </a>
-                                        <a href="javascript:void(0)" onclick="return confirmDelete('<?= site_url('room/reserved/delete_reservation/'.$rm->room_id.'/'.$rm->room_id)?>', 1)" class="btn btn-danger btn-sm">
+                                        <a href="javascript:void(0)" onclick="return confirmDelete('<?= site_url('room/delete_reservation/'.$rm->reservation_id.'/'.$rm->room_id)?>', 1)" class="btn btn-danger btn-sm">
                                             <i class="btn-icon-only fa fa-trash text-white"></i>
                                         </a>
                                     </td>

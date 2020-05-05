@@ -71,13 +71,16 @@ class Customer_model extends CI_Model {
      */
     function list_customers($data = '')
     {
-        $this->db->select('customer_id, customer_firstname, customer_lastname, customer_TCno, customer_address, customer_state, customer_city, customer_country, customer_telephone,  customer_email')->from('customer');
+        $this->db->select('customer_id, customer_firstname, customer_lastname, customer_TCno, customer_address, customer_state, customer_city, customer_country, customer_telephone,  customer_email')->from('customer'); 
+        $this->db->select("(SELECT SUM(`order_price`) FROM sales_service_orders WHERE `customer_id` = `customer`.`customer_id`) AS orders");
+        $this->db->select("(SELECT SUM(`paid`) FROM sales_service_orders WHERE `customer_id` = `customer`.`customer_id`) AS paid");
+        $this->db->select("(SELECT SUM(`orders`-`paid`)) AS debt");
          
         if (isset($data['page'])) {
             $this->db->limit($this->config->item('per_page'), $data['page']);
         }
 
-        $query = $this->db->get();
+        $query = $this->db->get(); 
         return $query->result();
     }
 

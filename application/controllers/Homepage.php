@@ -81,7 +81,8 @@ class Homepage extends Frontsite_Controller {
      */
     public function account($id = '')
     { 
-         $this->account_data->is_customer_logged_in();
+        $id = urldecode($id);
+        $this->account_data->is_customer_logged_in(TRUE);
 
     	$customer = $this->account_data->fetch($this->cuid, 1);
     	$statistics = $this->accounting_model->statistics(['customer' => $customer['customer_id']]);
@@ -138,7 +139,8 @@ class Homepage extends Frontsite_Controller {
      */
     public function reservations($room_id = '')
     { 
-        $this->account_data->is_customer_logged_in();
+        $room_id = urldecode($room_id);
+        $this->account_data->is_customer_logged_in(TRUE);
         $customer = $this->account_data->fetch($this->cuid, 1);
 
         $reservation = $this->reservation_model->reserved_rooms(['customer' => $customer['customer_id']], 1);
@@ -178,7 +180,8 @@ class Homepage extends Frontsite_Controller {
      */
     public function payments($action = '')
     { 
-        $this->account_data->is_customer_logged_in();
+        $action = urldecode($action);
+        $this->account_data->is_customer_logged_in(TRUE);
         $customer = $this->account_data->fetch(($this->cuid), 1);
         $reservation = $this->reservation_model->reserved_rooms(['customer' => $customer['customer_id']], 1);  
 
@@ -238,6 +241,7 @@ class Homepage extends Frontsite_Controller {
      */
     public function access($action = 'login')
     { 
+        $action = urldecode($action);
         $data = array(
         	'page' => $action,
         	'page_title' => ucwords($action) . ' - ' . my_config('site_name'),
@@ -331,7 +335,8 @@ class Homepage extends Frontsite_Controller {
      */
     public function invoice($reference = '')
     {
-        has_privilege('cashier-report') OR $this->account_data->is_customer_logged_in();
+        $reference = urldecode($reference);
+        error_redirect(has_privilege('cashier-report') OR $this->account_data->is_customer_logged_in(), '401');
     	$fetch_invoice = $this->payment_model->get_payments(['reference' => $reference]); 
     	if (!$fetch_invoice) 
     	{
@@ -382,7 +387,7 @@ class Homepage extends Frontsite_Controller {
      * @return null           Does not return anything but uses code igniter's view() method to render the page
      */
     public function rooms($room_id = '', $action = '')
-    {
+    { 
     	// If the user opens another room, remove the current room from the session
     	$changeable = $this->session->userdata('reservation');
     	if (isset($_SESSION['reservation']) && strtolower($room_id) !== strtolower($changeable['room_type'])) 
@@ -392,7 +397,8 @@ class Homepage extends Frontsite_Controller {
 
         // Get a default page to render here 
         $room_id = urldecode($room_id); 
-        $query = array('safelink' => 'homepage');  
+        $action  = urldecode($action);
+        $query   = array('safelink' => 'homepage');  
 
         $content = $this->content_model->get($query);
 

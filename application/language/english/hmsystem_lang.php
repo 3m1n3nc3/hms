@@ -53,6 +53,7 @@ $lang['customer']                   = 'Customer';
 $lang['customer_deleted']           = 'Customer Deleted';
 $lang['customer_updated']           = 'Customer data has been successfully updated.';
 $lang['customer_id_code']           = 'Customer Identification Number';
+$lang['customer_overstay']          = 'This customer has stayed %s days beyond their reservation';
 $lang['dashboard']                  = 'Dashboard';
 $lang['department']                 = 'Department';
 $lang['date']                       = 'Date';

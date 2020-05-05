@@ -32,6 +32,7 @@
                       <th> Phone Number </th>
                       <th> Email Address</th>
                       <th> Identity Code </th>
+                      <th> Debt </th>
                       <th class="td-actions"> Actions </th>
                     </tr>
                   </thead>
@@ -47,6 +48,7 @@
                       <td> <?=$customer->customer_telephone;?> </td>
                       <td> <?=$customer->customer_email;?> </td>
                       <td> <?=$customer->customer_TCno;?> </td>
+                      <td> <?=$this->cr_symbol.number_format($customer->debt, 2)?> </td>
                       <td class="td-actions">
                         <a href="<?= site_url('customer/reserve/'.$customer->customer_TCno) ?>" class="btn btn-sm btn-success" data-toggle="tooltip" title="Reserve">
                           <i class="btn-icon-only fa fa-calendar-check text-white"></i>
@@ -62,7 +64,7 @@
                     <?php endforeach; ?>
                     <?php else: ?>
                     <tr>
-                      <td colspan="5"><?php alert_notice('No rooms available', 'info', TRUE, FALSE) ?></td>
+                      <td colspan="5"><?php alert_notice('No Result Found For '.$query, 'info', TRUE, FALSE) ?></td>
                     </tr>
                     <?php endif; ?>
                   </tbody>

@@ -13,7 +13,7 @@
       <!-- /.col-md-4 Important Shortcuts -->
       	<div class="col-lg-12"> 
             
-	        <?= form_open('reservation/make')?>
+	        <?= form_open('reservation/make', ['id' => 'rs_form'])?>
 
 	            <div class="row">
 
@@ -54,13 +54,13 @@
 		                  	<!-- text input -->
 		                  	<div class="form-group col-6"> 
 		                    	<label for="checkin_date"><?=lang('checkin')?></label>
-		                    	<input type="text" id="checkin_date" name="checkin_date" class="form-control form-control-sm" value="<?= set_value('checkin_date') ?>" required readonly>
+		                    	<input type="text" id="checkin_date_" name="checkin_date" class="form-control form-control-sm" value="<?= set_value('checkin_date') ?>" required readonly>
 	                 	 	</div>  
 
 	                  		<!-- text input -->
 	                  		<div class="form-group col-6">
 	                    		<label for="checkout_date"><?=lang('checkout')?></label>
-	                    		<input type="text" id="checkout_date" name="checkout_date" class="form-control form-control-sm" value="<?= set_value('checkout_date') ?>" required readonly>
+	                    		<input type="text" id="checkout_date_" name="checkout_date" class="form-control form-control-sm" value="<?= set_value('checkout_date') ?>" required readonly>
 	                  		</div>
 	                	</div>  
 	            	</div>
@@ -91,16 +91,22 @@
                                 <?php for ($t=0, $i=0; $t<$rows; ++$t): ?>
                                 <tr>
                                     <?php for($j=0; $j<$cols && $i<$size; ++$i, ++$j): ?>
-                                    <td class="td-actions">
-                                        <button name="room_id" value="<?=$rooms[$i]->room_id?>" onclick="return confirm('Reserve this room?')" class="btn btn-lg py-4 m-2 font-weight-bold btn-success shadow">
-                                        <?=$rooms[$i]->room_type?>
-                                        <br>
-                                        Room <?=$rooms[$i]->room_id?>
-                                        <i class="btn-icon-only fa fa-calendar-check"> </i>
-                                        <br>
-                                        <?='At $' . $rooms[$i]->room_price;?>
-                                        </button>
-                                    </td>
+                                        <?php if (!$rooms[$i]->status): ?>
+                                        <td class="td-actions">
+                                            <input type="hidden" name="room_id" value="<?=$rooms[$i]->room_id?>">
+                                            <button    
+                                                type="button" 
+                                                onclick="return bootbox.confirm('Reserve this room?', function(e) {if (e == true) $('#rs_form').submit()})" 
+                                                class="btn btn-lg py-4 m-2 font-weight-bold btn-success shadow">
+                                                <?=$rooms[$i]->room_type;?> 
+                                                <br>
+                                                Room <?=$rooms[$i]->room_id?>
+                                                <i class="btn-icon-only fa fa-calendar-check"> </i>
+                                                <br>
+                                                <?='At ' . $this->cr_symbol . $rooms[$i]->room_price;?>
+                                            </button>
+                                        </td>
+                                        <?php endif; ?>
                                     <?php endfor; ?>
                                 </tr>
                                 <?php endfor; ?>

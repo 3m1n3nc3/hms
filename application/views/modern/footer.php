@@ -31,7 +31,9 @@
           <?php echo HMS_NAME . ' ' . HMS_VERSION ?> <?php echo  (ENVIRONMENT === 'development') ?  ' | Page rendered in <strong>{elapsed_time}</strong> seconds. CodeIgniter Version <strong>' . CI_VERSION . '</strong>' : '' ?>
         </div>
         <!-- Default to the left -->
-        <strong>Copyright &copy; <?= date('Y'); ?> <a href="https://adminlte.io"><?= my_config('site_name'); ?></a>.</strong> All rights reserved.
+        <strong>
+          Copyright &copy; <?= date('Y'); ?> <a href="https://adminlte.io"><?= my_config('site_name'); ?></a>.
+        </strong> All rights reserved.
       </footer>
 
     </div>
@@ -50,19 +52,12 @@
     <script src="<?= base_url('backend/modern/plugins/bootstrap/js/bootstrap.bundle.min.js'); ?>"></script>
     <!-- AdminLTE App -->
     <script src="<?= base_url('backend/modern/dist/js/adminlte.min.js'); ?>"></script>
+    <!-- AdminLTE App -->
+    <script src="<?= base_url('backend/modern/plugins/bootbox/bootbox.all.js'); ?>"></script>
+    <!-- DateTimePicker -->
+    <script src="<?= base_url('backend/modern/plugins/datetimepicker/build/jquery.datetimepicker.full.js'); ?>"></script> 
     <!-- Hotel Management System -->
-    <script src="<?= base_url('backend/js/hhms.js?time='.strtotime('NOW')); ?>"></script>
-
-    <!-- Tooltips and toggle Initialization -->
-    <script type="text/javascript"> 
-      $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
-      });
-       
-      $(function () {
-        $('[data-toggle="popover"]').popover()
-      })
-    </script>
+    <script src="<?= base_url('backend/js/hhms.js?time='.strtotime('NOW')); ?>"></script>  
 
     <!-- fullCalendar -->
     <?php if (isset($has_calendar)): ?>  
@@ -105,12 +100,18 @@
     <?php if (isset($has_calendar)): ?>  
     <script>
       function date2string(date) {
-        var d = date.getDate(); 
-        var m = date.getMonth()+1;
-        var y = date.getFullYear();
-        if(d<10)d='0'+d;
-        if(m<10)m='0'+m;
-        return y+'-'+m+'-'+d;
+        var d  = date.getDate(); 
+        var m  = date.getMonth()+1;
+        var y  = date.getFullYear();
+        var H  = date.getHours();
+        var mn = date.getMinutes();
+        var s  = date.getSeconds();
+        if(d<10) d  ='0'+d;
+        if(m<10) m  ='0'+m;
+        if(H<10) H  ='0'+H;
+        if(mn<10)mn ='0'+mn;
+        if(s<10) s  ='0'+s;
+        return y+'-'+m+'-'+d+' '+H+':'+mn+':'+s;
       }
       /* initialize the calendar
        -----------------------------------------------------------------*/
@@ -196,7 +197,7 @@
         }    
 
       </script><!-- /Calendar -->
-        <!-- Welcome Guide -->
+      <!-- Welcome Guide -->
       <?php if(SHOW_GUIDE): ?>
         <!-- <script src="<?= base_url('backend/js/guidely/guidely.min.js'); ?>"></script> -->
 
@@ -209,7 +210,7 @@
           //     title: 'Today \'s Stats', 
           //     text: 'You can see how many services are registered today. We used stored procedure here.'
           //   });
-            
+
           //   guidely.add ({
           //     attachTo: '#target-2', 
           //     anchor: 'top-left', 
@@ -224,7 +225,6 @@
           //     text: 'Here, you can see the customer who spend most money to our hotel. We used MAX, SUM, GROUP BY functions on our database.'
           //   });
             
-            
           //   guidely.add ({
           //     attachTo: '#target-4', 
           //     anchor: 'top-left', 
@@ -236,7 +236,7 @@
           // });
         </script>
       <?php endif; ?>
-        <!--/Welcome Guide-->
+      <!--/Welcome Guide-->
 
     <?php endif; ?>
 
@@ -244,15 +244,6 @@
       .calendar {
         -webkit-user-select: none; -moz-user-select: none;
       }
-    </style>
-
-    <script type="text/javascript">
-      function open_form()
-      {
-        console.log("Opening Form...");
-        $('#form').slideToggle();
-      }
-
-    </script>
+    </style> 
   </body>
 </html>  

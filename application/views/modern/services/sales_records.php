@@ -113,11 +113,13 @@
                                 <thead>
                                     <tr>
                                         <th> Order Items </th>
-                                        <th> Order Quantity (Per Items) </th>
+                                        <th> Order Qty</th>
                                         <th> Order Amount </th>
-                                        <th> Ordered By </th>
+                                        <th> Customer  </th>
                                         <th> Sold At </th>
                                         <th> Sold By </th>
+                                        <th> Paid </th>
+                                        <th> Bal. </th>
                                         <th> Order Time </th>
                                         <th class="td-actions"> Actions </th>
                                     </tr>

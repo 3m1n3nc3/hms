@@ -26,6 +26,7 @@
                       <th> Phone Number </th>
                       <th> Email Address</th>
                       <th> Identity Code </th>
+                      <th> Debt </th>
                       <th class="td-actions"> Actions </th>
                     </tr>
                   </thead>
@@ -41,6 +42,7 @@
                       <td> <?=$customer->customer_telephone;?> </td>
                       <td> <?=$customer->customer_email;?> </td>
                       <td> <?=$customer->customer_TCno;?> </td>
+                      <td> <?=$this->cr_symbol.number_format($customer->debt, 2)?> </td>
                       <td class="td-actions">
                         <?php if ($customer->customer_id !== '0'): ?>
                         <a href="<?= site_url('customer/reserve/'.$customer->customer_TCno) ?>" class="btn btn-sm btn-success" data-toggle="tooltip" title="Reserve">

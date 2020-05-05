@@ -47,8 +47,19 @@
 								<a class="float-right"><?= $this->cr_symbol.number_format($statistics['room_sales'], 2)?></a>
 							</li>
 							<li class="list-group-item">
-								<b>Total Expenses</b> 
+								<b>Expenses</b> 
 								<a class="float-right"><?= $this->cr_symbol.number_format($statistics['expenses'], 2)?></a>
+							</li>
+							<li class="list-group-item text-danger">
+								<b>Debt</b> 
+								<a class="float-right"><?= $this->cr_symbol.number_format($statistics['debt'], 2)?></a>
+							</li>
+							<?php 
+								$total_expenses = ($statistics['total_expenses'] <= 0 ? ($statistics['service_orders']+$statistics['room_sales']) : $statistics['total_expenses'])
+							?>
+							<li class="list-group-item text-success">
+								<b>Total Expenses</b> 
+								<a class="float-right"><?= $this->cr_symbol.number_format($total_expenses, 2)?></a>
 							</li>
 						</ul>
 

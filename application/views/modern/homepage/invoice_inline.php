@@ -59,7 +59,7 @@
 										<tbody>
 											<tr>
 												<td>1</td>
-												<td><?= ($post['room_type'] ?? $post['room_type']) . ' room ' . $post['room_id']?></td>
+												<td><?= ($post['room_type'] ?? $post['room_type']) . ' Room ' . $post['room_id']?></td>
 												<td><?= $post['payment_ref'] ?></td>
 												<td><?= $post['description'] ?></td>
 												<td><?= $this->cr_symbol.number_format(($post['amount'] ?? $room[0]->room_price), 2) ?></td>
@@ -72,7 +72,7 @@
 							<!-- /.row -->
 							<div class="row">
 								<!-- accepted payments column -->
-								<div class="col-6">
+								<div class="col-6 no-print">
 									<p class="lead">Payment Methods:</p>
 									<img src="<?php echo base_url('backend/img/credit/visa.png') ?>" alt="Visa">
 									<img src="<?php echo base_url('backend/img/credit/mastercard.png') ?>" alt="Mastercard">
@@ -120,8 +120,9 @@
 										<i class="far fa-credit-card"></i> Pay Now 
 									</button>   
 								<?php endif; ?>
+								<?php $p_page = isset($p_page) ? $p_page.'/' : 'homepage/'?>
 
-									<a href="<?php echo $action ?? site_url('homepage/invoice/'.$post['payment_ref'].'/?print=true') ?>" target="_blank" class="btn btn-default">
+									<a href="<?php echo $action ?? site_url($p_page.'invoice/'.$post['payment_ref'].'/?print=true') ?>" target="_blank" class="btn btn-default">
 										<i class="fas fa-print"></i> Print
 									</a>
 

@@ -32,7 +32,8 @@ class Services extends Admin_Controller {
 	{  
         error_redirect(has_privilege('sales-records'), '401');
 
-		$services = $this->services_model->get_service();
+        $query     = 
+		$services  = $this->services_model->get_service();
 		$customers = $this->customer_model->get_active_customers(); 
 
 		$config['base_url']   = site_url('services/inventory/');
@@ -44,11 +45,11 @@ class Services extends Admin_Controller {
 		$inventory = $this->services_model->get_stock(['page' => $_page]);
 
 		$viewdata = array(
-			'inventory' => $inventory, 
-			'services' => $services, 
-			'customers' => $customers, 
-			'use_table' => TRUE, 
-			'table_method' => 'sales_records'
+			'inventory'    => $inventory, 
+			'services'     => $services, 
+			'customers'    => $customers, 
+			'use_table'    => TRUE, 
+			'table_method' => 'sales_records'.($set_service ? '/' . $set_service : '')
 		);  
         $viewdata['pagination'] = $this->pagination->create_links();
 
@@ -188,11 +189,11 @@ class Services extends Admin_Controller {
 	{
         error_redirect(has_privilege('service-point') || has_privilege('inventory') || has_privilege('sales-services') || service_point_access_session(TRUE), '401');
 
-		$post = $this->input->post();
+		$post = $this->input->post(NULL, TRUE);
 
 		if(!$this->input->post("stock_item"))
 		{
-			$this->session->set_flashdata('message', alert_notice(' Order not placed, No items where selected', 'error')); 
+			$this->session->set_flashdata('message', alert_notice(' Order not placed, No items where selected', 'error'));
 		}
 		else
 		{ 
@@ -207,7 +208,7 @@ class Services extends Admin_Controller {
 			$errors = []; $sum_qty = 0;
 	        foreach ($items_array as $key => $sid) 
 	        {
-	            $res = $this->CI->services_model->get_stock(array('item_id' => $sid)); 
+	            $res = $this->services_model->get_stock(array('item_id' => $sid)); 
 
 	            if ($res)
             	{	
@@ -232,13 +233,14 @@ class Services extends Admin_Controller {
 
 	        if (empty($errors)) { 
 		        $save = array(
-		            'service_name' => $post['service'],
-		            'customer_id' => $post['customer'],
-		            'order_items' => $items,
-		            'order_quantity' => $quantity,
-		            'order_price' => $post['price'],
-		            'order_date' => $post['date'],
-		            'employee_id' => $this->uid,
+		            'service_name'     => $post['service'],
+		            'customer_id'      => $post['customer'],
+		            'order_items'      => $items,
+		            'order_quantity'   => $quantity,
+		            'order_price'      => $post['price'],
+		            'order_date'       => $post['date'],
+                    'employee_id'      => $this->uid,
+		            'paid'             => ($post['payment'] == 'c' ? $post['price'] : $post['payment']),
 		            'ordered_datetime' => date('Y-m-d H:m:s')
 		        );
 

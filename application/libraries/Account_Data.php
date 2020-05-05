@@ -70,7 +70,7 @@ class Account_Data {
         else 
         {
             $this->CI->session->set_userdata('redirect_customer_to', current_url());
-            redirect('account/login');
+            if ($redirect) redirect("account/login");
         }
     }
 

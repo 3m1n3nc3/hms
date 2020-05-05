@@ -20,14 +20,14 @@ class Datatables extends MY_Controller
      */
     public function inventory($id = null)
     {
-        $draw = intval($this->input->post("draw"));
-        $start = intval($this->input->post("start"));
+        $draw   = intval($this->input->post("draw"));
+        $start  = intval($this->input->post("start"));
         $length = intval($this->input->post("length"));
-        $order = $this->input->post("order");
-        $search= $this->input->post("search");
+        $order  = $this->input->post("order");
+        $search = $this->input->post("search");
         $search = $search['value'];
-        $col = 0;
-        $dir = "";
+        $col    = 0;
+        $dir    = "";
         if(!empty($order))
         {
             foreach($order as $o)
@@ -133,19 +133,19 @@ class Datatables extends MY_Controller
 
     /**
      * Get the sales records
-     * @param  string   $id 
+     * @param  string   $service_id 
      * @return Object
      */
-    public function sales_records($id = null)
+    public function sales_records($service_id = null)
     {
-        $draw = intval($this->input->post("draw"));
-        $start = intval($this->input->post("start"));
+        $draw   = intval($this->input->post("draw"));
+        $start  = intval($this->input->post("start"));
         $length = intval($this->input->post("length"));
-        $order = $this->input->post("order");
-        $search= $this->input->post("search");
+        $order  = $this->input->post("order");
+        $search = $this->input->post("search");
         $search = $search['value'];
-        $col = 0;
-        $dir = "";
+        $col    = 0;
+        $dir    = "";
         if(!empty($order))
         {
             foreach($order as $o)
@@ -164,9 +164,9 @@ class Datatables extends MY_Controller
             0=>'order_items',
             1=>'order_quantity', 
             2=>'order_price',  
+            3=>'customer_id',  
             4=>'service_name', 
-            5=>'employee_id', 
-            6=>'ordered_datetime' 
+            5=>'employee_id' 
         );
 
         if(!isset($valid_columns[$col]))
@@ -176,6 +176,12 @@ class Datatables extends MY_Controller
         else
         {
             $order = $valid_columns[$col];
+        }
+
+        if($service_id)
+        {
+            $service_id = urldecode($service_id);
+            $this->db->where('service_name', $service_id);
         }
 
         if($order !=null)
@@ -195,6 +201,18 @@ class Datatables extends MY_Controller
                 else
                 {
                     $this->db->or_like($sterm,$search);
+                }
+
+                if($sterm == 'customer_id')
+                {
+                    $csq = $this->db->query(
+                        "SELECT customer_id FROM customer WHERE CONCAT_WS(' ', customer_firstname, customer_lastname) LIKE '%$search%'"
+                    ); 
+                    $cxx = [];
+                    foreach ($csq->result_array() as $cx) {
+                        $cxx[] = $cx['customer_id'];
+                    } 
+                    $this->db->or_where_in($sterm, implode(',', $cxx));
                 }
                 $x++;
             }                 
@@ -220,7 +238,9 @@ class Datatables extends MY_Controller
                 $this->cr_symbol.number_format($rows->order_price, 2), 
                 $customer['name'], 
                 $rows->service_name, 
-                $employee ? $employee[0]->employee_firstname . ' ' . $employee[0]->employee_lastname : 'N/A',
+                $employee ? $employee[0]->employee_firstname . ' ' . $employee[0]->employee_lastname : 'N/A', 
+                $this->cr_symbol.number_format($rows->paid, 2), 
+                $this->cr_symbol.number_format($rows->order_price-$rows->paid, 2), 
                 $rows->ordered_datetime,  
                 '<a href="javascript:void(0)" onclick="return confirmDelete(\''.site_url('services/delete_record/sales_records/'.$rows->id).'\', 1)" class="btn btn-danger btn-sm m-1" data-toggle="tooltip" title="Delete">
                     <i class="btn-icon-only fa fa-trash text-white fa-fw"></i>
@@ -228,7 +248,7 @@ class Datatables extends MY_Controller
                 20 => 'tr_'.$rows->id
             );     
         }
-        $total_content = $this->total_sales_records($id);
+        $total_content = $this->total_sales_records($service_id);
         $output = array(
             "draw" => $draw,
             "recordsTotal" => $total_content,
@@ -245,8 +265,14 @@ class Datatables extends MY_Controller
      * @param  string   $id 
      * @return Object
      */
-    public function total_sales_records($id = null)
+    public function total_sales_records($service_id = null)
     {      
+        if($service_id)
+        {
+            $service_id = urldecode($service_id);
+            $this->db->where('service_name', $service_id);
+        }
+
         $query = $this->db->select("COUNT(id) as num")->get("sales_service_orders");
         $result = $query->row();
         if(isset($result)) return $result->num;
@@ -261,14 +287,14 @@ class Datatables extends MY_Controller
      */
     public function cashier_report($show_btn = TRUE)
     {
-        $draw = intval($this->input->post("draw"));
-        $start = intval($this->input->post("start"));
+        $draw   = intval($this->input->post("draw"));
+        $start  = intval($this->input->post("start"));
         $length = intval($this->input->post("length"));
-        $order = $this->input->post("order");
-        $search= $this->input->post("search");
+        $order  = $this->input->post("order");
+        $search = $this->input->post("search");
         $search = $search['value'];
-        $col = 0;
-        $dir = "";
+        $col    = 0;
+        $dir    = "";
         if(!empty($order))
         {
             foreach($order as $o)
@@ -408,14 +434,14 @@ class Datatables extends MY_Controller
      */
     public function payment_report($show_btn = TRUE)
     {
-        $draw = intval($this->input->post("draw"));
-        $start = intval($this->input->post("start"));
+        $draw   = intval($this->input->post("draw"));
+        $start  = intval($this->input->post("start"));
         $length = intval($this->input->post("length"));
-        $order = $this->input->post("order");
-        $search= $this->input->post("search");
+        $order  = $this->input->post("order");
+        $search = $this->input->post("search");
         $search = $search['value'];
-        $col = 0;
-        $dir = "";
+        $col    = 0;
+        $dir    = "";
         if(!empty($order))
         {
             foreach($order as $o)
@@ -550,14 +576,14 @@ class Datatables extends MY_Controller
      */
     public function room_sales_report($show_btn = TRUE)
     {
-        $draw = intval($this->input->post("draw"));
-        $start = intval($this->input->post("start"));
+        $draw   = intval($this->input->post("draw"));
+        $start  = intval($this->input->post("start"));
         $length = intval($this->input->post("length"));
-        $order = $this->input->post("order");
-        $search= $this->input->post("search");
+        $order  = $this->input->post("order");
+        $search = $this->input->post("search");
         $search = $search['value'];
-        $col = 0;
-        $dir = "";
+        $col    = 0;
+        $dir    = "";
         if(!empty($order))
         {
             foreach($order as $o)

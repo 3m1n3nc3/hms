@@ -60,6 +60,7 @@ $route['account/(:any)']           = "homepage/account/$1";
 
 $route['reservations']             = "homepage/reservations";
 $route['reservations/(:any)']      = "homepage/reservations/$1";
+$route['review/invoice/(:any)']    = "homepage/invoice/$1";
 
 $route['my-payments']             = "homepage/payments";
 $route['my-payments/(:any)']      = "homepage/payments/$1";

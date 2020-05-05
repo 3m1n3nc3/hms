@@ -172,6 +172,15 @@ class Room_model extends CI_Model {
         return $this->db->affected_rows();
     }
 
+    function checkoutCustomer($data)
+    { 
+        $this->db->where('reservation_id', $data['reservation_id']);
+        $this->db->update('reservation', $data); 
+
+        $this->db->where('reservation_id', $data['reservation_id']);
+        $this->db->update('room_sales', $data); 
+    }
+
     function add_room_sale($data) {
         $query = $this->db->join("room_type","room_type.room_type = room.room_type", "left")->get_where("room", array('room_id' => $data['room_id']));
         if(!$query || $query->num_rows() == 0) {

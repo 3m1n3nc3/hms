@@ -16,6 +16,10 @@
         <link rel="stylesheet" href="<?= base_url('backend/modern/front/vendors/bootstrap-datepicker/bootstrap-datetimepicker.min.css'); ?>">
         <link rel="stylesheet" href="<?= base_url('backend/modern/front/vendors/nice-select/css/nice-select.css'); ?>">
         <link rel="stylesheet" href="<?= base_url('backend/modern/front/vendors/owl-carousel/owl.carousel.min.css'); ?>"> 
+    
+        <!-- DateTimePicker -->
+        <link rel="stylesheet" href="<?= base_url('backend/modern/plugins/datetimepicker/jquery.datetimepicker.css'); ?>">
+    
         <!-- main css --> 
         <link rel="stylesheet" href="<?= base_url('backend/modern/front/style.css'); ?>">
         <link rel="stylesheet" href="<?= base_url('backend/modern/front/responsive.css'); ?>"> 

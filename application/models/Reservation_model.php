@@ -17,8 +17,8 @@ class Reservation_model extends CI_Model {
         $checkout_date = date('Y-m-d', strtotime($data['checkout_date']));
         $adults = $data['adults'];
         $children = $data['children'];
-
-        $this->db->select('*')->from('room')->join('room_type', '`room`.`room_type` = `room_type`.`room_type`', 'Left');
+  
+        $this->db->select('*, (SELECT status FROM reservation WHERE `reservation`.`room_id` = `room`.`room_id`) AS status')->from('room')->join('room_type', '`room`.`room_type` = `room_type`.`room_type`', 'Left');
         $this->db->where('room.room_type', $room_type); 
         $this->db->where('room_type.max_adults >=', $adults); 
         $this->db->where('room_type.max_kids >=', $children); 

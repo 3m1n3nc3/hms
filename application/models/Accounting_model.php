@@ -115,15 +115,18 @@ class Accounting_model extends CI_Model {
                         SELECT reservation.reservation_id FROM reservation JOIN payments ON reservation.reservation_ref = payments.reference
                         WHERE room_sales.customer_id = \''.$data['customer'].'\'
                     )) AS customer_room_sales,
-                    (SELECT SUM(payments+service_orders+customer_room_sales)) AS expenses, '.$data['customer'].' AS customer_id'
+                    (SELECT SUM(`paid`) FROM sales_service_orders WHERE `customer_id` = \''.$data['customer'].'\') AS paid,
+                    (SELECT SUM(`service_orders`-`paid`)) AS debt,
+                    (SELECT SUM(payments+service_orders+customer_room_sales)) AS total_expenses, 
+                    (SELECT SUM(total_expenses-debt)) AS expenses,  
+                    '.$data['customer'].' AS customer_id'
                 )->get();
-            }
+            } 
         }
         else
         {
             $query = $this->db->select('(SELECT SUM(amount) FROM payments) AS payments, (SELECT SUM(order_price) FROM sales_service_orders) AS sales, (SELECT SUM(room_sales_price) FROM room_sales) AS room_sales, (SELECT COUNT(customer_id) FROM customer) AS customers')->get();
-        }
- 
+        } 
         return $query->row_array();
     } 
 }

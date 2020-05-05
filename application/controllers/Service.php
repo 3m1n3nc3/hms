@@ -61,7 +61,7 @@ class Service extends Admin_Controller
       'service' => $service[0] ?? [], 
       'customers' => $customers,  
     );  
-
+ 
     $this->load->view($this->h_theme.'/header', $data);
     $this->load->view($this->h_theme.'/services/service_point', $viewdata);
     $this->load->view($this->h_theme.'/footer');

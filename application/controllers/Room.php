@@ -58,17 +58,22 @@ class Room extends Admin_Controller
      */
 	public function reserved_room($room_id = '', $customer_id = '')
 	{ 
+        $room_id     = urldecode($room_id);
+        $customer_id = urldecode($customer_id);
 		// Check of employee has permission to take this action
         error_redirect(has_privilege('rooms'), '401');
 
 		$reservation = $this->reservation_model->reserved_rooms(['room' => $room_id, 'customer' => $customer_id, 'uncheck' => TRUE], 1);
-		$rooms = $this->reservation_model->reserved_rooms(['room' => $room_id, 'uncheck' => TRUE]);
+		$rooms     = $this->reservation_model->reserved_rooms(['room' => $room_id, 'uncheck' => TRUE]);
+        $payment   = $this->payment_model->get_payments(['reference' => $reservation['reservation_id']]);
 
-		$viewdata = array('reservation' => $reservation, 'rooms' => $rooms);
-		$viewdata['checkin_date'] = date('Y-m-d', strtotime($reservation['checkin_date']));
+		$viewdata  = array('reservation' => $reservation, 'rooms' => $rooms);
+		$viewdata['checkin_date']  = date('Y-m-d', strtotime($reservation['checkin_date']));
 		$viewdata['checkout_date'] = date('Y-m-d', strtotime($reservation['checkout_date']));
 
-        $viewdata['pagination'] = $this->pagination->create_links();
+        $viewdata['invoice_link']  = ($payment ? 'review/invoice/'.$payment['reference'] : 'reservation/invoice/'.$reservation['reservation_id']); 
+
+        $viewdata['pagination']    = $this->pagination->create_links();
 
 		$data = array('title' => 'Rooms - ' . my_config('site_name'), 'page' => 'reserved');
 		$this->load->view($this->h_theme.'/header', $data);
@@ -126,15 +131,42 @@ class Room extends Admin_Controller
      * @param  string   $max_id     Id where to end deleting
      * @return null                 Redirects to the rooms listing page
      */
-	function delete($min_id, $max_id)
-	{
-		// Check of employee has permission to take this action
+    function delete($min_id, $max_id)
+    {
+        $min_id = urldecode($min_id);
+        $max_id = urldecode($max_id);
+        // Check of employee has permission to take this action
         error_redirect(has_privilege('rooms'), '401');
 
-		$this->session->set_flashdata('message', alert_notice('All rooms numbered from '. $min_id.' to '.$max_id.' have been deleted')); 
-		$this->room_model->deleteRoomRange($min_id, $max_id);
-		redirect("room");
-	}
+        $this->session->set_flashdata('message', alert_notice('All rooms numbered from '. $min_id.' to '.$max_id.' have been deleted')); 
+        $this->room_model->deleteRoomRange($min_id, $max_id);
+        redirect("room");
+    }
+
+
+    /**
+     * Checkout the current customer from the current reserved room
+     * @param  string   $reservation_id     Id Of the reservation to checkout 
+     * @return null                 Redirects to the users reservation for the current room page
+     */
+    function checkout($reservation_id)
+    {
+        $reservation_id = urldecode($reservation_id); 
+        // Check of employee has permission to take this action
+        error_redirect(has_privilege('reservation'), '401');
+
+        $res = $this->reservation_model->fetch_reservation(['id' => $reservation_id]);
+        $usr = $this->account_data->fetch($res['customer_id'], 1); 
+
+        $this->session->set_flashdata('message', alert_notice($usr['name'].' has been checked out from room '.$res['room_id']));
+
+        $checkout['reservation_id'] = $reservation_id;
+        $checkout['status']         = '0';
+        $checkout['checkout_date']  = date('Y-m-d H:i:s', strtotime('NOW-10 Minutes')); 
+
+        $this->room_model->checkoutCustomer($checkout);
+        redirect("room/reserved_room/".$res['room_id']);
+    }
 
 
     /**
@@ -144,6 +176,7 @@ class Room extends Admin_Controller
      */
 	function delete_reservation($reservation_id = '')
 	{
+        $reservation_id = urldecode($reservation_id);
 		// Check of employee has permission to take this action
         error_redirect(has_privilege('reservation'), '401');
 
@@ -162,6 +195,7 @@ class Room extends Admin_Controller
      */
 	public function edit($room_type, $min_id, $max_id)
 	{
+        $room_type = urldecode($room_type);
 		// Check of employee has permission to take this action
         error_redirect(has_privilege('rooms'), '401');
 

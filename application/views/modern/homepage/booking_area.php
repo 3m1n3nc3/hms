@@ -14,16 +14,16 @@
                                                 <input type='hidden' name="room_type" value="<?=$room['room_type']?>">
                                                 <input type='hidden' name="by_booking_area" value="1">
 
-                                                <div class='input-group date' id='datetimepicker11'>
-                                                    <input type='text' name="checkin_date" class="form-control" style="padding: 19px;" value="<?=set_value('checkin_date')?>" placeholder="<?=lang('arrival').' '.lang('date')?>" required>
+                                                <div class='input-group date'>
+                                                    <input type='text' id="checkin_date" name="checkin_date" class="form-control" style="padding: 19px;" value="<?=set_value('checkin_date')?>" placeholder="<?=lang('arrival').' '.lang('date')?>" required autocomplete="off">
                                                     <span class="input-group-addon">
                                                         <i class="fa fa-calendar" aria-hidden="true"></i>
                                                     </span>
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <div class='input-group date' id='datetimepicker1'>
-                                                    <input type='text' name="checkout_date" class="form-control" style="padding: 19px;" value="<?=set_value('checkout_date')?>" placeholder="<?=lang('departure').' '.lang('date')?>" required>
+                                                <div class='input-group dat'>
+                                                    <input type='text' id="checkout_date" name="checkout_date" class="form-control" style="padding: 19px;" value="<?=set_value('checkout_date')?>" placeholder="<?=lang('departure').' '.lang('date')?>" required autocomplete="off">
                                                     <span class="input-group-addon">
                                                         <i class="fa fa-calendar" aria-hidden="true"></i>
                                                     </span>

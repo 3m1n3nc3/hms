@@ -296,3 +296,28 @@ $('.todo-list').sortable({
         })
     }
 }) 
+
+function open_form()
+{
+    console.log("Opening Form...");
+    $('#form').slideToggle();
+}
+
+$(function () {
+    $('#checkin_date').datetimepicker({
+        useCurrent: false, 
+        format: 'Y-m-d H:i:s',
+        defaultDate: $('#checkin_date').val()
+    });  
+
+    $('#checkout_date').datetimepicker({
+        useCurrent: false, 
+        format: 'Y-m-d H:i:s',
+        defaultDate: $('#checkout_date').val()
+    }); 
+
+    // Tooltips and toggle Initialization
+    $('[data-toggle="tooltip"]').tooltip() 
+ 
+    $('[data-toggle="popover"]').popover()
+})

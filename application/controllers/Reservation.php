@@ -43,9 +43,11 @@ class Reservation extends Admin_Controller
 
 		$post = $this->input->post();
 
-		$this->form_validation->set_rules('customer_TCno', 'Customer Identity Code', 'trim|required');
-		$this->form_validation->set_rules('adults', 'Number of Adults', 'trim|required');
-		$this->form_validation->set_rules('children', 'Number of Children', 'trim|required');
+		$this->form_validation->set_rules('customer_TCno', lang('customer_id_code'), 'trim|required');
+		$this->form_validation->set_rules('adults', lang('adults'), 'trim|required');
+		$this->form_validation->set_rules('children', lang('children'), 'trim|required');
+		$this->form_validation->set_rules('checkin_date', lang('checkin'), 'trim|required');
+		$this->form_validation->set_rules('checkout_date', lang('checkout'), 'trim|required');
         if ($post && $this->form_validation->run() !== FALSE) 
         {
 			$customer = $this->customer_model->get_customer($post['customer_TCno']);
@@ -56,7 +58,7 @@ class Reservation extends Admin_Controller
 			} 
 			else 
 			{
-				$rooms = $this->reservation_model->get_available_rooms($post);
+				$rooms = $this->reservation_model->get_available_rooms_inline($post);
 				if(!$rooms) {
 					$this->session->set_flashdata('message', alert_notice('No available rooms', 'info')); 
 				}
@@ -74,17 +76,17 @@ class Reservation extends Admin_Controller
 
 		if(isset($viewdata['error']))
 		{
-			$room_types = $this->room_model->get_room_types();
+			$room_types             = $this->room_model->get_room_types();
 			$viewdata['room_types'] = $room_types;
 			$this->load->view($this->h_theme.'/reservation/add',$viewdata);
 		} 
 		else 
 		{
-			$viewdata['rooms'] = $rooms;
+			$viewdata['rooms']         = $rooms;
 			$viewdata['customer_TCno'] = $post['customer_TCno'] ?? '';
-			$viewdata['checkin_date'] = $post['checkin_date'] ?? '';
+			$viewdata['checkin_date']  = $post['checkin_date'] ?? '';
 			$viewdata['checkout_date'] = $post['checkout_date'] ?? '';
-			$viewdata['room_type'] = $post['room_type'] ?? ''; 
+			$viewdata['room_type']     = $post['room_type'] ?? ''; 
 			$this->load->view($this->h_theme.'/reservation/list',$viewdata);
 		}
 
@@ -102,27 +104,31 @@ class Reservation extends Admin_Controller
         
 		$post = $this->input->post();
 		
-		$this->form_validation->set_rules('customer_TCno', 'Customer Identity Code', 'trim|required');
-		$this->form_validation->set_rules('adults', 'Number of Adults', 'trim|required');
-		$this->form_validation->set_rules('children', 'Number of Children', 'trim|required');
+		$this->form_validation->set_rules('customer_TCno', lang('customer_id_code'), 'trim|required');
+		$this->form_validation->set_rules('adults', lang('adults'), 'trim|required');
+		$this->form_validation->set_rules('children', lang('children'), 'trim|required');
+		$this->form_validation->set_rules('checkin_date', lang('checkin'), 'trim|required');
+		$this->form_validation->set_rules('checkout_date', lang('checkout'), 'trim|required');
         if ($post && $this->form_validation->run() !== FALSE) 
         {
-			$customer = $this->customer_model->get_customer($post['customer_TCno']);
+			$customer       = $this->customer_model->get_customer($post['customer_TCno']);
 			$room_type_info = $this->room_model->getRoomType($post['room_type'])[0];
-			$customer = $customer[0];
-			$viewdata = array();
-			$data = array();
-			$data['customer_id']   = $customer->customer_id;
-			$data['room_id'] 	   = $post['room_id'];
-			$data['checkin_date']  = $post['checkin_date'];
-			$data['checkout_date'] = $post['checkout_date'];
-			$data['reservation_date']  = date('Y-m-d');
-			$data['reservation_price'] = $room_type_info->room_price;
-			$data['employee_id']   = UID;
+			$customer       = $customer[0];
+			$viewdata       = array();
+			$data           = array();
 
-			$date = new DateTime();
-			$date_s = $date->format('Y-m-d');
-			if($date_s>$data['checkin_date']) 
+        	$data['reservation_ref'] = $this->enc_lib->generateToken(12, 1, 'HRSPR-', TRUE);
+			$data['customer_id']     = $customer->customer_id;
+			$data['room_id'] 	     = $post['room_id'];
+			$data['checkin_date']    = date('Y-m-d H:i:s', strtotime($post['checkin_date']));
+			$data['checkout_date']   = date('Y-m-d H:i:s', strtotime($post['checkout_date']));
+			$data['reservation_date']  = date('Y-m-d H:i:s', strtotime("NOW"));
+			$data['reservation_price'] = $room_type_info->room_price;
+			$data['employee_id']       = UID;
+			$data['status']            = 1;
+ 
+			$date_s = date('Y-m-d H:i:s', strtotime("NOW"));
+			if($date_s > $data['checkin_date']) 
 			{
 				$this->session->set_flashdata('message', alert_notice('Check in date is past and can\'t be before today', 'error'));   
 			} 
@@ -140,12 +146,21 @@ class Reservation extends Admin_Controller
 				// Add the reservation and set the reservation_id to a variable
 				$reservation_id = $this->reservation_model->add_reservation($data);
 
-				unset($data['reservation_date'], $data['reservation_price']);
+				unset($data['reservation_date'], $data['reservation_price'], $data['reservation_ref']);
 
 				$data['reservation_id'] = $reservation_id;
 				
 				$this->room_model->add_room_sale($data);
-				$this->session->set_flashdata('message', alert_notice('Reservation successfully made', 'success'));  
+				$this->session->set_flashdata(
+					'message', 
+					alert_notice('Reservation successfully made!<br> 
+						<strong>
+							<a href="'.site_url('reservation/invoice/'.$reservation_id).'" class="text-white">Print Invoice</a>
+						</strong>', 'success'
+					)
+				);  
+
+				redirect('reservation/make');
 			}
 		}
 		else 
@@ -158,11 +173,52 @@ class Reservation extends Admin_Controller
 
 		$data = array(
 			'title' => 'Reservation - ' . my_config('site_name'), 
-			'page' => 'reservation', 
+			'page' => 'reservation',
 			'has_calendar' => TRUE
 		);
 		$this->load->view($this->h_theme.'/header', $data);
 		$this->load->view($this->h_theme.'/reservation/add', $viewdata);
 		$this->load->view($this->h_theme.'/footer');
 	}
+
+    /**
+     * Renders the invoice
+     * @param  string   $id   id of the invoice item to read
+     * @return null           Does not return anything but uses code igniter's view() method to render the page
+     */
+    public function invoice($reference = '')
+    {
+        $reference = urldecode($reference);
+        
+        error_redirect(has_privilege('cashier-report'), '401'); 
+
+        $post = $this->reservation_model->fetch_reservation(['id' => $reference]); 
+
+        error_redirect($post); 
+
+        $customer = $this->account_data->fetch($post['customer_id'] ?? '', 1); 
+        $room     = $this->room_model->getRoom(['id' => $post['room_id'] ?? $invoice['room_id']]);  
+        $room_type_info = $this->room_model->getRoomType($room['room_type']); 
+        $room_info      = (array)($room_type_info[0] ?? []);   
+
+        $post['amount']      = $post['reservation_price']; 
+        $post['room_type']   = $room_info['room_type'];
+        $post['room_id']     = $room['room_id'];
+        $post['invoice']     = $post['room_id'].date('ymdHm', strtotime($post['reservation_date']));
+        $post['date']        = date('Y-m-d', strtotime($post['reservation_date'])); 
+        $post['payment_ref'] = $post['invoice_id'] = $post['reservation_ref'];
+        $post['description'] = 'Payment for reservation of ' . $post['room_type'] . ' Room ' . $post['room_id'];
+
+        $viewdata = [
+        	'title'       => $post['description'] . ' Invoice',
+        	'show_footer' => TRUE,
+        	'post'        => $post, 
+        	'customer'    => $customer, 
+        	'room'        => $room_type_info,
+        	'p_page'	  => 'reservation'
+        ];
+         
+        $this->load->view($this->h_theme.'/header_plain', $viewdata);  
+        $this->load->view($this->h_theme.'/homepage/invoice_inline', $viewdata);
+    }
 } 

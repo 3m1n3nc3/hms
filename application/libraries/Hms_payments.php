@@ -61,7 +61,7 @@ class Hms_payments {
                     // Add the reservation and set the reservation_id to a variable
                     $reservation_id = $this->CI->reservation_model->add_reservation($sessioned);
 
-                    unset($sessioned['reservation_date'], $sessioned['reservation_price'], $sessioned['reservation_ref'], $sessioned['status']);
+                    unset($sessioned['reservation_date'], $sessioned['reservation_price'], $sessioned['reservation_ref']);
 
                     $sessioned['reservation_id'] = $reservation_id;
 

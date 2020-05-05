@@ -96,7 +96,7 @@
 	                <div class="col-md-12">
 	                  	<!-- text input -->
 	                  	<div class="form-group">
-	                    	<label for="TCno">Customer Identity Code</label>
+	                    	<label for="TCno"><?=lang('customer_id_code')?></label>
 	                    	<input type="text" id="TCno" name="customer_TCno" class="form-control" value="<?= set_value_switch('customer_TCno', $ref_token) ?>" required readonly>
 	                  		<?= form_error('customer_TCno'); ?>
 	                  	</div>

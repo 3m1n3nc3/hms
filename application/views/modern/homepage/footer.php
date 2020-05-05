@@ -35,6 +35,8 @@
         <script src="<?= base_url('backend/modern/front/js/stellar.js'); ?>"> </script>  
         <script src="<?= base_url('backend/modern/front/vendors/lightbox/simpleLightbox.min.js'); ?>"> </script>  
         <script src="<?= base_url('backend/modern/front/js/custom.js'); ?>"> </script>   
+        <!-- DateTimePicker -->
+        <script src="<?= base_url('backend/modern/plugins/datetimepicker/build/jquery.datetimepicker.full.js'); ?>"></script> 
 
         <script src="<?= base_url('backend/js/hhms.js?time='.strtotime('NOW')); ?>"></script>
 

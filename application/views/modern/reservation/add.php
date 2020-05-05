@@ -68,7 +68,7 @@
                   <!-- text input -->
                   <div class="form-group">
                     <label for="checkin_date">Check-in Date</label>
-                    <input type="date" id="checkin_date" name="checkin_date" class="form-control" value="<?= set_value('checkin_date') ?>" required>
+                    <input type="text" id="checkin_date" name="checkin_date" class="form-control set_date" value="<?= set_value('checkin_date') ?>" required autocomplete="off" placeholder="____-__-__ __:__:__">
                   </div>
                 </div>
 
@@ -76,7 +76,7 @@
                   <!-- text input -->
                   <div class="form-group">
                     <label for="checkout_date">Check-out Date</label>
-                    <input type="date" id="checkout_date" name="checkout_date" class="form-control" value="<?= set_value('checkout_date') ?>" required>
+                    <input type="text" id="checkout_date" name="checkout_date" class="form-control set_date" value="<?= set_value('checkout_date') ?>" required autocomplete="off" placeholder="____-__-__ __:__:__">
                   </div>
                 </div>  
               </div>

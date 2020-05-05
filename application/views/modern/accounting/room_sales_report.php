@@ -6,7 +6,7 @@
         <div class="row">
           <div class="col-12">
             <h2 class="page-header">
-            <img src="<?= $this->creative_lib->fetch_image(my_config('site_logo'), 4); ?>" alt="<?=my_config('site_name')?> Logo" class="brand-image" style="opacity: .8"></i> <?=my_config('site_name')?>.
+            <img src="<?= $this->creative_lib->fetch_image(my_config('site_logo'), 2); ?>" alt="<?=my_config('site_name')?> Logo" class="brand-image" style="opacity: .8"></i> <?=my_config('site_name')?>.
             <small class="float-right"><?= lang('date'); ?>: <?= date('d/m/Y'); ?></small>
             </h2>
           </div>

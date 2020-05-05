@@ -85,7 +85,7 @@ class Customer extends Admin_Controller
 			$this->load->view($this->h_theme.'/header', $data);
 
 			$viewdata = array('reference' => 'reservation');
-			$viewdata['ref_token'] = $this->enc_lib->generateToken(rand(3,5), 1, 'HRSC-');  
+			$viewdata['ref_token'] = $this->enc_lib->generateToken(rand(6,7), 1, 'CIC-');  
 			$this->load->view($this->h_theme.'/customer/add',$viewdata);
 		}
 		$this->load->view($this->h_theme.'/footer');
@@ -131,7 +131,7 @@ class Customer extends Admin_Controller
 				redirect('customer/data/'.$customer['customer_id']);
 			}  
 		}
-
+        
 		$data = array('title' => 'Customer ('.$customer['customer_firstname'].' '.$customer['customer_lastname'].') - ' . my_config('site_name'), 'page' => 'customer');
 
 		$this->load->view($this->h_theme.'/header', $data);

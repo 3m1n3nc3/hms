@@ -53,7 +53,7 @@
                       <th class="text-right">Actions</th>
                     </tr>
                   </thead>
- 
+  
                   <?php 
                     $i = 0;
                     foreach($contents AS $content): 
