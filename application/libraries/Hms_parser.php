@@ -22,21 +22,19 @@ class Hms_parser
             $customer = $this->CI->customer_model->get_customer(['id' => $reservations['customer_id']]); 
             $room = $this->CI->room_model->getRoom(['id' => $reservations['room_id']]); 
 
-            $sy = date('Y', strtotime($reservations['checkin_date']));
-            $sm = date('m', strtotime($reservations['checkin_date']))-1;
-            $sd = date('d', strtotime($reservations['checkin_date']));
-
-            $ey = date('Y', strtotime($reservations['checkout_date']));
-            $em = date('m', strtotime($reservations['checkout_date']))-1;
-            $ed = date('d', strtotime($reservations['checkout_date']));
+            $checkin_date_string  = strtotime($reservations['checkin_date']);
+            $checkout_date_string = strtotime($reservations['checkout_date']);
+ 
+            $start_date = date('Y-m-d H:i:s', $checkin_date_string); 
+            $end_date = date('Y-m-d H:i:s', $checkout_date_string); 
 
             $title = $room['room_type'].' Room '.$room['room_id'].' ('.$customer['customer_firstname']. ' ' .$customer['customer_lastname'].')';
 
             $reserved[] = 
             '{
                 title          : \''.$title.'\',
-                start          : new Date('.$sy.', '.$sm.', '.$sd.'),
-                end            : new Date('.$ey.', '.$em.', '.$ed.'), 
+                start          : Date.createFromPHP("'.$start_date.'"), 
+                end            : Date.createFromPHP("'.$end_date.'"), 
                 url            : \''.site_url('room/reserved_room/'.$room['room_id'].'/'.$customer['customer_id']. '').'\',
                 backgroundColor: \'#00a65a\', //#f39c12-yellow
                 borderColor    : \'#00a65a\', //yellow

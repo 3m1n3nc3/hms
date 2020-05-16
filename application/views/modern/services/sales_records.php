@@ -112,8 +112,7 @@
                             <table class="table table-striped display" id="datatables_table" style="width: 100%">
                                 <thead>
                                     <tr>
-                                        <th> Order Items </th>
-                                        <th> Order Qty</th>
+                                        <th> Order Items </th> 
                                         <th> Order Amount </th>
                                         <th> Customer  </th>
                                         <th> Sold At </th>

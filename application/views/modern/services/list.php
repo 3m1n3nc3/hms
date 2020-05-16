@@ -158,7 +158,7 @@
                     <?php endforeach; ?>
 					<?php else: ?>
 						<tr>
-						    <td colspan="6"><?php alert_notice('No sales services available', 'info', TRUE) ?></td>
+						    <td colspan="6" class="text-center"><?php alert_notice('No sales services available', 'info', TRUE) ?></td>
 						</tr>
 					<?php endif;?>
                   </tbody>

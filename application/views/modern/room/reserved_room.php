@@ -9,6 +9,8 @@
 
             $expired_reservation = $reservation['checkout_date'] < date('Y-m-d H:i:s', strtotime('NOW')) && 
                 $reservation['status'] ? TRUE : FALSE;
+
+            $allow_checkout = (!$expired_reservation && !($statistics['debt']??null)) ? TRUE : FALSE;
         ?>
         <div class="row">
             <div class="col-md-4">
@@ -45,7 +47,7 @@
                             </li>
                         </ul>
                         <a href="<?=site_url($invoice_link)?>" class="btn btn-success btn-block text-white mt-1"><b>Print Invoice</b></a>
-                        <?php if (isset($this->uid) && ($active_reservation || $reservation['status'])):?>
+                        <?php if (has_privilege('customers') && ($active_reservation || $reservation['status'])):?>
                             <?=form_open('reservation')?>
                                 <input type="hidden" name="customer_TCno" value="<?=$reservation['customer_TCno']?>">
                                 <input type="hidden" name="change_booking" value="<?=$reservation['reservation_id']?>">
@@ -53,7 +55,7 @@
                             <?=form_close()?>
                         <?php endif;?>
                         <?php if ($active_reservation || $reservation['status']): ?>
-                            <a href="<?=site_url('room/checkout/'.$reservation['reservation_id'])?>" class="btn btn-danger btn-block text-white mt-1"><b>Checkout</b></a>
+                            <a href="<?=$allow_checkout ? site_url('room/checkout/'.$reservation['reservation_id']) : 'javascript:void(0)'?>" class="btn btn-<?=$allow_checkout ? 'danger text-white' : 'light text-danger checkout_blocked'?> border btn-block mt-1"><b><?=$allow_checkout ? 'Checkout' : 'Checkout Blocked'?></b></a>
                         <?php endif;?>
                     </div>
                     <!-- /.card-body -->
@@ -62,10 +64,15 @@
             </div>
             <!-- /.col -->
             <div class="col-md-8">
-
-                <?php if ($expired_reservation):?>
-                    <?= alert_notice(sprintf(lang('customer_overstay'), dateDifference(date('Y-m-d', strtotime($reservation['checkout_date'])), date('Y-m-d', strtotime('NOW')))), 'warning')?>
-                <?php endif;?>
+    
+                <div id="error_boxes">
+                    <?php if ($expired_reservation):?>
+                        <?= alert_notice(sprintf(lang('customer_overstay'), dateDifference(date('Y-m-d', strtotime($reservation['checkout_date'])), date('Y-m-d', strtotime('NOW')))), 'warning')?>
+                    <?php endif;?>
+                    <?php if ($statistics['debt']??null):?>
+                        <?= alert_notice(sprintf(lang('customer_has_debt'), $this->cr_symbol.number_format($statistics['debt'], 2), site_url("customer/data/{$reservation['customer_id']}/purchases")), 'danger')?>
+                    <?php endif;?> 
+                </div>
 
                 <div class="card">
                     <div class="card-header p-2">
@@ -82,7 +89,7 @@
                                     <th> <?= lang('room_type') ?> </th>
                                     <th> <?= lang('checkin') ?> <?= lang('date') ?> </th>
                                     <th> <?= lang('checkout') ?> <?= lang('date') ?> </th>
-                                    <?php if (isset($this->uid)):?>
+                                    <?php if (has_privilege('customers')):?>
                                     <th> <?= lang('customer') ?> </th>
                                     <th class="td-actions"> <?= lang('actions') ?> </th>
                                     <?php endif;?>
@@ -97,7 +104,7 @@
                                     <td> <?=$rm->room_type ?> </td>
                                     <td> <?= date('D d M Y', strtotime($rm->checkin_date)) ?> </td>
                                     <td> <?= date('D d M Y', strtotime($rm->checkout_date)) ?> </td>
-                                    <?php if (isset($this->uid)):?>
+                                    <?php if (has_privilege('customers')):?>
                                     <td>
                                         <a href="<?=site_url('customer/data/'.$rm->customer_id)?>">
                                             <?=$rm->customer_firstname ?> <?=$rm->customer_lastname ?>
@@ -113,7 +120,7 @@
                                     </td>
                                     <?php endif;?>
                                     <td>
-                                        <?php if ($reservation['checkin_date'] < date('Y-m-d', strtotime('NOW')) && $reservation['checkout_date'] < date('Y-m-d', strtotime('NOW'))): ?>
+                                        <?php if (!$reservation['status'] && $reservation['checkin_date'] < date('Y-m-d H:i:s', time()) && $reservation['checkout_date'] < date('Y-m-d H:i:s', time())): ?>
                                         <i class="fa fa-arrow-down text-danger"></i>
                                         <?php else: ?>
                                         <i class="fa fa-arrow-up text-success"></i>
@@ -123,14 +130,15 @@
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="7"><?php alert_notice(lang('no_more_reservations_this_room'), 'info', TRUE, FALSE) ?></td>
+                                    <td colspan="7" class="text-center"><?php alert_notice(lang('no_more_reservations_this_room'), 'info', TRUE, FALSE) ?></td>
                                 </tr>
                             <?php endif; ?>
                             </tbody>
                         </table>
                     </div><!-- /.card-body -->
                 </div>
-                        <!-- /.nav-tabs-custom -->
+                <!-- /.nav-tabs-custom --> 
+                </div> 
             </div>
             <!-- /.col -->
         </div>
@@ -138,3 +146,27 @@
     </div><!-- /.container-fluid -->
 </section>
 <!-- /.content -->
+
+<script>
+    window.onload = function () {
+        $('.checkout_blocked').click(function(event) { 
+            bootbox.dialog({ 
+                title: 'Unable to process checkout!',
+                message: $('#error_boxes').html(),
+                size: 'large',
+                onEscape: true,
+                backdrop: true,
+                buttons: {
+                    view: {
+                        label: 'View Details',
+                        className: 'btn-info',
+                        callback: function(e){
+                            location.href=site_url('<?= 'customer/data/'.$reservation['customer_id'] ?>');
+                            return false;
+                        }
+                    }
+                }
+            });
+        });
+    }
+</script>

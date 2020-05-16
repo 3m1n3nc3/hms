@@ -79,7 +79,8 @@
 						<?php
 							$size = count($rooms);
 							$cols = ceil(sqrt($size));
-							$rows = ceil($size/$cols);
+                            $rows = ceil($size/$cols);
+							$today = date('Y-m-d H:i:s', time());
 						?>
                         <table>
                             <thead>
@@ -90,23 +91,22 @@
                             <tbody>
                                 <?php for ($t=0, $i=0; $t<$rows; ++$t): ?>
                                 <tr>
-                                    <?php for($j=0; $j<$cols && $i<$size; ++$i, ++$j): ?>
-                                        <?php if (!$rooms[$i]->status): ?>
-                                        <td class="td-actions">
-                                            <input type="hidden" name="room_id" value="<?=$rooms[$i]->room_id?>">
-                                            <button    
-                                                type="button" 
-                                                onclick="return bootbox.confirm('Reserve this room?', function(e) {if (e == true) $('#rs_form').submit()})" 
-                                                class="btn btn-lg py-4 m-2 font-weight-bold btn-success shadow">
-                                                <?=$rooms[$i]->room_type;?> 
-                                                <br>
-                                                Room <?=$rooms[$i]->room_id?>
-                                                <i class="btn-icon-only fa fa-calendar-check"> </i>
-                                                <br>
-                                                <?='At ' . $this->cr_symbol . $rooms[$i]->room_price;?>
-                                            </button>
-                                        </td>
-                                        <?php endif; ?>
+                                    <?php for($j=0; $j<$cols && $i<$size; ++$i, ++$j): ?> 
+                                    <td class="td-actions">
+                                        <!-- <input type="hidden" name="room_id" value="<?=$rooms[$i]->room_id?>"> -->
+                                        <button onclick="return re(this)" 
+                                            type="button"  
+                                            name="room_id"
+                                            value = "<?=$rooms[$i]->room_id?>" 
+                                            class="btn btn-lg py-4 m-2 font-weight-bold btn-success shadow">
+                                            <?=$rooms[$i]->room_type;?> 
+                                            <br>
+                                            Room <?=$rooms[$i]->room_id?>
+                                            <i class="btn-icon-only fa fa-calendar-check"> </i>
+                                            <br>
+                                            <?='At ' . $this->cr_symbol . $rooms[$i]->room_price;?>
+                                        </button>
+                                    </td> 
                                     <?php endfor; ?>
                                 </tr>
                                 <?php endfor; ?>
@@ -127,3 +127,51 @@
   	</div><!-- /.container-fluid -->
 </div>
 <!-- /.content -->
+
+
+<script>
+    function re(e) {
+        console.log($(e));
+        return $('form#rs_form').submit();
+    }
+
+    window.onload = function () {
+        var loader = 
+        '<div class="text-center preloader">'+
+            '<div class="spinner-light text-info spinner-grow" role="status">'+
+                '<span class="sr-only">Loading...</span>'+
+           '</div>'+
+        '</div>';
+
+        room_id = '';
+        // On submit click, set the value
+        $('form button[type="submit"]').click(function(){
+            room_id = $(this).prev('input[name="room_id"]').val();
+        });
+
+        $('form#rs_forms').submit(function(event) {
+            // 
+            var theform = this;
+
+            // var room_id = $(this).prev('input[name="room_id"]').val();
+            $.post(site_url('ajax/connect/checkroom'), {room_id:room_id}, function(data) {
+                if (data.available==false) {
+                    bootbox.dialog({ 
+                        title: 'Reservation Error',
+                        message: data.message,
+                        size: 'large',
+                        onEscape: true,
+                        backdrop: true 
+                    });
+                } else {
+                    bootbox.confirm('Reserve this room?', function(e) {
+                        if (e == true) {
+                            return $(theform).submit();
+                        }
+                    });
+                }
+            });
+           event.preventDefault();
+        });
+    }
+</script>

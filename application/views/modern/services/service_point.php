@@ -3,6 +3,11 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-lg-12"> 
+
+                    <a href="<?= site_url('services/sales_records/' . $service->service_name)?>" class="btn btn-primary text-white my-2">
+                        <i class="fa fa-book"></i> Sales Records
+                    </a>
+
                     <?= $this->session->flashdata('message') ?? '' ?>
                 </div>
 

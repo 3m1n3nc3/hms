@@ -10,17 +10,16 @@ class Report_model extends CI_Model {
 
     function search_customers($query)
     {
+        $query = trim($query);
         $this->db->select("*"); 
         $this->db->select("(SELECT SUM(`order_price`) FROM sales_service_orders WHERE `customer_id` = `customer`.`customer_id`) AS orders");
         $this->db->select("(SELECT SUM(`paid`) FROM sales_service_orders WHERE `customer_id` = `customer`.`customer_id`) AS paid");
         $this->db->select("(SELECT SUM(`orders`-`paid`)) AS debt");
-        $query = $this->db->from("customer")
-            ->like('customer_firstname', $query)
-            ->or_like("CONCAT_WS(' ', customer_firstname, customer_lastname)", $query)
-            ->or_like('customer_lastname', $query)
-            ->or_like('customer_TCno', $query)
+        $query = $this->db->from("customer") 
+            ->like('customer_TCno', $query)
             ->or_like('customer_email', $query)
             ->or_like('customer_state', $query)
+            ->or_like("CONCAT_WS(' ', customer_firstname, customer_lastname)", $query) 
         ->get();
         $data = array();
         foreach ($query->result() as $res) {

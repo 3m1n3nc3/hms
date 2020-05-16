@@ -31,8 +31,7 @@ class Services extends Admin_Controller {
 	public function sales_records($set_service = '')
 	{  
         error_redirect(has_privilege('sales-records'), '401');
-
-        $query     = 
+ 
 		$services  = $this->services_model->get_service();
 		$customers = $this->customer_model->get_active_customers(); 
 
@@ -40,7 +39,7 @@ class Services extends Admin_Controller {
         $config['total_rows'] = count($this->services_model->get_stock()); 
 
         $this->pagination->initialize($config);
-        $_page = $this->uri->segment($set_service ? 3 : 4, 0);
+        $_page = $this->uri->segment($set_service ? 4 : 3, 0);
 
 		$inventory = $this->services_model->get_stock(['page' => $_page]);
 
@@ -75,7 +74,7 @@ class Services extends Admin_Controller {
         $config['total_rows'] = count($this->services_model->get_stock()); 
 
         $this->pagination->initialize($config);
-        $_page = $this->uri->segment($set_service ? 3 : 4, 0);
+        $_page = $this->uri->segment($set_service ? 4 : 3, 0);
 
 		$inventory = $this->services_model->get_stock(['page' => $_page]);
 
@@ -346,7 +345,9 @@ class Services extends Admin_Controller {
      * @return null     			Does not return anything but echoes a JSON Object with a response
      */
 	public function list_stock($service = "")
-	{         
+	{    
+        header('Content-type: application/json'); 
+             
 		$get_service_name = urldecode($service);
 		$stock_list = $this->services_model->get_stock(['item_service' => $get_service_name]);
 

@@ -10,7 +10,7 @@ class Search extends Admin_Controller
      */
 	public function index()
 	{ 
-		$word = $this->input->post("customer");
+		$word = trim($this->input->post("customer"));
 
 		$result = $this->report_model->search_customers($word);
 		

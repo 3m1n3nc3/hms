@@ -256,3 +256,54 @@ if ( ! function_exists('error_redirect'))
         return TRUE;
     }
 }
+
+
+if ( ! function_exists('db_inc')) 
+{
+    /**
+     * Method generates incremental function call for database input
+     * 
+     * @param string    $Prop The database property to increment
+     * @param int       $num increment by int or float. 1 by default
+     *  
+     * @return string
+     */
+    function db_inc($Prop = '', $num = 1, $protect = TRUE)
+    {
+        global $CI;
+
+        $tags = ($protect === TRUE ? '`' : '');
+
+        if (!is_numeric($num)) {
+            $num = 1;
+        }
+        $data = $tags . $Prop . $tags . "+" . $num;
+        return $CI->db->set($tags . $Prop . $tags, $data, FALSE);
+    }
+}
+
+
+if ( ! function_exists('db_dec')) 
+{
+    /**
+     * Method generates decremental function call for database input
+     * 
+     * @param string    $Prop The database property to decrement
+     * @param int       $num decrement by int or float. 1 by default
+     *  
+     * @return string
+     */
+    function db_dec($Prop = '', $num = 1, $protect = TRUE)
+    {
+        global $CI;
+
+        $tags = ($protect === TRUE ? '`' : '');
+
+        if (!is_numeric($num)) {
+            $num = 1;
+        }
+        $data = $tags . $Prop . $tags . "-" . $num;
+
+        return $CI->db->set($tags . $Prop . $tags, $data, FALSE);
+    }
+}

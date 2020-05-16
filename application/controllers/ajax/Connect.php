@@ -186,25 +186,109 @@ class Connect extends MY_Controller {
 
     /**
      * Receives ajax request for country, state, and cities worldwide
-     * @param  string   $local   	specifies the local to return [countries|states|cities]
+     * @param  string   $local      specifies the local to return [countries|states|cities]
      * @param  string   $parent_id  If set will return the local for the set parent
      * @return NULL     Echoes a json string containing the data presented by the relevant helper
      */
     public function fetch_locale($locale = '', $parent_id = '')
     {
-    	if ($locale == 'countries') 
-    	{
-    		$data['response'] = select_countries();
-    	}
-    	elseif ($locale == 'states') 
-    	{
-    		$data['response'] = select_states($parent_id);
-    	}
-    	elseif ($locale == 'cities') 
-    	{
-    		$data['response'] = select_cities($parent_id);
-    	}
+        if ($locale == 'countries') 
+        {
+            $data['response'] = select_countries();
+        }
+        elseif ($locale == 'states') 
+        {
+            $data['response'] = select_states($parent_id);
+        }
+        elseif ($locale == 'cities') 
+        {
+            $data['response'] = select_cities($parent_id);
+        }
 
-    	echo json_encode($data, JSON_FORCE_OBJECT);
+        echo json_encode($data, JSON_FORCE_OBJECT);
+    }
+
+
+    /**
+     * Fetches notifications for the currently logged in user 
+     * @return NULL     Echoes a json string containing the notifications
+     */
+    public function fetch_notifications()
+    {
+        header('Content-type: application/json'); 
+
+        try 
+        {
+            $param              = ['recipient_id' => $this->logged_user['employee_id'], 'type' => 'all'];
+            $notif_list         = $this->notifications->getNotifications($param);
+            $data['notif_list'] = o2Array($notif_list);
+
+            $response['status'] = 200;
+            $response['html']   = $this->load->view($this->h_theme. '/extra_layout/notifications', $data, TRUE);
+        }
+        catch(Exception $e)
+        {
+            $response['status']  = 304;
+            $response['message'] = $e;
+        }
+
+        echo json_encode($response);
+    }
+
+
+    /**
+     * Fetches and updates status of notifications, requests and messages
+     * @return NULL     Echoes a json string containing the notifications
+     */
+    public function update_data()
+    {
+        header('Content-type: application/json'); 
+
+        $features = $this->input->get(NULL, TRUE);
+
+        try 
+        {
+            $response['notif'] =
+            $response['new_messages'] =
+            $response['chats'] =
+            $response['requests'] = FALSE;
+
+            $param                    = ['recipient_id' => $this->logged_user['employee_id'], 'type' => 'new'];
+            $notifications            = $this->notifications->getNotifications($param);
+            if ($notifications) {
+                $response['notif']    = $notifications;
+            }
+            $response['requests']     = 0;
+            $response['new_messages'] = 0;
+
+            $response['status']       = 200; 
+        }
+        catch(Exception $e)
+        {
+            $response['status']  = 304;
+            $response['message'] = $e;
+        }
+
+        echo json_encode($response);
+    }
+
+
+    /**
+     * For the status of the selected room
+     * @return NULL     Echoes a json string containing the notifications
+     */
+    public function checkroom()
+    {
+        header('Content-type: application/json');   
+        $response['available']  = true;
+
+        $room_id = $this->input->post('room_id', TRUE);
+        $room    = $this->reservation_model->reserved_rooms(['room' => $room_id, 'overstay' => TRUE], 1);
+        if ($room) {
+            $response['message'] = alert_notice(sprintf(lang('customer_overstaying'), 'ddd'), 'warning'); 
+            $response['available']  = false;
+        }
+
+        echo json_encode($response);
     }
 }

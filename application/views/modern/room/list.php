@@ -52,7 +52,7 @@
 							<?php endforeach; ?>
 						<?php else: ?>
 							<tr>
-							    <td colspan="5"><?php alert_notice('No rooms available', 'info', TRUE, FALSE) ?></td>
+							    <td colspan="5" class="text-center"><?php alert_notice('No rooms available', 'info', TRUE, FALSE) ?></td>
 							</tr>
 						<?php endif; ?>
 						</tbody>

@@ -51,7 +51,7 @@
 							<?php endforeach; ?>
 						<?php else: ?>
 							<tr>
-							    <td colspan="4"><?php alert_notice('No facilities available', 'info', TRUE, FALSE) ?></td>
+							    <td colspan="4" class="text-center"><?php alert_notice('No facilities available', 'info', TRUE, FALSE) ?></td>
 							</tr>
 						<?php endif; ?>
 						</tbody>

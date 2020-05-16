@@ -382,6 +382,109 @@ class Homepage extends Frontsite_Controller {
 
 
     /**
+     * Renders the invoice
+     * @param  string   $id   id of the invoice item to read
+     * @return null           Does not return anything but uses code igniter's view() method to render the page
+     */
+    public function generic_invoice($reference = '', $get_type = '')
+    {
+        $reference = urldecode($reference);
+        error_redirect(has_privilege('cashier-report') OR $this->account_data->is_customer_logged_in(), '401');
+
+        $invoice_date  = 'NOW';
+        $customer_name = $customer_address = $item_name = $description = $action = $type = $type_header = '';
+        $customer_id   = $amount = $invoice_id = $quantity = $vat = 0;
+        $variables     = array(); 
+
+        // Debt payments Invoice
+        $type_debt_payment = ($this->input->post('print') == 'debt_payment' || $this->input->get('print') == 'debt_payment' || $get_type == 'debt_payment');
+        $type_reservation  = ($this->input->post('print') == 'reservation' || $this->input->get('print') == 'reservation' || $get_type == 'reservation');
+
+        if ($type_debt_payment) 
+        {  
+            $paid_info = $this->payment_model->get_debt_payments(
+                ['table' => 'sales_service_orders', 'am_prop' => 'order_price', 'id' => $reference]
+            );      
+            $invoice_id       = $reference;                          
+            $type             = 'debt_payment';
+            $type_header      = 'Debt Clearance';
+            $invoice_id       = $paid_info['id'];
+            $invoice_date     = $paid_info['date'];
+            $customer_name    = $paid_info['customer_name'];
+            $customer_address = $paid_info['customer_address'];
+            $customer_id      = $paid_info['customer_id'];
+            $quantity         = 1;
+            $item_name        = $paid_info['item_name'] . ' Purchase';
+            $reference        = $paid_info['payment_id'];
+            $description      = $paid_info['description'];
+            $amount           = $paid_info['amount'];  
+            $action           = 'homepage/generic_invoice/' . $paid_info['id'] . '/-post';
+            $variables        = ['invoice_type' => $type, 'margin' => 'mx-auto'];
+        } 
+        elseif ($type_reservation) 
+        {
+            // Reservation Invoice
+            $finvoice = $this->payment_model->get_payments(['reference' => $reference]); 
+            if (!$finvoice) 
+            {
+                $finvoice = $this->session->userdata('reservation');  
+
+                if ($finvoice) {
+                    $cust = $this->customer_model->get_customer(['email' => $finvoice['email']]);
+                    $finvoice['customer_id'] = $cust['customer_id'];
+                    $finvoice['description'] = 'Reservation payments for ' . $finvoice['room_type'] . ' room ' . $fetch_invoice['room_id'];
+                }
+
+            } 
+            if ($finvoice) {
+                $customer       = $this->account_data->fetch($finvoice['customer_id'] ?? '', 1); 
+                $post           = $this->reservation_model->fetch_reservation(['reservation_ref' => $reference]); 
+                $room           = $this->room_model->getRoom(['id' => $post['room_id'] ?? $finvoice['room_id']]);  
+                $room_type_info = $this->room_model->getRoomType($room['room_type']); 
+                $room_info      = o2Array($room_type_info[0] ?? []);  
+                $room_id        = $room['room_id'] ?? $finvoice['room_id'];
+
+                $invoice_id       = $finvoice['id'] ?? 'pending';
+                $type             = 'reservation';
+                $type_header      = 'Reservation';
+                $amount           = $finvoice['amount'] ?? $room_info['room_price'];
+                $description      = $finvoice['description'];  
+                $invoice_date     = $finvoice['date'];  
+                $vat              = $room_info['vat'];  
+                $reference        = $post['payment_ref'] = ($finvoice['reference'] ?? $finvoice['payment_ref']);
+                $item_name        = ($finvoice['room_type'] ?? $room_info['room_type']) . ' Room ' . $room_id;
+                $invoice_no       = $finvoice['invoice'] ?? $post['room_id'].date('ymdHm');
+                $customer_name    = $customer['customer_firstname'] . ' ' . $customer['customer_lastname'];
+                $customer_address = $customer['customer_address'];
+                $customer_id      = $customer['customer_id'];
+                $quantity         = 1;    
+                $action           = 'homepage/generic_invoice/' . $reference . '/-post';
+                $variables        = ['invoice_type' => $type, 'margin' => 'mx-auto'];
+
+                $variables           = [
+                    'invoice_no' => $invoice_no, 'invoice_type' => $get_type, 'margin' => 'mx-auto', 'post' => $post, 'room' => $room_type_info, 
+                'customer' => $customer];
+            } else {
+                error_redirect($finvoice);
+            }
+        } 
+        $invoice   = array(
+            'invoice_id'    => $invoice_id,    'date'          => date('d M Y', strtotime($invoice_date)),
+            'customer_name' => $customer_name, 'customer_addr' => $customer_address,
+            'customer_id'   => $customer_id,   'qty'           => $quantity,    'item'      => $item_name, 
+            'reference'     => $reference,     'description'   => $description, 'amount'    => $amount, 
+            'action'        => $action,        'vat'           => $vat,         'variables' => $variables
+        );
+        $viewdata = [
+            'title' => $type_header . ' Invoice',
+            'show_footer' => TRUE 
+        ];
+        $this->load->view($this->h_theme.'/header_plain', $viewdata);  
+        $this->load->view($this->h_theme.'/extra_layout/generic_invoice', $invoice);
+    }
+
+
+    /**
      * Renders the rooms info page
      * @param  string   $id   id of the room content to render
      * @return null           Does not return anything but uses code igniter's view() method to render the page

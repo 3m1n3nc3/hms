@@ -71,9 +71,13 @@ class Room extends Admin_Controller
 		$viewdata['checkin_date']  = date('Y-m-d', strtotime($reservation['checkin_date']));
 		$viewdata['checkout_date'] = date('Y-m-d', strtotime($reservation['checkout_date']));
 
-        $viewdata['invoice_link']  = ($payment ? 'review/invoice/'.$payment['reference'] : 'reservation/invoice/'.$reservation['reservation_id']); 
+        $viewdata['invoice_link']  = (isset($payment['reference']) ? 'review/invoice/'.$payment['reference'] : 'reservation/invoice/'.$reservation['reservation_id']); 
 
-        $viewdata['pagination']    = $this->pagination->create_links();
+        $viewdata['statistics'] = $reservation['customer_id'] ? $this->accounting_model->statistics(['customer' => $reservation['customer_id']]) : [];
+        $viewdata['pagination'] = $this->pagination->create_links();
+
+        $ovrooms   = $this->reservation_model->overstayed_room(['room' => $room_id, 'uncheck' => TRUE]);
+        print_r($ovrooms);
 
 		$data = array('title' => 'Rooms - ' . my_config('site_name'), 'page' => 'reserved');
 		$this->load->view($this->h_theme.'/header', $data);
@@ -162,7 +166,7 @@ class Room extends Admin_Controller
 
         $checkout['reservation_id'] = $reservation_id;
         $checkout['status']         = '0';
-        $checkout['checkout_date']  = date('Y-m-d H:i:s', strtotime('NOW-10 Minutes')); 
+        $checkout['checkout_date']  = date('Y-m-d H:i:s', strtotime('NOW-1 Minute')); 
 
         $this->room_model->checkoutCustomer($checkout);
         redirect("room/reserved_room/".$res['room_id']);

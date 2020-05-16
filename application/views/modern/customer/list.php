@@ -35,7 +35,7 @@
                     <?php foreach ($customers as $customer): ?>
                     <tr>
                       <td>
-                        <a href="<?= site_url('customer/data/'.urlencode($customer->customer_id)) ?>">
+                        <a href="<?= $customer->customer_id !== '0' ? site_url('customer/data/'.$customer->customer_TCno) : 'javascript:void(0)' ?>">
                           <?=$customer->customer_firstname . ' ' . $customer->customer_lastname;?>
                         </a>
                       </td>
@@ -60,7 +60,7 @@
                     <?php endforeach; ?>
                     <?php else: ?>
                     <tr>
-                      <td colspan="5"><?php alert_notice('No rooms available', 'info', TRUE, FALSE) ?></td>
+                      <td colspan="5" class="text-center"><?php alert_notice('No rooms available', 'info', TRUE, FALSE) ?></td>
                     </tr>
                     <?php endif; ?>
                   </tbody>

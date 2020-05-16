@@ -73,7 +73,7 @@
                     <?php endforeach; ?>
                     <?php else: ?>
                     <tr>
-                      <td colspan="7"><?php alert_notice('No employees available', 'info', TRUE, FALSE) ?></td>
+                      <td colspan="7" class="text-center"><?php alert_notice('No employees available', 'info', TRUE, FALSE) ?></td>
                     </tr>
                     <?php endif; ?>
                   </tbody>

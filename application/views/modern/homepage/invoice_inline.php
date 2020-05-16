@@ -3,7 +3,7 @@
 				<div class="row">
 					<div class="col-12"> 
 						<!-- Main content -->
-						<div class="invoice p-3 mb-3">
+						<div class="invoice p-3 m-3">
 							<!-- title row -->
 							<div class="row">
 								<div class="col-12">
@@ -29,7 +29,7 @@
 									To
 									<address>
 										<strong><?= $customer['name']; ?></strong><br>
-										<?php //echo $address; ?>
+										<?= $customer['customer_address']??'' ?>
 									</address>
 								</div>
 								<!-- /.col -->

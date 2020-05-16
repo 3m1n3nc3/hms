@@ -60,7 +60,8 @@ $autoload['packages'] = array();
 */
 $autoload['libraries'] = array(
 	'database', 'form_validation', 'session', 'upload', 'pagination', 'licenser', 'Aes', 'enc_lib', 'Curler', 
-	'Account_Data', 'my_config', 'creative_lib', 'ip', 'intl', 'hms_parser', 'hms_data', 'hms_payments'
+	'Account_Data', 'my_config', 'creative_lib', 'ip', 'intl', 'hms_parser', 'hms_data', 'hms_payments', 
+    'notifications'
 );
 
 /*
@@ -109,7 +110,7 @@ $autoload['helper'] = array(
 | config files.  Otherwise, leave it blank.
 |
 */
-$autoload['config'] = array();
+$autoload['config'] = array('');
 
 /*
 | -------------------------------------------------------------------

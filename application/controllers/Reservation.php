@@ -88,7 +88,7 @@ class Reservation extends Admin_Controller
 			$viewdata['checkout_date'] = $post['checkout_date'] ?? '';
 			$viewdata['room_type']     = $post['room_type'] ?? ''; 
 			$this->load->view($this->h_theme.'/reservation/list',$viewdata);
-		}
+		} 
 
 		$this->load->view($this->h_theme.'/footer');
 	}
@@ -130,7 +130,7 @@ class Reservation extends Admin_Controller
 			$date_s = date('Y-m-d H:i:s', strtotime("NOW"));
 			if($date_s > $data['checkin_date']) 
 			{
-				$this->session->set_flashdata('message', alert_notice('Check in date is past and can\'t be before today', 'error'));   
+				$this->session->set_flashdata('message', alert_notice('Check in date or time is past and can\'t be before today', 'error'));   
 			} 
 			else 
 			{
@@ -144,23 +144,22 @@ class Reservation extends Admin_Controller
 				}
 
 				// Add the reservation and set the reservation_id to a variable
-				$reservation_id = $this->reservation_model->add_reservation($data);
+				// $reservation_id = $this->reservation_model->add_reservation($data);
 
-				unset($data['reservation_date'], $data['reservation_price'], $data['reservation_ref']);
+				// unset($data['reservation_date'], $data['reservation_price'], $data['reservation_ref']);
 
-				$data['reservation_id'] = $reservation_id;
+				// $data['reservation_id'] = $reservation_id;
 				
-				$this->room_model->add_room_sale($data);
-				$this->session->set_flashdata(
-					'message', 
+				// $this->room_model->add_room_sale($data);
+				$this->session->set_flashdata('message', 
 					alert_notice('Reservation successfully made!<br> 
 						<strong>
 							<a href="'.site_url('reservation/invoice/'.$reservation_id).'" class="text-white">Print Invoice</a>
 						</strong>', 'success'
 					)
-				);  
+				);  print_r($_POST);
 
-				redirect('reservation/make');
+				// redirect('reservation/make');
 			}
 		}
 		else 
@@ -176,6 +175,7 @@ class Reservation extends Admin_Controller
 			'page' => 'reservation',
 			'has_calendar' => TRUE
 		);
+
 		$this->load->view($this->h_theme.'/header', $data);
 		$this->load->view($this->h_theme.'/reservation/add', $viewdata);
 		$this->load->view($this->h_theme.'/footer');

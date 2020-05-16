@@ -18,7 +18,10 @@ if ( ! function_exists('has_privilege'))
     function has_privilege($role = '')
     {
     	global $CI; 
- 
+        if (empty($CI->logged_user)) {
+            return false; 
+        }
+        
         if ($CI->logged_user['role'] >= 2)
         {
             return true;
@@ -122,8 +125,10 @@ if ( ! function_exists('list_permissions'))
 if ( ! function_exists('verify_permision'))
 {
     function verify_permision($role = '')
-    {    
-        $privileges = perfect_privilege($role);
-        return in_array($role, $privileges);
+    {   
+        if ($role) {
+            $privileges = perfect_privilege($role);
+            return is_array($privileges) && in_array($role, $privileges);
+        }
     }
 }

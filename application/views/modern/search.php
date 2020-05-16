@@ -41,7 +41,7 @@
                     <?php foreach ($result as $customer): ?>
                     <tr>
                       <td>
-                        <a href="<?= site_url('customer/data/'.$customer->customer_TCno) ?>">
+                        <a href="<?= $customer->customer_id !== '0' ? site_url('customer/data/'.$customer->customer_TCno) : 'javascript:void(0)' ?>">
                           <?=$customer->customer_firstname . ' ' . $customer->customer_lastname;?>
                         </a>
                       </td>
@@ -50,21 +50,23 @@
                       <td> <?=$customer->customer_TCno;?> </td>
                       <td> <?=$this->cr_symbol.number_format($customer->debt, 2)?> </td>
                       <td class="td-actions">
+                        <?php if ($customer->customer_id !== '0'): ?>
                         <a href="<?= site_url('customer/reserve/'.$customer->customer_TCno) ?>" class="btn btn-sm btn-success" data-toggle="tooltip" title="Reserve">
                           <i class="btn-icon-only fa fa-calendar-check text-white"></i>
                         </a>
                         <a href="<?= site_url('customer/add/'.$customer->customer_id.'/update') ?>" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Edit">
                           <i class="btn-icon-only fa fa-edit text-white"></i>
                         </a>
-                        <a href="<?= site_url('customer/delete/'.$customer->customer_id) ?>" onclick="return confirm('Are you sure ?')" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Delete">
+                        <a href="javascript:void(0)" onclick="return confirmDelete('<?= site_url('customer/delete/'.$customer->customer_id) ?>', 1)" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Delete">
                           <i class="btn-icon-only fa fa-trash text-white"></i>
                         </a>
+                        <?php endif; ?>
                       </td>
                     </tr>
                     <?php endforeach; ?>
                     <?php else: ?>
                     <tr>
-                      <td colspan="5"><?php alert_notice('No Result Found For '.$query, 'info', TRUE, FALSE) ?></td>
+                      <td colspan="6" class="text-center font-weight-bold"><?php alert_notice('No Result Found For '.$query, 'info', TRUE, FALSE) ?></td>
                     </tr>
                     <?php endif; ?>
                   </tbody>

@@ -62,6 +62,42 @@ class Customer_model extends CI_Model {
             return $query;
         }
     } 
+    /**
+     * This function will fetch return the a specified customer from the customers table
+     * @param array $data
+     * @return mixed    Depending on available parameters it will either return an object or an array
+     */
+    function purchases($data)
+    { 
+        $this->db->select('*')->from("sales_service_orders"); 
+
+        if (isset($data['customer_id'])) 
+        {
+            $this->db->where('customer_id', $data['customer_id']); 
+        }
+
+        if (isset($data['employee_id'])) 
+        { 
+            $this->db->where('employee_id', $data['employee_id']);
+        }
+
+        if (isset($data['item_id'])) 
+        { 
+            $this->db->where('id', $data['item_id']);
+        }
+         
+        if (isset($data['page'])) {
+            $this->db->limit($this->config->item('per_page'), $data['page']);
+        }
+
+        $query = $this->db->get();
+
+        if (isset($data['item_id'])) 
+        { 
+            return $query->row_array(); 
+        }
+        return $query->result_array(); 
+    } 
 
 
     /**
@@ -133,6 +169,19 @@ class Customer_model extends CI_Model {
         $this->db->delete('room_sales', array('customer_id' => $customer_id));
         $this->db->delete('reservation', array('customer_id' => $customer_id));
         $this->db->delete('customer', array('customer_id' => $customer_id));
+        return $this->db->affected_rows();
+    }
+
+
+    /**
+     * This function will update an items debt info
+     * @return integer    Returns the count of records updated by the query
+     */
+    function update_debt($data)
+    {
+        $this->db->where("id", $data['item_id']);
+        db_inc('paid',$data['amount']);
+        $this->db->update('sales_service_orders'); 
         return $this->db->affected_rows();
     }
 

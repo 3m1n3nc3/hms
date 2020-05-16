@@ -52,7 +52,7 @@
 							</li>
 							<li class="list-group-item text-danger">
 								<b>Debt</b> 
-								<a class="float-right"><?= $this->cr_symbol.number_format($statistics['debt'], 2)?></a>
+								<a class="float-right" id="customer_debt"><?= $this->cr_symbol.number_format($statistics['debt'], 2)?></a>
 							</li>
 							<?php 
 								$total_expenses = ($statistics['total_expenses'] <= 0 ? ($statistics['service_orders']+$statistics['room_sales']) : $statistics['total_expenses'])
@@ -63,7 +63,7 @@
 							</li>
 						</ul>
 
-						<?php if (isset($this->uid) && $customer['customer_id'] !== '0'):?>
+						<?php if (has_privilege('customers') && $customer['customer_id'] !== '0'):?>
 						<?=form_open('reservation')?>
 							<input type="hidden" name="customer_TCno" value="<?=$customer['customer_TCno']?>">
 							<button class="btn btn-primary btn-block"><b>Reserve</b></button>
@@ -79,17 +79,27 @@
 				<div class="card">
 					<div class="card-header p-2">
 						<ul class="nav nav-pills">
+							<?php if ($set_view == 'home'):?>
 							<li class="nav-item">
-								<a class="nav-link<?= !$this->input->post('update_profile') && !$this->session->flashdata('update_profile') ? ' active' : ''?>" href="#profile" data-toggle="tab">Profile</a>
+								<a class="nav-link<?= $set_view == 'home' && (!$this->input->post('update_profile') && !$this->session->flashdata('update_profile')) ? ' active' : ''?>" href="#profile" data-toggle="tab">Profile</a>
 							</li>
-							<?php if (isset($this->cuid) && $this->cuid == $customer['customer_id']):?>
+							<?php else:?>
 							<li class="nav-item">
-								<a class="nav-link<?= $this->input->post('update_profile') || $this->session->flashdata('update_profile') ? ' active' : ''?>" href="#settings" data-toggle="tab">Settings</a>
+								<a class="nav-link" href="<?= site_url('customer/data/'.$customer['customer_TCno'])?>">Profile</a>
 							</li>
 							<?php endif;?>
+							<?php if (isset($this->cuid) && $this->cuid == $customer['customer_id']):?>
+							<li class="nav-item">
+								<a class="nav-link<?= $set_view == 'home' && ($this->input->post('update_profile') || $this->session->flashdata('update_profile')) ? ' active' : ''?>" href="#settings" data-toggle="tab">Settings</a>
+							</li>
+							<?php endif;?>
+							<li class="nav-item">
+								<a class="nav-link<?= $set_view == 'purchases' ? ' active' : ''?>" href="<?= site_url('customer/data/'.$customer['customer_TCno'].'/purchases') ?>">Purchases</a>
+							</li>
 						</ul>
 					</div><!-- /.card-header -->
 
+					<?php if ($set_view == 'home'):?>
 					<div class="card-body">
 						<div class="tab-content">
 							<div class="tab-pane<?= !$this->input->post('update_profile') && !$this->session->flashdata('update_profile') ? ' active' : ''?>" id="profile">
@@ -200,10 +210,55 @@
 						</div>
 					<!-- /.tab-content -->
 					</div><!-- /.card-body -->
+					<?php elseif ($set_view == 'purchases'):?>  
+						<div class="card-body px-0">
+				            <table class="table table-striped">
+				              	<thead>
+					                <tr> 
+					                  	<th> Made At </th>
+					                  	<th> Items </th>
+					                  	<th> Paid </th>
+					                  	<th> Bal. </th>
+					                  	<?php if (has_privilege('customers') && $statistics['debt']): ?>
+					                  	<th class="td-actions"> Actions </th>
+					                  	<?php endif; ?>
+					                </tr>
+				              	</thead>
+				              	<tbody>
+				                <?php if ($purchases): ?>
+					                <?php foreach ($purchases as $purchase): 
+					                	$debt = $purchase['order_price']-$purchase['paid'];
+					                	?>
+						                <tr> 
+						                  	<td> <?=$purchase['service_name']?> </td>
+						                  	<td> <?=$this->hms_data->explode_sales_items($purchase['order_items'], $purchase['order_quantity'], ', ')?> </td>
+						                  	<td id="paid_<?=$purchase['id']?>"> <?=$this->cr_symbol.number_format($purchase['paid'], 2)?> </td>
+						                  	<td id="debt_<?=$purchase['id']?>"> <?=$this->cr_symbol.number_format($debt, 2)?> </td> 
+						                  	<?php if (has_privilege('customers') && $debt > 0): ?> 
+						                  	<td class="td-actions">
+							                    <a href="javascript:void(0)" class="btn btn-danger text-white btn-sm update_debt" data-toggle="tooltip" data-id="<?=$purchase['id']?>" data-ref="<?=$customer['customer_TCno']?>" title="Update">
+							                      Update
+							                    </a>
+						                  	</td>
+						                  <?php endif; ?>
+						                </tr>
+					                <?php endforeach; ?>
+				                <?php else: ?>
+					                <tr>
+					                  <td colspan="5" class="text-center"><?php alert_notice('No Purchases', 'info', TRUE, FALSE) ?></td>
+					                </tr>
+				                <?php endif; ?>
+				              	</tbody>
+				            </table>
+						</div> <!-- /.card-body -->
+				        <?php if ($pagination): ?>
+							<div class="card-footer mb-0 pb-0"> <?=$pagination?> </div>
+				        <?php endif; ?>
+					<?php endif;?>
 				</div>
 				<!-- /.nav-tabs-custom -->
 			</div>
-			<!-- /.col -->
+			<!-- /.col --> 
 		</div>
 		<!-- /.row -->
 	</div><!-- /.container-fluid -->
@@ -223,3 +278,55 @@
     );
     $this->load->view($this->h_theme.'/modal', $param);
 ?>
+
+<script>
+	window.onload = function () {
+    	$('.update_debt').click(function(event) { 
+    		var item = $(this);
+    		var ref  = item.data('ref');
+    		var link = siteUrl+'customer/update_debt/';
+    		var item_id = item.data('id');
+			bootbox.dialog({ 
+			    title: 'Update user debt of <span>'+$('#debt_'+item.data('id')).text()+'</span>',
+			    message: '<span id="bootbox-message"></span><input class="bootbox-input bootbox-input-number form-control" autocomplete="off" type="number" placeholder="Amount" required="" id="update_amount">',
+			    size: 'large',
+			    onEscape: true,
+			    backdrop: true,
+			    buttons: {
+			        update: {
+			            label: 'Update',
+			            className: 'btn-success',
+			            callback: function(e){
+			            	$(e.target).attr('disabled',true).text('Please Wait...');
+			            	var amount = $('#update_amount').val();
+			            	$.post(link+'update',{item_id:item_id,amount:amount}, function(data){
+			            		$('#bootbox-message').html(data.message);
+			            		$('.modal-title span, #debt_'+item_id).html(data.debt);
+			            		$('#paid_'+item_id).html(data.paid);
+			            		$('#customer_debt').html(data.total_debt);
+			            		$(e.target).removeAttr('disabled').text('Update');
+			            	})
+			            	return false;
+			            }
+			        },
+			        clear: {
+			            label: 'Clear Debt',
+			            className: 'btn-primary',
+			            callback: function(e){
+			            	$(e.target).attr('disabled',true).text('Please Wait...');
+			            	$.post(link+'clear',{item_id:item_id}, function(data){
+			            		$('#bootbox-message').html(data.message);
+			            		$('.modal-title span, #debt_'+item_id).html(data.debt);
+			            		$('#paid_'+item_id).html(data.paid);
+			            		$('#customer_debt').html(data.total_debt);
+			            		$(e.target).removeAttr('disabled').text('Clear Debt');
+			            	})
+			            	return false;
+			            }
+			        }, 
+			        cancel: { label: 'Cancel', className: 'btn-danger', callback: function(d){  } }
+			    }
+			})
+    	});
+	}
+</script>

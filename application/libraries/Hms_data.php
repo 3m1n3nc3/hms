@@ -90,4 +90,25 @@ class Hms_data {
             }
         }
     }
+
+    function explode_sales_items($items = array(), $iqty = array(), $implode = false, $qty_text = '') 
+    {
+        $item_name = [];
+        foreach (explode(',', $items) as $key => $sid) 
+        {   
+            $quantity = '';
+            if (!empty($iqty)) 
+            {
+                $qty = explode(',', $iqty);
+                $quantity = ($qty_text ? " ($qty_text {$qty[$key]})" : " ({$qty[$key]})");
+            }
+            $items = $this->CI->services_model->get_stock(array('item_id' => $sid));
+
+            $item_name[] = $items['item_name'] . $quantity;
+        }
+        if ($implode) {
+            return implode($implode, $item_name);
+        }
+        return  $item_name;
+    }
 }

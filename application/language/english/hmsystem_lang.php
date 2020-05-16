@@ -54,6 +54,8 @@ $lang['customer_deleted']           = 'Customer Deleted';
 $lang['customer_updated']           = 'Customer data has been successfully updated.';
 $lang['customer_id_code']           = 'Customer Identification Number';
 $lang['customer_overstay']          = 'This customer has stayed %s days beyond their reservation';
+$lang['customer_overstaying']       = 'A customer is currently lodged in this room beyond their checkout date, this room cannot be booked at this time <a href="%s" class="text-light font-weight-bold">Click to view details</a>';
+$lang['customer_has_debt']          = 'This customer has unpaid debts of up to %s <a href="%s" class="text-light font-weight-bold">Click to view details</a>';
 $lang['dashboard']                  = 'Dashboard';
 $lang['department']                 = 'Department';
 $lang['date']                       = 'Date';

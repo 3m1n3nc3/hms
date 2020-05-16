@@ -5,6 +5,7 @@ class MY_Controller extends CI_Controller
     public function __construct()
     {
         parent::__construct();   
+        $this->config->load('config_');
 
         // $CI->output->enable_profiler(TRUE);
         if ($this->input->get('set_theme')) 

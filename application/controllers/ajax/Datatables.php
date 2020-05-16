@@ -162,11 +162,10 @@ class Datatables extends MY_Controller
 
         $valid_columns = array(
             0=>'order_items',
-            1=>'order_quantity', 
-            2=>'order_price',  
-            3=>'customer_id',  
-            4=>'service_name', 
-            5=>'employee_id' 
+            1=>'order_price',  
+            2=>'customer_id',  
+            3=>'service_name', 
+            4=>'employee_id' 
         );
 
         if(!isset($valid_columns[$col]))
@@ -214,6 +213,18 @@ class Datatables extends MY_Controller
                     } 
                     $this->db->or_where_in($sterm, implode(',', $cxx));
                 }
+
+                if($sterm == 'employee_id')
+                {
+                    $esq = $this->db->query(
+                        "SELECT employee_id FROM employee WHERE CONCAT_WS(' ', employee_firstname, employee_lastname) LIKE '%$search%'"
+                    ); 
+                    $exx = [];
+                    foreach ($esq->result_array() as $ex) {
+                        $exx[] = $ex['employee_id'];
+                    } 
+                    $this->db->or_where_in($sterm, implode(',', $exx));
+                }
                 $x++;
             }                 
         }
@@ -233,8 +244,7 @@ class Datatables extends MY_Controller
             $customer = $this->account_data->fetch($rows->customer_id ?? '', 1); 
 
             $data[]= array(  
-                implode(', ', $item_name), 
-                $rows->order_quantity, 
+                $this->hms_data->explode_sales_items($rows->order_items, $rows->order_quantity, ', '),  
                 $this->cr_symbol.number_format($rows->order_price, 2), 
                 $customer['name'], 
                 $rows->service_name, 

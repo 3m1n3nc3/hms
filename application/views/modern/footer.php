@@ -43,7 +43,7 @@
     <!-- Placed at the end of the document so the pages load faster --> 
     <!-- =============================================== -->
     <!-- jQuery -->
-    <script src="<?= base_url('backend/modern/plugins/jquery/jquery.min.js'); ?>"></script>
+    <script src="<?= base_url('backend/modern/plugins/jquery/jquery.js'); ?>"></script>
     <!-- Croppie -->
     <script src="<?= base_url('backend/js/plugins/croppie.js'); ?>"></script>
     <!-- jQuery UI -->
@@ -74,6 +74,24 @@
     <script src="<?= base_url('backend/js/chart.min.js'); ?>" type="text/javascript"></script> 
     <script language="javascript" type="text/javascript" src="<?= base_url('backend/js/full-calendar/fullcalendar.min.js'); ?>"></script>
     <script src="<?= base_url('backend/js/base.js'); ?>"></script> 
+
+    <!-- Notifications and more -->
+    <?php if ($this->account_data->logged_in()): ?>
+      <script>
+        jQuery(document).ready(function($) {
+
+            $("#get-notifications").click(function(event) {
+                var notf_list = $("#notifications__list");
+                var preloader = notf_list.children('.preloader').clone().removeClass('d-none');
+                notf_list.html(preloader);
+                get_notifications();
+                delay(function(){
+                
+                },400); 
+            });
+        });
+      </script>
+    <?php endif ?>
 
     <!-- Datatables -->
     <?php if (isset($use_table) && $use_table): ?>
@@ -202,7 +220,7 @@
         <!-- <script src="<?= base_url('backend/js/guidely/guidely.min.js'); ?>"></script> -->
 
         <script>
-          $(function () {
+          // $(function () {
             
           //   guidely.add ({
           //     attachTo: '#target-1', 

@@ -4,6 +4,7 @@ This is a starter template page. Use this page to start your new project from
 scratch. This page gets rid of all links and provides the needed markup only.
 -->
 <?php 
+  header('Content-type: text/html'); 
   $list_services = $this->services_model->get_service();
   $employee = $this->employee_model->getEmployee($this->uid, 1);
 ?>
@@ -50,13 +51,20 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 
   </head>
-  <body class="hold-transition sidebar-mini accent-info">
+  <body class="hold-transition sidebar-mini accent-info" data-page="<?=$page?>">
     
     <script type="text/javascript">
       siteUrl = "<?=site_url()?>";
       site_theme = "<?=$this->h_theme?>";
       currency_symbol = "<?=$this->cr_symbol?>";
       site_currency = "<?=$this->cr_symbol?>";
+
+      function is_logged() {
+        return '<?=$this->account_data->logged_in()?>';
+      }
+      function site_url(path){
+        return '<?=site_url()?>' + path;
+      }
     </script>
  
     <div class="wrapper">
@@ -90,9 +98,23 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <!-- Right navbar links -->
         <ul class="navbar-nav ml-auto">
 
-          <!-- Add Messages Dropdown Menu Here --> 
+          <!-- Add Messages Dropdown Menu Here -->       
+          <li class="nav-item dropdown">
+            <a class="nav-link" data-toggle="dropdown" id="get-notifications" href="#">
+              <i class="far fa-bell" id="notification_bell"></i>
+              <span class="badge badge-danger navbar-badge" id="new__notif"></span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" id="notifications__list">
 
-          <!-- Add Notifications Dropdown Menu Here --> 
+              <div class="text-center preloader d-none"> 
+                <div class="spinner-light text-info spinner-grow" role="status"> 
+                  <span class="sr-only">Loading...</span> 
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <!-- Add Notifications Dropdown Menu Here -->  
 
           <?php if(UID): ?> 
           <li class="nav-item dropdown user-menu">

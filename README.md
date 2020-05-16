@@ -62,3 +62,9 @@ run eliminate the need for certain employees as certain functions of your hotel 
 1. Create and Manage static pages
 2. Create and Manage User Privileges
 3. Stepped Configuration page  
+
+1. let the hotel run their offical website
+2. host your job/work on our hosting server then draft out hyperlink that linkd to the hotel official websites, where they can on their own link up the hyperlink we provided for them
+3. pls send me a snapshot of our hosting server where the featues of the  shortcut code for coding is added to enable the hotel update their server
+4. Run through the blueprint attached to perfect the HOTEL MAGT SYSTEM FOR CUSTOMERS AND STAFFS OF THE HOTEL.
+Thanks

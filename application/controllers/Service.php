@@ -24,8 +24,16 @@ class Service extends Admin_Controller
       'order_price' => $price
     );
 
-    if ($this->input->post()) {
-      $this->restaurant_model->add_service($data);
+    if ($this->input->post()) 
+    {
+      $this->restaurant_model->add_service($data); 
+
+      $re_data = array( 
+        'type' => 'made_sales',
+        'url' => site_url('services/sales_records') 
+      );
+      $this->notifications->notifyPrivilegedMods($re_data); 
+
       $this->session->set_flashdata('message', alert_notice('Service request placed', 'success'));
       redirect('services');
     } 
