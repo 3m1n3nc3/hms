@@ -79,21 +79,33 @@ class Homepage extends Frontsite_Controller {
      * @param  string   $id   id or safelink of the parent content to render
      * @return null           Does not return anything but uses code igniter's view() method to render the page
      */
-    public function account($id = '')
+    public function account($id = '', $set_view = 'home')
     { 
         $id = urldecode($id);
         $this->account_data->is_customer_logged_in(TRUE);
 
-    	$customer = $this->account_data->fetch($this->cuid, 1);
+    	$customer   = $this->account_data->fetch($this->cuid, 1);
     	$statistics = $this->accounting_model->statistics(['customer' => $customer['customer_id']]);
+
+        $pconfig['base_url']   = site_url('account/'.$customer['customer_id'].'/'.$set_view);
+        $pconfig['total_rows'] = count($this->customer_model->purchases(['customer_id' => $customer['customer_id']])); 
+
+        $this->pagination->initialize($pconfig);
+        $ppage = $this->uri->segment(4, 0);
+
+        $purchases  = $this->customer_model->purchases(['customer_id' => $customer['customer_id'], 'page' => $ppage]); 
 
         $data = array(
         	'page' => 'account',
         	'page_title' => $customer['name'] . ' Account' . ' - ' . my_config('site_name'),
         	'customer' => $customer,
-        	'statistics' => $statistics,
-        	'form_action' => 'account'
+            'purchases' => $purchases, 
+        	'statistics' => $this->accounting_model->statistics(['customer' => $customer['customer_id']]),
+        	'form_action' => 'account',
+            'set_view' => $set_view,
+            'view_link' => 'account/'.$customer['customer_id']
         );  
+        $data['pagination'] = $this->pagination->create_links();
  
 		$post = $this->input->post(NULL, TRUE);
 		if ($post) 
@@ -107,13 +119,21 @@ class Homepage extends Frontsite_Controller {
 			$this->form_validation->set_rules('customer_email', 'Email', 'trim|valid_email'.$unique_email); 
 			$this->form_validation->set_rules('customer_telephone', 'Phone', 'trim|required|numeric'.$unique_tel); 
 			$this->form_validation->set_rules('customer_address', 'Address', 'trim|required'); 
-			$this->form_validation->set_rules('customer_city', 'City', 'trim|required|alpha_dash'); 
-			$this->form_validation->set_rules('customer_state', 'State', 'trim|required|alpha_dash'); 
-			$this->form_validation->set_rules('customer_country', 'Country', 'trim|required|alpha_dash'); 
+			$this->form_validation->set_rules('customer_city', 'City', 'trim|required'); 
+			$this->form_validation->set_rules('customer_state', 'State', 'trim|required'); 
+            $this->form_validation->set_rules('customer_country', 'Country', 'trim|required'); 
+			$this->form_validation->set_rules('accept', 'Accept', 'trim|required',
+                    array('required' => 'You are required to accept our terms and conditions')
+                ); 
+            if ($post['nationality'] && $post['nationality'] !== config_item('site_country')) {
+                $this->form_validation->set_rules('customer_passport_no', 'Passport Number', 'trim|required',
+                    array('required' => 'By setting your nationality, you are required to enter your passport number, this only happens for non '.config_item('site_country').' citizens')
+                ); 
+            }
 
+            unset($post['update_profile'], $post['accept']); 
 	        if ($this->form_validation->run() !== FALSE) 
 	        {	
-	        	unset($post['update_profile']);
 	        	$post['cid'] = $customer['customer_id'];
 
 				$this->customer_model->add_customer($post);
@@ -137,34 +157,42 @@ class Homepage extends Frontsite_Controller {
      * @param  string   $id   id or safelink of the parent content to render
      * @return null           Does not return anything but uses code igniter's view() method to render the page
      */
-    public function reservations($room_id = '')
-    { 
+    public function reservations($room_id = '', $page = '')
+    {  
         $room_id = urldecode($room_id);
         $this->account_data->is_customer_logged_in(TRUE);
         $customer = $this->account_data->fetch($this->cuid, 1);
 
         $reservation = $this->reservation_model->reserved_rooms(['customer' => $customer['customer_id']], 1);
-        $rooms = $this->reservation_model->reserved_rooms(['customer' => $customer['customer_id'], 'uncheck' => TRUE]); 
 
-        $viewdata['pagination'] = $this->pagination->create_links();
+        $config['uri_segment']  = 3;
+        $config['base_url']     = site_url('reservations/'.$room_id);
+        $config['total_rows']   = count($this->reservation_model->reserved_rooms(['room' => $room_id, 'uncheck' => TRUE])); 
+
+        $rooms = $this->reservation_model->reserved_rooms(['customer' => $customer['customer_id'], 'uncheck' => TRUE, 'page' => $page]);
 
         $data = array('title' => 'Rooms - ' . my_config('site_name'), 'page' => 'reserved'); 
 
-        $customer = $this->account_data->fetch($this->cuid, 1);
+        $customer   = $this->account_data->fetch($this->cuid, 1);
         $statistics = $this->accounting_model->statistics(['customer' => $customer['customer_id']]);
 
         $data = array(
-            'page' => 'account',
-            'subpage' => 'reservation',
-            'space' => 'person',
-            'page_title' => lang('my_reservations') . ' - ' . my_config('site_name'),
-            'customer' => $customer,
-            'statistics' => $statistics,
-            'reservation' => $reservation,
-            'rooms' => $rooms,
-            'checkin_date' => date('Y-m-d', strtotime($reservation['checkin_date'])),
+            'page'          => 'account',
+            'subpage'       => 'reservation',
+            'space'         => 'person',
+            'page_title'    => lang('my_reservations') . ' - ' . my_config('site_name'),
+            'customer'      => $customer,
+            'statistics'    => $statistics,
+            'reservation'   => $reservation,
+            'rooms'         => $rooms,
+            'checkin_date'  => date('Y-m-d', strtotime($reservation['checkin_date'])),
             'checkout_date' => date('Y-m-d', strtotime($reservation['checkout_date']))
         );  
+        $data['pagination']    = $this->pagination->create_links();
+        $data['customer_link'] = anchor('account/', $customer['name'], ['class'=>'font-weight-bold mt-1']);
+
+        $data['print_invoice'] = $reservation['reservation_id'] ? anchor_popup('generate/invoice/'.$reservation['reservation_id'].'/reservation', '<i class="fa fa-print"></i> Print Invoice', ['class'=>'btn btn-success btn-block text-white font-weight-bold mt-1']) : '';
+
         $data['account_data'] = $this->load->view($this->h_theme.'/room/reserved_room', $data, TRUE);
 
         $this->load->view($this->h_theme.'/homepage/header', $data);    
@@ -389,6 +417,7 @@ class Homepage extends Frontsite_Controller {
     public function generic_invoice($reference = '', $get_type = '')
     {
         $reference = urldecode($reference);
+        $reference = ($reference == 'ALL') ? NULL : $reference;
         error_redirect(has_privilege('cashier-report') OR $this->account_data->is_customer_logged_in(), '401');
 
         $invoice_date  = 'NOW';
@@ -399,6 +428,7 @@ class Homepage extends Frontsite_Controller {
         // Debt payments Invoice
         $type_debt_payment = ($this->input->post('print') == 'debt_payment' || $this->input->get('print') == 'debt_payment' || $get_type == 'debt_payment');
         $type_reservation  = ($this->input->post('print') == 'reservation' || $this->input->get('print') == 'reservation' || $get_type == 'reservation');
+        $type_payment      = ($this->input->post('print') == 'payment' || $this->input->get('print') == 'payment' || $get_type == 'payment');
 
         if ($type_debt_payment) 
         {  
@@ -420,11 +450,12 @@ class Homepage extends Frontsite_Controller {
             $amount           = $paid_info['amount'];  
             $action           = 'homepage/generic_invoice/' . $paid_info['id'] . '/-post';
             $variables        = ['invoice_type' => $type, 'margin' => 'mx-auto'];
+            error_redirect(($this->cuid == $customer_id) OR has_privilege('payments'), '401');
         } 
         elseif ($type_reservation) 
         {
             // Reservation Invoice
-            $finvoice = $this->payment_model->get_payments(['reference' => $reference]); 
+            $finvoice = $this->payment_model->get_payments(['ref_reservation' => $reference]); 
             if (!$finvoice) 
             {
                 $finvoice = $this->session->userdata('reservation');  
@@ -461,13 +492,40 @@ class Homepage extends Frontsite_Controller {
                 $action           = 'homepage/generic_invoice/' . $reference . '/-post';
                 $variables        = ['invoice_type' => $type, 'margin' => 'mx-auto'];
 
-                $variables           = [
+                $variables        = [
                     'invoice_no' => $invoice_no, 'invoice_type' => $get_type, 'margin' => 'mx-auto', 'post' => $post, 'room' => $room_type_info, 
                 'customer' => $customer];
+
+                error_redirect(($this->cuid == $customer_id) OR has_privilege('payments'), '401');
             } else {
                 error_redirect($finvoice);
             }
-        } 
+        }
+        elseif ($type_payment) 
+        {
+            $finvoice = $this->payment_model->get_payments( ['reference' => $reference]); 
+        } else {
+            $finvoice = $this->payment_model->get_payments( ['reference' => $reference, 
+                'type' => ['type' => $get_type, 'col' => 'invoice', 't_col' => 'id']]
+            );
+            $invoice_id       = $reference;                          
+            $type             = $get_type;
+            $type_header      = ucwords(str_ireplace('_', ' ', $get_type));
+            $invoice_id       = $finvoice['id'];
+            $invoice_date     = $finvoice['date'];
+            $customer_name    = $finvoice['customer_name'];
+            $customer_address = $finvoice['customer_address'];
+            $customer_id      = $finvoice['customer_id'];
+            $quantity         = 1;
+            $item_name        = $type_header . ' Payment';
+            $reference        = $finvoice['reference'];
+            $description      = $finvoice['description'];
+            $amount           = $finvoice['amount'];  
+            $action           = 'homepage/generic_invoice/' . $finvoice['reference'] . '/' . $get_type . '/-post';
+            $variables        = ['invoice_type' => $type, 'margin' => 'mx-auto'];
+            
+            error_redirect(($this->cuid == $customer_id) OR has_privilege('payments'), '401');
+        }
         $invoice   = array(
             'invoice_id'    => $invoice_id,    'date'          => date('d M Y', strtotime($invoice_date)),
             'customer_name' => $customer_name, 'customer_addr' => $customer_address,
@@ -598,10 +656,10 @@ class Homepage extends Frontsite_Controller {
     	}
  
     	// Reserve the room
-    	if (isset($_SESSION['reservation']) && $this->account_data->customer_logged_in())
+    	if (isset($_SESSION['reservation']) && isset($this->logged_customer['customer_id']))
     	{
-    		$post = $this->session->userdata('reservation');
-			$customer = $this->account_data->fetch($this->cuid, 1);
+    		$post           = $this->session->userdata('reservation');
+			$customer       = $this->account_data->fetch($this->logged_customer['customer_id'], 1);
 			$room_type_info = $this->room_model->getRoomType($post['room_type']); 
 
 			// Check if the customer and room types are set

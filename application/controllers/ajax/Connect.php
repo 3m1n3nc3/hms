@@ -17,17 +17,17 @@ class Connect extends MY_Controller {
      */
 	public function upload_image($endpoint_id = '', $endpoint = 0)
 	{ 	 
-		if ($endpoint === 'customer') 
+		if ($endpoint === 'customer' OR $endpoint === 'passport') 
 		{ 
 			$user_id  = $endpoint_id ? $endpoint_id : $this->session->userdata('cusername');
 			$data     = $this->account_data->fetch($user_id, 1); 
-	        $sub_folder = $data['customer_username'] . '/';  
+	        $sub_folder = $data['customer_username'] . $data['customer_id'] . '/';  
 		}
 		elseif ($endpoint === 'employee') 
 		{ 
 			$user_id  = $endpoint_id ? $endpoint_id : $this->session->userdata('username');
 			$data     = $this->account_data->fetch($user_id); 
-	        $sub_folder  = $data['employee_username'] . '/'; 	 
+	        $sub_folder  = $data['employee_username'] . $data['employee_id'] . '/'; 	 
 		}
 		else 
 		{  
@@ -36,26 +36,30 @@ class Connect extends MY_Controller {
 	        // $room = $this->room_model->getRoom(array('id' => $endpoint_id));
 	        // $roomType = $this->room_model->getRoomType($endpoint_id/*$room['room_type']*/, 1);
 	        if ($endpoint === 'page') 
-	        {
-	        	$data = $this->content_model->get(array('id' => $endpoint_id));
-	        }
-	        else 
+            {
+                $data = $this->content_model->get(array('id' => $endpoint_id));
+            }
+            else 
 	        {
 	        	$data = $this->room_model->getRoomType($endpoint_id, 1);
 	        }
 	        $sub_folder  = $endpoint . '/';
 		} 
 
-		$table_index = ($endpoint === 'page') ? 'banner' : 'image'; 
+		$table_index = ($endpoint === 'page') ? 'banner' : ($endpoint === 'passport') ? 'passport' : 'image'; 
 
-		$upload_type 	 = $this->input->post('set_type');
-		if ($upload_type == 'cover') 
+		$upload_type = $this->input->post('set_type');
+		if ($upload_type === 'cover') 
+        {
+            $folder = 'covers/';
+        } 
+        elseif ($upload_type === 'avatar') 
+        {
+            $folder = 'avatars/';
+        } 
+        else 
 		{
-			$folder 	 = 'covers/';
-		} 
-		else 
-		{
-			$folder 	 = 'avatars/'; 
+			$folder = $endpoint . '/'; 
 		}
 
 		// Set the upload directory
@@ -97,7 +101,7 @@ class Connect extends MY_Controller {
 		                {
 		                    $data_img = 'uploads/' . $folder . $sub_folder . $new_image;
 
-							if ($endpoint === 'customer') 
+							if ($endpoint === 'customer' OR $endpoint === 'passport') 
 							{
 								$this->customer_model->add_customer(['cid' => $data['customer_id'], $table_index => $data_img]);
 							}
@@ -219,9 +223,12 @@ class Connect extends MY_Controller {
 
         try 
         {
-            $param              = ['recipient_id' => $this->logged_user['employee_id'], 'type' => 'all'];
-            $notif_list         = $this->notifications->getNotifications($param);
-            $data['notif_list'] = o2Array($notif_list);
+            $param               = ['recipient_id' => $this->logged_user['employee_id'], 'type' => 'all'];
+            $employee_notif_list = $this->notifications->getNotifications($param);
+            $cparam              = ['recipient_id' => $this->logged_user['employee_id'], 'type' => 'customer'];
+            $customer_notif_list = $this->notifications->getNotifications($cparam);
+            $data['employee_notif'] = o2Array($employee_notif_list); 
+            $data['customer_notif'] = o2Array($customer_notif_list); 
 
             $response['status'] = 200;
             $response['html']   = $this->load->view($this->h_theme. '/extra_layout/notifications', $data, TRUE);
@@ -285,7 +292,11 @@ class Connect extends MY_Controller {
         $room_id = $this->input->post('room_id', TRUE);
         $room    = $this->reservation_model->reserved_rooms(['room' => $room_id, 'overstay' => TRUE], 1);
         if ($room) {
-            $response['message'] = alert_notice(sprintf(lang('customer_overstaying'), 'ddd'), 'warning'); 
+            if ($this->uid) {
+                $response['message'] = alert_notice(sprintf(lang('customer_overstaying'), site_url('room/reserved_room/'.$room_id.'/'.$room['customer_id'])), 'warning'); 
+            } else { 
+                $response['message'] = alert_notice('This room is not available for now.', 'warning'); 
+            }
             $response['available']  = false;
         }
 

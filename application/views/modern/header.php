@@ -57,8 +57,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
       siteUrl = "<?=site_url()?>";
       site_theme = "<?=$this->h_theme?>";
       currency_symbol = "<?=$this->cr_symbol?>";
-      site_currency = "<?=$this->cr_symbol?>";
-
+      site_currency = "<?=$this->cr_symbol?>"; 
+      hms_lang = <?php 
+          $ck_idiom = $this->cuid ? 'user_' : 'customer_';
+          echo json_encode(
+            array(
+              'checkin_from' => $this->cuid ? lang($ck_idiom.'checkin_from') : lang($ck_idiom.'checkin_from'),
+              'checkout_to' => $this->cuid ? lang($ck_idiom.'checkout_to') : lang($ck_idiom.'checkout_to') 
+            ), JSON_FORCE_OBJECT)?>  
       function is_logged() {
         return '<?=$this->account_data->logged_in()?>';
       }
@@ -106,10 +112,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </a>
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" id="notifications__list">
 
-              <div class="text-center preloader d-none"> 
-                <div class="spinner-light text-info spinner-grow" role="status"> 
-                  <span class="sr-only">Loading...</span> 
-                </div>
+            </div>
+            <div class="text-center preloader d-none"> 
+              <div class="spinner-light text-info spinner-grow" role="status"> 
+                <span class="sr-only">Loading...</span> 
               </div>
             </div>
           </li>
@@ -174,10 +180,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
               <?php if (has_privilege('reservation')): ?>
                 <li class="nav-item">
-                  <a href="<?= site_url('reservation')?>" class="nav-link <?= ($page == "reservation" ? 'active' : '')?>">
+                  <a href="<?= site_url('reservation')?>" class="nav-link <?= ($page == "reception" ? 'active' : '')?>">
                     <i class="nav-icon fas fa-tasks"></i>
                     <p>
-                      Reservation
+                      Reception
                     </p>
                   </a>
                 </li>
@@ -308,8 +314,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
               <?php endif; ?>
 
               <?php if (has_privilege('cashier-report') || has_privilege('expense-register') || has_privilege('payments') || has_privilege('room-sales')): ?>
-                <li class="nav-item has-treeview <?= ($page == "cashier-report" || $page == "expenses-register" || $page == "online_payments" || $page == "room_sales" ? 'menu-open' : '')?>">
-                  <a href="#" class="nav-link <?= ($page == "cashier-report" || $page == "expenses-register" || $page == "online_payments" || $page == "room_sales" ? 'active' : '')?>">
+                <li class="nav-item has-treeview <?= ($page == "cashier-report" || $page == "expenses-register" || $page == "sales_report" || $page == "room_sales" ? 'menu-open' : '')?>">
+                  <a href="#" class="nav-link <?= ($page == "cashier-report" || $page == "expenses-register" || $page == "sales_report" || $page == "room_sales" ? 'active' : '')?>">
                     <i class="nav-icon fas fa-calculator"></i>
                     <p>
                       Cashier
@@ -338,9 +344,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   
                   <?php if (has_privilege('payments')): ?>
                     <li class="nav-item">
-                      <a href="<?= site_url('accounting/cashier/payments')?>" class="nav-link <?= ($page == "online_payments" ? 'active' : '')?>">
-                        <i class="fa<?= ($page == "online_payments" ? 's' : 'r')?> fa-circle nav-icon"></i>
-                        <p>Online Payments</p>
+                      <a href="<?= site_url('accounting/cashier/payments')?>" class="nav-link <?= ($page == "sales_report" ? 'active' : '')?>">
+                        <i class="fa<?= ($page == "sales_report" ? 's' : 'r')?> fa-circle nav-icon"></i>
+                        <p>Sales Report</p>
                       </a>
                     </li> 
                   <?php endif;?> 

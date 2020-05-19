@@ -25,16 +25,16 @@ class MY_Controller extends CI_Controller
         $this->uid      = $this->session->userdata('uid');
         $this->username = $this->session->userdata('username');
         $this->fullname = $this->session->userdata('fullname');
-        $this->logged_user = $this->employee_model->getEmployee($this->uid, 1);
-        $this->show_guide  = !$this->session->userdata('show_guide');
+        $this->logged_user     = $this->employee_model->getEmployee($this->uid, 1);
+        $this->show_guide      = !$this->session->userdata('show_guide');
         $this->department_name = $this->session->userdata('department_name');
 
-        $this->cuid     = $this->session->userdata('cuid');
-        $this->username = $this->session->userdata('cusername');
+        $this->cuid            = $this->session->userdata('cuid');
+        $this->username        = $this->session->userdata('cusername');
         $this->logged_customer = $this->cuid ? $this->customer_model->get_customer(['id' => $this->cuid]) : [];
 
-        $this->currency = 'NGN';
-        $this->cr_symbol = $this->intl->currency(3, $this->currency);
+        $this->currency        = 'NGN';
+        $this->cr_symbol       = $this->intl->currency(3, $this->currency);
     } 
 }
 

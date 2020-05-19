@@ -28,8 +28,8 @@ class Cashier extends Admin_Controller
 
 		$viewdata = array(
 			'expenses' => $this->accounting_model->get_expense($filter),  
-			'date_from' => $this->accounting_model->min_max()['date'],
-			'date_to' => $this->accounting_model->min_max(1)['date'],
+			'date_from' => $this->accounting_model->min_max(),
+			'date_to' => $this->accounting_model->min_max(1),
 			'from' => $filter_from,
 			'to' => $filter_to,
 			'filter_query' => $filter_query,
@@ -63,8 +63,8 @@ class Cashier extends Admin_Controller
         error_redirect(has_privilege('payments'), '401');
 
 		$filter_from = $this->input->get('from');
-		$filter_to = $this->input->get('to');
-		$filter = array();
+		$filter_to   = $this->input->get('to');
+		$filter      = array();
 		if ($filter_from) 
 		{
 			$filter['from'] = $filter_from;
@@ -73,13 +73,15 @@ class Cashier extends Admin_Controller
 		{
 			$filter['to'] = $filter_to;
 		}
+        
+        $filter['type'] = 'ALL';
 		
 		$filter_query = ($filter_from && $filter_to ? '?from='.$filter_from.'&to='.$filter_to : ($filter_from ? '?from='.$filter_from : ($filter_to ? '?to='.$filter_to : null)));
 
 		$viewdata = array(
 			'payments' => $this->payment_model->get_payments($filter),  
-			'date_from' => $this->payment_model->min_max()['date'],
-			'date_to' => $this->payment_model->min_max(1)['date'],
+			'date_from' => $this->payment_model->min_max(),
+			'date_to' => $this->payment_model->min_max(1),
 			'from' => $filter_from,
 			'to' => $filter_to,
 			'filter_query' => $filter_query,
@@ -87,11 +89,11 @@ class Cashier extends Admin_Controller
 			'table_method' => 'payment_report'.($filter_query)
 		); 
 
-		$data = array('title' => 'Online Payments - ' . my_config('site_name'), 'page' => 'online_payments');
+		$data = array('title' => 'Sales Report - ' . my_config('site_name'), 'page' => 'sales_report');
 
 		if ($this->input->post('print')) 
 		{	
-			$viewdata['table_method'] = 'cashier_report/0'.($filter_query);
+			$viewdata['table_method'] = 'payment_report/0'.($filter_query);
 			$this->load->view($this->h_theme.'/accounting/payment_report',array_merge($data, $viewdata));
 		}
 		else
@@ -130,8 +132,8 @@ class Cashier extends Admin_Controller
 
 		$viewdata = array(
 			'room_sales' => $this->room_model->room_sales($filter),  
-			'date_from' => $this->room_model->min_max()['date'],
-			'date_to' => $this->room_model->min_max(1)['date'],
+			'date_from' => $this->room_model->min_max(),
+			'date_to' => $this->room_model->min_max(1),
 			'from' => $filter_from,
 			'to' => $filter_to,
 			'filter_query' => $filter_query,

@@ -87,7 +87,7 @@ class Services extends Admin_Controller {
 		$this->load->view($this->h_theme.'/footer', $viewdata);
 	}
 
-
+ 
     /**
      * This methods allows for adding or updating new items to the inventory
      * @param string 	$set_item_id 	The Id of the item to edit if updating
@@ -97,24 +97,24 @@ class Services extends Admin_Controller {
 	{
         error_redirect(has_privilege('inventory'), '401');
 
-		$services = $this->services_model->get_service();
+		$services       = $this->services_model->get_service();
 		$inventory_item = $this->services_model->get_stock(['item_id' => $set_item_id]);  
 
 		if($this->input->post("item_name"))
 		{
-			$item_name = $this->input->post("item_name");
-			$item_details = $this->input->post("item_details");
+			$item_name     = $this->input->post("item_name");
+			$item_details  = $this->input->post("item_details");
 			$item_quantity = $this->input->post("item_quantity");
-			$item_price = $this->input->post("item_price");
-			$item_service = $this->input->post("item_service");
+			$item_price    = $this->input->post("item_price");
+			$item_service  = $this->input->post("item_service");
 	        
 	        $save = array(
-	            'item_name' => $item_name,
-	            'item_details' => $item_details,
+	            'item_name'     => $item_name,
+	            'item_details'  => $item_details,
 	            'item_quantity' => $item_quantity,
-	            'item_price' => $item_price,
-	            'item_service' => $item_service,
-		        'employee_id' => $this->uid,
+	            'item_price'    => $item_price,
+	            'item_service'  => $item_service,
+		        'employee_id'   => $this->uid,
 	            'item_add_date' => date('Y-m-d H:m:s')
 	        );
 	        if ($set_item_id) 
@@ -122,7 +122,15 @@ class Services extends Admin_Controller {
 	        	$save['item_id'] = $set_item_id;
 	        }
 				
-			$this->services_model->add_stock($save);
+			$new_item_id = $this->services_model->add_stock($save);
+
+            // Send notifications
+            $re_data = array( 
+                'type' => ($new_item_id) ? 'added_inventory_item' : 'updated_inventory_item',
+                'url'  => site_url('services/inventory')
+            );
+            $this->CI->notifications->notifyPrivilegedMods($re_data);  
+
 			$mit = $inventory_item ? 'updated' : 'added';
 			$this->session->set_flashdata('message', alert_notice('Inventory Item '.$mit, 'success')); 
 			redirect("services/inventory");
@@ -196,39 +204,44 @@ class Services extends Admin_Controller {
 		}
 		else
 		{ 
-			$items_array = $this->input->post('stock_item');
-			$items = implode(',', $items_array);
-
-			$quantity_array = $this->input->post('stock_qty');
-			$quantity = implode(',', $quantity_array);
-
+			$items_array     = $this->input->post('stock_item');
+			$items           = implode(',', $items_array);
+			$quantity_array  = $this->input->post('stock_qty');
+			$quantity        = implode(',', $quantity_array);
 			$stock_item_name = $this->input->post('stock_item_name');
+            $reference       = $this->enc_lib->generateToken(12, 1, 'HRSPR-', TRUE);
 
-			$errors = []; $sum_qty = 0;
+			$errors = $price = []; $sum_qty = 0;
 	        foreach ($items_array as $key => $sid) 
 	        {
 	            $res = $this->services_model->get_stock(array('item_id' => $sid)); 
 
 	            if ($res)
             	{	
-            		$real_quantity = ($quantity_array ? $quantity_array[$key] : 1);
+            		$request_quantity = ($quantity_array ? $quantity_array[$key] : 1);
 
-            		if ($real_quantity == 0) 
+            		if ($request_quantity == 0) 
             		{
             			$errors[] .= 'You can\'t make a request for 0 '.$stock_item_name[$key];
             		}
-            		elseif ($res['item_quantity'] < $real_quantity) 
+            		elseif ($res['item_quantity'] < $request_quantity) 
 	            	{
-	            		$errors[] .= 'There are less than '.$real_quantity.' '.$stock_item_name[$key].' in stock';
-	            	} 
+	            		$errors[] .= 'There are less than '.$request_quantity.' '.$stock_item_name[$key].' in stock';
+	            	} elseif ($post['customer'] == 0 && $post['payment'] <= 0 && $post['payment'] != 'c') {
+                        $errors[] .= 'Generic Customers can\'t make a purchase on credit';
+                    }
 
-            		$sum_qty += $real_quantity;
+                    $price[]  = $res['item_price'];
+
+            		$sum_qty += $request_quantity;
             	}
 	            else
 	            {
             		$errors[] .= $stock_item_name[$key].' is no longer available in stock';
             	}
 	        }
+
+            $item_prices = implode(',', $price);
 
 	        if (empty($errors)) { 
 		        $save = array(
@@ -244,8 +257,23 @@ class Services extends Admin_Controller {
 		        );
 
 				$this->hms_parser->update_stock($items_array, $quantity_array);
-				$this->services_model->order_service($save);
-				$this->session->set_flashdata('message', alert_notice($sum_qty.' Items Sold', 'success'));
+				$invoice = $this->services_model->order_service($save);
+
+                $quantity_price = array($quantity, $item_prices);
+                $_items   = $this->hms_data->explode_sales_items($items, $quantity_price, ', ');
+                // Add a new payment record
+                $add_payment_record = array(
+                    'customer_id'   => $save['customer_id'],
+                    'payment_type'  => 'sales_service_orders',
+                    'reference'     => $reference,
+                    'invoice'       => $invoice,
+                    'amount'        => $save['paid'],
+                    'description'   => 'Service Purchase of ' . $_items
+                );
+                $this->payment_model->add_payments($add_payment_record);
+
+                $print_invoice = anchor_popup('generate/invoice/'.$reference.'/sales_service_orders', '<i class="fa fa-print"></i> Print Invoice', ['class'=>'text-white font-weight-bold btn btn-success mb-3']);
+				$this->session->set_flashdata('message', alert_notice($sum_qty.' Items Sold - '.$_items, 'success').$print_invoice);
 			}
 			else
 			{ 
@@ -255,7 +283,7 @@ class Services extends Admin_Controller {
 
 			}
 		} 
-		redirect("services");
+		redirect("service/point/" . $post['service']);
 	}
 
 

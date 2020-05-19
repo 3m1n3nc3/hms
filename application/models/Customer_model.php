@@ -20,7 +20,7 @@ class Customer_model extends CI_Model {
     {
         if (isset($data['id']) || isset($data['email']) || isset($data['username']) || isset($data['customer_id']) || isset($data['customer_TCno'])) 
         {
-            $this->db->select('customer_id, customer_username, customer_firstname, customer_lastname, image, customer_TCno, customer_address, customer_state, customer_city, customer_country, customer_telephone,  customer_email')->from('customer');
+            $this->db->select("customer_id, customer_username, customer_firstname, customer_lastname, CONCAT_WS(' ', customer_firstname, customer_lastname) AS name, image, customer_TCno, CONCAT_WS(', ', customer_address, customer_city, customer_state, customer_country) AS address, customer_address, customer_state, customer_city, customer_country, customer_nationality, customer_passport_no, passport, customer_telephone,  customer_email")->from('customer');
         
             if (isset($data['username'])) 
             {
@@ -128,6 +128,7 @@ class Customer_model extends CI_Model {
      */
     function add_customer($data)
     {
+        unset($data['accept']);
         if (isset($data['cid'])) 
         {
             $data['customer_id'] = $data['cid'];

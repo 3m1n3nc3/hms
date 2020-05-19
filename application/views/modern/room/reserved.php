@@ -69,9 +69,11 @@
                       <?php endif; ?>
                       </tbody>
                     </table>
-
                   </div>
                 </div>  
+
+                <?=$pagination ?>
+
               </div>
               <!-- /.col-md-6 -->
             </div>

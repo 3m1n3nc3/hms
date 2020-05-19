@@ -2,8 +2,11 @@
 
 class Customer extends Admin_Controller 
 { 
-
-
+    public function __construct()
+    {
+        parent::__construct();    
+    }
+ 
     /**
      * This method will allow you to add or update customers
      * @param  string   $ref    Probably the id or username of the customer if updating
@@ -47,7 +50,17 @@ class Customer extends Admin_Controller
 						$msg = lang('customer_updated');
 						$data['cid'] = $customer['customer_id'];
 					}
-					$this->customer_model->add_customer($data);
+					
+                    $customer_id = $this->customer_model->add_customer($data);
+
+                    // Notify Admins of the addition
+                    $re_data = array( 
+                        'type' => 'added_new_customer', 
+                        'url'  => site_url('customer/data/'.$customer_id) 
+                    );
+
+                    $this->notifications->notifyPrivilegedMods($re_data); 
+
 					$this->session->set_flashdata('message', alert_notice($msg, 'success')); 
 					redirect("customer/add/$ref/$action");
 				} 
@@ -96,7 +109,7 @@ class Customer extends Admin_Controller
      * This methods allow viewing of a customer's profile
      * @param  string   $id   	Id of the customer records to retrieve 
      * @return null             Does not return anything but uses code igniter's view() method to render the page
-     */
+     */ 
 	public function data($id = "", $set_view = 'home')
 	{	
         error_redirect(has_privilege('customers'), '401');
@@ -156,6 +169,47 @@ class Customer extends Admin_Controller
 		$this->load->view($this->h_theme.'/customer/view',$viewdata);
 		$this->load->view($this->h_theme.'/footer');
 	} 
+
+
+    /**
+     * View a detailed report on the customer
+     * @return null           Does not return anything but uses code igniter's view() method to render the page
+     */
+    public function report($customer_id = '')
+    {  
+        $filter_from = $this->input->get('from');
+        $filter_to   = $this->input->get('to');
+        if ($filter_from) 
+        {
+            $query_data['from'] = $filter_from;
+        }
+        if ($filter_to) 
+        {
+            $query_data['to'] = $filter_to;
+        }
+
+        $query_data['customer_id'] = $query_data['customer'] = $customer_id;
+        $query_data['uncheck']     = true;
+        $query_data['type']        = 'ALL';
+
+        $min_max_dates = $this->accounting_model->customer_report_dates(['customer_id' => $customer_id]);
+
+        $viewdata = array(
+            'reservations' => $this->reservation_model->reserved_rooms($query_data),  
+            'payments'     => $this->payment_model->get_payments($query_data),   
+            'purchases'    => $this->services_model->service_orders($query_data),   
+            'statistics'   => $this->accounting_model->statistics($query_data),
+            'customer'     => $this->customer_model->get_customer($query_data),
+            'date_from'    => $min_max_dates['min_date'],
+            'date_to'      => $min_max_dates['max_date'],
+            'from'         => $filter_from,
+            'to'           => $filter_to,
+            'filter_query' => ''
+        ); 
+
+        $data = array('title' => 'Customer Report - ' . my_config('site_name'), 'page' => 'customer_report');
+        $this->load->view($this->h_theme.'/customer/customer_report',array_merge($data, $viewdata));
+    }
 
 
     /**
@@ -219,72 +273,130 @@ class Customer extends Admin_Controller
      * @param  string   $action    Action being taken
      * @return null     Redirects to the reservation page
      */
-    function update_debt($action = '')
+    function update_debt($action = '') 
     {
-        $resp['message'] = alert_notice('Permission Denied', 'danger');
+        $resp['message']         = alert_notice('Permission Denied', 'danger');
+        $resp['reservation_ref'] = $this->enc_lib->generateToken(12, 1, 'HRSPR-', TRUE);
+
+        $nm_prop = $am_prop = $pd_prop = $id_prop = $append_item = null;
 
         if (has_privilege('customers')) {
             $data = $this->input->post(NULL, TRUE);
-            $item = $this->customer_model->purchases(['item_id' => $data['item_id']]);
 
-            $debt_note = $this->cr_symbol.number_format($item['order_price']-$item['paid'], 2);
+            $done = 'updated';
 
-            if ($action == 'update' && $data['amount'] > $item['order_price']) 
+            $amount_note = $this->cr_symbol.number_format($data['amount'], 2);
+
+            $update_debt_records = false;
+            if ($action == 'update' || $action == 'clear') 
             {
-                $resp['message'] = alert_notice("Amount cannot be greater than $debt_note");
-            }
-            elseif ($action == 'update' && $data['amount'] <= 0) 
-            {
-                $resp['message'] = alert_notice('Amount cannot be 0');
-            } 
-            else 
-            {
-                $done = 'updated';
+                $item      = $this->customer_model->purchases(['item_id' => $data['item_id']]);
+                $debt_note = $this->cr_symbol.number_format($item['order_price']-$item['paid'], 2);
+                
                 if ($action == 'clear')
                 {
                     $done           = 'cleared';
                     $data['amount'] = $item['order_price']-$item['paid'];
                 }
 
-                $amount_note = $this->cr_symbol.number_format($data['amount'], 2);
-                
-                if ($this->customer_model->update_debt($data))
+                $debt_data['payment_table'] = 'sales_service_orders';
+                $append_item                = ' Purchase';
+                $amt_prop                   = 'order_price';
+                $success_message            = "Debt has been $done, $amount_note was paid.";
+                $debt_data['description']   = "$amount_note Was paid off for a debt of $debt_note";
+                if ($data['amount'] > $item['order_price'] || $data['amount'] <= 0) 
                 {
-                    $debt_data['amount']        = $data['amount'];
-                    $debt_data['payment_id']    = $data['item_id'];
-                    $debt_data['payment_table'] = 'sales_service_orders';
-                    $debt_data['description']   = "$amount_note Was paid off for a debt of $debt_note";
-                    $ins = $this->payment_model->add_debt_payment($debt_data);
-
-                    $resp['message'] = alert_notice("Debt has been $done, $amount_note was paid.", 'success');
-
-                    $paid_info = $this->payment_model->get_debt_payments(
-                        ['table' => $debt_data['payment_table'], 'am_prop' => 'order_price', 'id' => $ins]
-                    );
-                    $invoice   = array(
-                        'invoice_id' => $paid_info['id'],
-                        'date' => date('d M Y', strtotime($paid_info['date'])),
-                        'customer_name' => $paid_info['customer_name'],
-                        'customer_addr' => $paid_info['customer_address'],
-                        'customer_id' => $paid_info['customer_id'],
-                        'qty' => 1,
-                        'item' => $paid_info['item_name'] . ' Purchase',
-                        'reference' => $paid_info['payment_id'],
-                        'description' => $paid_info['description'],
-                        'amount' => $paid_info['amount'],
-                        'action' => 'homepage/generic_invoice/' . $paid_info['id'] . '/-post',
-                        'vat' => 0,
-                        'variables' => ['invoice_type' => 'debt_payment', 'width' => 11, 'post' => [], 'room' => [], 'customer' => []] 
-                    );
-                    $resp['message'] .= $this->load->view($this->h_theme.'/extra_layout/generic_invoice', $invoice, true);
+                    $resp['message'] = alert_notice("Amount cannot be 0 and cannot be greater than $debt_note");
+                } 
+                else 
+                {
+                    $upd_debt_record = $this->customer_model->update_debt($data);
                 }
             }
+            elseif ($action == 'pay_overstay') 
+            {
 
-            $update             = $this->customer_model->purchases(['item_id' => $data['item_id']]);
-            $statistics         = $this->accounting_model->statistics(['customer' => $item['customer_id']]);
-            $resp['total_debt'] = $this->cr_symbol.number_format($statistics['debt'], 2);
-            $resp['paid']       = $this->cr_symbol.number_format($update['paid'], 2);
-            $resp['debt']       = $this->cr_symbol.number_format($update['order_price']-$update['paid'], 2);
+                $resvn = $this->reservation_model->fetch_reservation(['id' => $data['item_id']]);
+                $item  = $this->reservation_model->overstayed_room(['customer' => $resvn['customer_id'], 'room' => $resvn['room_id']]); 
+
+                $debt_note = $this->cr_symbol.number_format(($item['overdue_cost']), 2);
+
+                $debt_data['payment_table'] = 'reservation';
+                $append_item                = ' Room ' . $resvn['room_id'];
+                $am_prop                    = $pd_prop = 'reservation_price';
+                $nm_prop                    = 'reservation_ref';
+                $id_prop                    = 'reservation_id';
+                $success_message            = "Over stay debt of $amount_note was paid. You may need to refresh this page!";
+                $debt_data['description']   = "$amount_note Was paid off for an overstay debt of $debt_note";
+                $new_checkout_date = strtotime("{$item['checkout_date']} + {$data['p_days']} days");
+                $upt_resvn = array(
+                    'reservation_id' => $resvn['reservation_id'],
+                    'checkout_date'  => date('Y-m-d H:i:s', $new_checkout_date)
+                );
+                $resp['total_debt'] = $debt_note;
+                $resp['paid']    = $amount_note;
+                $resp['debt']    = $this->cr_symbol.number_format($item['overdue_cost']-$data['amount'], 2);
+                $upd_debt_record = $this->reservation_model->add_reservation($upt_resvn);
+            } 
+            
+            if ($upd_debt_record)
+            {
+                // Add a new payment record
+                $add_payment_record = array(
+                    'customer_id'  => $resvn['customer_id'],
+                    'payment_type' => 'debt_payments',
+                    'reference'    => $resp['reservation_ref'],
+                    'invoice'      => $resp['reservation_ref'],
+                    'amount'       => $data['amount'],
+                    'description'  => $debt_data['description']
+                );
+                $this->payment_model->add_payments($add_payment_record);
+
+                $debt_data['amount']        = $data['amount'];
+                $debt_data['payment_id']    = $data['item_id'];
+                $ins = $this->payment_model->add_debt_payment($debt_data);
+
+                $resp['message'] = alert_notice($success_message, 'success');
+
+                $paid_info = $this->payment_model->get_debt_payments(
+                    ['table' => $debt_data['payment_table'], 'am_prop' => $am_prop, 'id_prop' => $id_prop, 'pd_prop' => $pd_prop, 'nm_prop' => $nm_prop, 'id' => $ins]
+                );
+
+                $invoice   = array(
+                    'invoice_id' => $paid_info['id'],
+                    'date' => date('d M Y', strtotime($paid_info['date'])),
+                    'customer_name' => $paid_info['customer_name'],
+                    'customer_addr' => $paid_info['customer_address'],
+                    'customer_id' => $paid_info['customer_id'],
+                    'qty' => 1,
+                    'item' => $paid_info['item_name'] . $append_item,
+                    'reference' => $paid_info['payment_id'],
+                    'description' => $paid_info['description'],
+                    'amount' => $paid_info['amount'],
+                    'action' => 'homepage/generic_invoice/' . $paid_info['id'] . '/-post',
+                    'vat' => 0,
+                    'variables' => ['invoice_type' => 'debt_payment', 'width' => 11, 'post' => [], 'room' => [], 'customer' => []] 
+                );
+
+                // Send notifications
+                $re_data = array( 
+                    'type' => 'cleared_a_debt',
+                    'url'  => site_url('generate/invoice/' . $paid_info['id'] . '/debt_payment')
+                );
+                $this->CI->notifications->notifyPrivilegedMods($re_data);  
+
+                $resp['message'] .= $this->load->view($this->h_theme.'/extra_layout/generic_invoice', $invoice, true);
+            }
+
+            $statistics['debt'] = $update['paid'] = $update['order_price'] = 0;
+            if ($action == 'update' || $action == 'clear') 
+            {
+                $update         = $this->customer_model->purchases(['item_id' => $data['item_id']]);
+                $statistics     = $this->accounting_model->statistics(['customer' => $item['customer_id']]);
+                $resp['total_debt'] = $this->cr_symbol.number_format($statistics['debt'], 2);
+                $resp['paid']       = $this->cr_symbol.number_format($update['paid'], 2);
+                $resp['debt']       = $this->cr_symbol.number_format($update['order_price']-$update['paid'], 2);
+            }
         } 
 
         header('Content-type: application/json'); 

@@ -76,9 +76,13 @@ class Hms_data {
                 {
                     redirect('account');
                 }
-                elseif ($redirect) 
+                elseif ($redirect !== FALSE) 
                 {
                     redirect($redirect);
+                } 
+                else 
+                {
+                    redirect(current_url());
                 }
             }  
             else
@@ -91,16 +95,52 @@ class Hms_data {
         }
     }
 
-    function explode_sales_items($items = array(), $iqty = array(), $implode = false, $qty_text = '') 
+    /**
+     * Creates a string containing a list of items separated by the delimiter 
+     * provided in the implode parameter
+     * @param  string  $items    A comma separated string containing a list of purchased items
+     * @param  string  $iqty     A comma separated string containing a list of quantities or a numeric array 
+     *                           each containing A comma separated string containing a list of quantities and
+     *                           prices order as $items
+     *                           E.g. [0=>2,3,4],[1=>100,200,300] The quantity comes first then the prices
+     * @param  boolean $implode  The string to implode the results with
+     * @param  string  $qty_text Text to prepend on the quantity
+     * @return string            A formated string possibly containing a list of purchased items, quantity and prices
+     */
+    function explode_sales_items($items = '', $iqty = '', $implode = false, $qty_text = '') 
     {
-        $item_name = [];
+        if (!empty($iqty[1]) && !is_array($iqty[1]) && ',' !== $iqty[1]) {
+            foreach (explode(',', $iqty[1]) as $k => $v) 
+            {
+                $stk = $this->CI->services_model->get_stock(array('item_id' => $v)); 
+                if ($stk)
+                {
+                    $stk_price[] = $stk['item_price'];
+                }
+            }
+            $iqty[1] = implode(',', $stk_price);
+        }
+
+        $item_name = $price = [];
         foreach (explode(',', $items) as $key => $sid) 
         {   
             $quantity = '';
             if (!empty($iqty)) 
             {
-                $qty = explode(',', $iqty);
-                $quantity = ($qty_text ? " ($qty_text {$qty[$key]})" : " ({$qty[$key]})");
+                $iqty_qty = $iqty;
+                $price[]  = null;  
+                if (isset($iqty[1])) 
+                {
+                    $iqty_qty    = $iqty[0];
+                    $iqty_price  = $iqty[1];
+                    $price       = explode(',', $iqty_price);  
+                    $price[$key] = $this->CI->cr_symbol.number_format((float)$price[$key]) . 'x';
+                } 
+
+                $qty = explode(',', $iqty_qty);
+                if (!empty($qty[$key])) {
+                    $quantity = ($qty_text ? " ($qty_text {$price[$key]}{$qty[$key]})" : " ({$price[$key]}{$qty[$key]})");
+                }
             }
             $items = $this->CI->services_model->get_stock(array('item_id' => $sid));
 

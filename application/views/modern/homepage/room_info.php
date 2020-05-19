@@ -10,7 +10,7 @@
                 <div class="overlay bg-parallax" data-stellar-ratio="0.8" data-stellar-vertical-offset="0" data-background=""></div>
                 <div class="container">
                     <div class="page-cover text-center">
-                        <h2 class="page-cover-tittle"><?= $room->room_type?></h2>
+                        <h2 class="page-cover-tittle"><?= $room->room_type??''?></h2>
                         <ol class="breadcrumb">
                         <?php if ($this->uri->segment(1, NULL) && !$this->uri->segment(2, NULL)): ?>
                             <li class="active">
@@ -136,7 +136,7 @@
                                     <tr>
                                         <?php for($j=0; $j<$cols && $i<$size; ++$i, ++$j): ?>
                                         <td class="td-actions">
-                                            <button name="room_id" value="<?=$rooms[$i]->room_id?>" onclick="return confirm('Reserve this room?')" class="btn btn-lg py-4 m-2 font-weight-bold btn-success shadow">
+                                            <button name="room_id" type="button" value="<?=$rooms[$i]->room_id?>" onclick="return re(this)" class="btn btn-lg py-4 m-2 font-weight-bold btn-success shadow">
                                                 <?=$rooms[$i]->room_type?>
                                                 <br>
                                                 Room <?=$rooms[$i]->room_id?>
@@ -247,3 +247,54 @@
         <!--================ Accomodation Area  =================-->
         <?= $this->hms_parser->show_rooms(int_bool($content['rooms']))?> 
         <!--================ Accomodation Area  =================-->
+ 
+
+
+<script>
+    function re(event) {
+        // return $(event).form.submit();
+
+        var room_id     = $(event).val();
+        var form        = $(event.form);
+        var from        = form.find('input[name="from"]').val();
+        var destination = form.find('input[name="destination"]').val();
+
+                console.log(from);
+        $.post(site_url('ajax/connect/checkroom'), {room_id:room_id}, function(data) {
+            if (data.available==false) {
+                bootbox.dialog({
+                    title: 'Reservation Error',
+                    message: data.message,
+                    size: 'large',
+                    onEscape: true,
+                    backdrop: true 
+                });
+            } else {
+                $('<input />').attr('type', 'hidden')
+                    .attr('name', "room_id")
+                    .attr('value', room_id)
+                    .appendTo($(event.form));
+
+                if (typeof from == 'undefined' || typeof destination == 'undefined') {
+                    fromToDestination(event.form);
+                } else {
+                    bootbox.confirm('Reserve this room?', function(e) {
+                        if (e == true) {
+                            return $(event.form).submit();
+                        }
+                    });
+                }
+            }
+        });
+        return false;
+    }
+
+    window.onload = function () {
+        var loader = 
+        '<div class="text-center preloader">'+
+            '<div class="spinner-light text-info spinner-grow" role="status">'+
+                '<span class="sr-only">Loading...</span>'+
+           '</div>'+
+        '</div>';  
+    }
+</script>

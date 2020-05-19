@@ -12,7 +12,7 @@ if ( ! function_exists('alert_notice'))
      * @param   string      $dismissible    whether the notice can be dismissed
      * @return  string
      */
-    function alert_notice($msg = '', $type = 'info', $echo = FALSE, $dismissible = TRUE)
+    function alert_notice($msg = '', $type = 'info', $echo = FALSE, $dismissible = TRUE, $header = '')
     {   
         $icon = $dismissible_alert = $dismiss_btn = '';
         if ($type == 'danger' || $type == 'error') 
@@ -45,12 +45,17 @@ if ( ! function_exists('alert_notice'))
 
         if ($msg != '') 
         {
+            if ($header) 
+            {
+                $title = $header;
+            }
+            
             if ($dismissible !== 'FLAT') 
             {
                 $alert = 
                 '<div class="alert alert-'.$type.$dismissible_alert.'">
                     '.$dismiss_btn.'
-                    <h6><i class="icon fa fa-'.$icon.'"></i> '.$title.'</h6>
+                    <h5><i class="icon fa fa-'.$icon.'"></i> '.$title.'</h5>
                     '.str_ireplace('.', '.', $msg).'
                 </div>';
             } else {
@@ -284,6 +289,36 @@ if ( ! function_exists('o2array') )
 }
 
 
+if ( ! function_exists('sprintlang') ) 
+{
+    /** 
+     *
+     * Converts an Object of standard type to Array
+     *
+     * @param   object      $obj   
+     * @return  array
+     */
+    function sprintlang($line, $sprint_f = '') {
+        
+        $line = get_instance()->lang->line($line);
+
+        if ($sprint_f) 
+        {
+            if (is_array($sprint_f)) 
+            {
+                $line = vsprintf($line, $sprint_f); 
+            }
+            else
+            {
+                $line = sprintf($line, $sprint_f); 
+            }
+        }
+
+        return $line;
+    }
+}
+
+
 if ( ! function_exists('timeAgo') ) 
 {
     /**
@@ -342,4 +377,4 @@ if ( ! function_exists('timeAgo') )
             }
         }
     }
-} 
+}

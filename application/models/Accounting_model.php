@@ -87,7 +87,7 @@ class Accounting_model extends CI_Model {
         $this->db->limit('1'); 
         $this->db->order_by('date '.$order); 
         $query = $this->db->select('date')->from('expenses')->get();
-        return $query->row_array();
+        return $query->row_array()['date'];
     } 
 
     /**
@@ -102,23 +102,27 @@ class Accounting_model extends CI_Model {
             if (isset($data['service'])) 
             { 
                 $query = $this->db->select('(SELECT SUM(order_price) FROM sales_service_orders WHERE service_name = \''.$data['service'].'\') AS sales')->get();
-            }
+            } 
 
             if (isset($data['customer'])) 
             { 
                 $query = $this->db->select(
-                    '(SELECT SUM(amount) FROM payments WHERE customer_id = \''.$data['customer'].'\') AS payments, 
-                    (SELECT SUM(order_price) FROM sales_service_orders WHERE customer_id = \''.$data['customer'].'\') AS service_orders,
+                    '(SELECT COALESCE(SUM(amount), 0) FROM payments WHERE customer_id = \''.$data['customer'].'\') AS payments, 
+                    (SELECT COALESCE(SUM(order_price), 0) FROM sales_service_orders WHERE customer_id = \''.$data['customer'].'\') AS service_orders,
                     (SELECT COUNT(customer_id) FROM room_sales WHERE customer_id = \''.$data['customer'].'\') AS checkins,
-                    (SELECT SUM(room_sales_price) FROM room_sales WHERE customer_id = \''.$data['customer'].'\') AS room_sales,
-                    (SELECT SUM(room_sales_price) FROM room_sales WHERE reservation_id NOT IN (
+                    (SELECT COALESCE(SUM(room_sales_price), 0) FROM room_sales WHERE customer_id = \''.$data['customer'].'\') AS room_sales,
+                    (SELECT COALESCE(SUM(GREATEST(room_type.room_price, 0)), 0) FROM reservation JOIN room ON room.room_id = reservation.room_id JOIN room_type ON room_type.room_type = room.room_type  WHERE checkout_date < CURDATE() AND checkin_date < CURDATE() AND status = 1 AND customer_id = \''.$data['customer'].'\') AS pre_overstay_debt,
+                    (SELECT COALESCE(SUM(DATEDIFF(CURDATE(), reservation.checkout_date)), 0) FROM reservation WHERE checkout_date < CURDATE() AND checkin_date < CURDATE() AND status = 1 AND customer_id = \''.$data['customer'].'\') AS overstay_days,
+                    (SELECT COALESCE(SUM(room_sales_price), 0) FROM room_sales WHERE reservation_id !=NULL AND reservation_id NOT IN (
                         SELECT reservation.reservation_id FROM reservation JOIN payments ON reservation.reservation_ref = payments.reference
                         WHERE room_sales.customer_id = \''.$data['customer'].'\'
                     )) AS customer_room_sales,
-                    (SELECT SUM(`paid`) FROM sales_service_orders WHERE `customer_id` = \''.$data['customer'].'\') AS paid,
-                    (SELECT SUM(`service_orders`-`paid`)) AS debt,
+                    (SELECT COALESCE(SUM(`paid`), 0) FROM sales_service_orders WHERE `customer_id` = \''.$data['customer'].'\') AS paid,
+                    (SELECT SUM(`service_orders`-`paid`)) AS service_debt,
+                    (SELECT pre_overstay_debt * overstay_days) AS overstay_debt,
+                    (SELECT SUM(`service_debt`+`overstay_debt`)) AS debt,
                     (SELECT SUM(payments+service_orders+customer_room_sales)) AS total_expenses, 
-                    (SELECT SUM(total_expenses-debt)) AS expenses,  
+                    (SELECT SUM(total_expenses-service_debt)) AS expenses,  
                     '.$data['customer'].' AS customer_id'
                 )->get();
             } 
@@ -129,4 +133,32 @@ class Accounting_model extends CI_Model {
         } 
         return $query->row_array();
     } 
+
+    /**
+     * This function will return the the usage and functionality statistics of the site 
+     * @param array $data
+     * @return mixed
+     */
+    function customer_report_dates($data = null)
+    {  
+        $x_query = 'WHERE 1'; 
+        if (isset($data['customer_id'])) 
+        { 
+            $x_query .= " AND customer_id = '{$data['customer_id']}'";
+        } 
+        // $x_query = $this->db->escape_like_str($x_query);
+
+        $query = $this->db->query(
+        "SELECT MAX(max_date) as max_date, MIN(min_date) as min_date FROM
+        (
+            SELECT MAX(reservation_date) as max_date, MIN(reservation_date) as min_date 
+                FROM reservation $x_query UNION ALL
+            SELECT MAX(ordered_datetime) as max_date, MIN(ordered_datetime) as min_date 
+                FROM sales_service_orders $x_query UNION ALL
+            SELECT MAX(`date`) as max_date, MIN(`date`) as min_date 
+                FROM payments $x_query
+        ) as subQuery");
+
+        return $query->row_array();
+    }
 }

@@ -6,7 +6,7 @@
             <!-- /.col-md-4 Important Shortcuts -->
             <div class="col-lg-12"> 
                 
-                <?= form_open('accounting/cashier', array('method' => 'get'))?>
+                <?= form_open('accounting/cashier/payments', array('method' => 'get'))?>
 
                     <div class="row"> 
 
@@ -52,7 +52,7 @@
                         <div class="card-header">
                             <strong class="m-0 p-0">
                                 <i class="far fa-credit-card mx-2 text-gray"></i>
-                                <?=lang('online_payments')?>
+                                <?=lang('sales_report')?>
                             </strong>
                             <div class="float-right d-none d-sm-inline text-sm my-0 p-0">
                                 <?//= $pagination ?>

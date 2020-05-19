@@ -120,7 +120,7 @@ class Account_Data {
     {   
         if ($customer === 1) 
         {
-            $data = $this->CI->customer_model->get_customer(['id' => $id]); 
+            $data = $this->CI->customer_model->get_customer(['customer_id' => $id]); 
 
             if ($data['customer_firstname'] && $data['customer_lastname']) 
             {

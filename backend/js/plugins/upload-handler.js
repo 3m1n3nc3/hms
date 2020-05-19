@@ -135,10 +135,16 @@ var wideresize = $('#croppie-wide-preview').croppie({
  */
 $('.image-selection').on('change', function () {
 
-  var endpoint_id = $('#upload_resize_image').data('endpoint_id');
-  var endpoint = $('#upload_resize_image').data('endpoint');
- 
-  var new_attr = 'upload_action(1'+(endpoint_id ? ', \''+endpoint_id+'\'' : '') + (endpoint ? ', \''+endpoint+'\'' : '')+')'; 
+  var _identifier = $('#button_identifiers').val();
+  if (typeof _identifier === 'undefined' || _identifier == '') {
+    var _identifier = 'upload_resize_image';
+  }
+  var endpoint_id = $('#' + _identifier).data('endpoint_id');
+  var endpoint    = $('#' + _identifier).data('endpoint');
+  var preset_type = $('#' + _identifier).data('set_type');
+  var set_type    = (typeof preset_type !== 'undefined') ? preset_type : '1';
+
+  var new_attr = 'upload_action('+set_type+(endpoint_id ? ', \''+endpoint_id+'\'' : '') + (endpoint ? ', \''+endpoint+'\'' : '')+')'; 
 
   var upload_type = $(this).attr('id');
   if (upload_type == 'image-input') {
@@ -184,13 +190,19 @@ function upload_action(type, id, endpoint) {
   $("#action-buttons").hide();
 
   if (type == 1) {
-    var set_type = 'cover';
-    var resized = wideresize;
+    var set_type   = 'cover';
+    var resized    = wideresize;
     var image_size = 'wide';
   } else {
-    var set_type = 'avatar';
-    var resized = resize;
+    var set_type   = 'avatar';
+    var resized    = resize;
     var image_size = 'image';
+  }
+
+  if (type == 3 || type == 4) {
+    var set_type   = endpoint;
+    var resized    = (type == 3) ? wideresize : resize;
+    var image_size = (type == 3) ? 'wide' : 'image';
   }
 
   var query = (id ? '/'+id : '') + (endpoint ? '/'+endpoint : '');
@@ -216,6 +228,9 @@ function upload_action(type, id, endpoint) {
       }
     }).done(function (data) {
       html = img.length > 10 ? '<div class="d-flex container justify-content-center"><img src="' + img + '" height="250px" width="auto"/></div>' : '';
+      if (img.length > 10) {
+        $('img.'+endpoint).attr('src', img);
+      }
       $(m_id).html(html);
       if (data.error) {
         $("#upload-status").html(data.error);

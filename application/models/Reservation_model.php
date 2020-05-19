@@ -41,10 +41,19 @@ class Reservation_model extends CI_Model {
         return false;
     } 
 
-    public function add_reservation($data, $date=NULL)
+    public function add_reservation($data)
     {
-        $this->db->insert('reservation', $data);
-        return $this->db->insert_id();
+        if (isset($data['reservation_id'])) 
+        { 
+            $this->db->where('reservation_id', $data['reservation_id']);
+            $this->db->update('reservation', $data);
+            return $this->db->affected_rows();
+        } 
+        else 
+        {
+            $this->db->insert('reservation', $data);
+            return $this->db->insert_id();
+        }
     }
 
     public function fetch_reservation($data = array())
@@ -99,17 +108,28 @@ class Reservation_model extends CI_Model {
             $this->db->where('checkout_date <', $date);
             $this->db->where('reservation.status', 1);
         }
+        
+        if (isset($data['from']))
+        {
+            $this->db->where('reservation_date >=', $data['from']);  
+        } 
+        
+        if (isset($data['to']))
+        {
+            $this->db->where('reservation_date <=', $data['to']);  
+        } 
 
-        $this->db->select("*, CONCAT_WS(' ', customer_firstname, customer_lastname) AS customer_name")->from('reservation');
+        $this->db->select("*, reservation.checkin_date, reservation.checkout_date, CONCAT_WS(' ', customer_firstname, customer_lastname) AS customer_name")->from('reservation');
         $this->db->join('customer', "customer.customer_id=reservation.customer_id", "LEFT");
         $this->db->join('room', "room.room_id=reservation.room_id", "LEFT");
+        // $this->db->join('room_type', "room_type.room_type=room.room_type", "LEFT");
          
         if (isset($data['page']) && !$row)
         {
             $this->db->limit($this->config->item('per_page'), $data['page']);
         }
  
-        $this->db->order_by('checkin_date', 'ASC'); 
+        $this->db->order_by('checkin_date', 'DESC'); 
 
         if ($row) 
         {
@@ -120,15 +140,30 @@ class Reservation_model extends CI_Model {
 
     public function overstayed_room($data = array(), $row = null)
     { 
-        $now = date('Y-m-d H:i:s', strtotime('NOW'));
-        $this->db->where('reservation.checkout_date<', $now);
-        $this->db->where('reservation.status', '1');
+        if (isset($data['customer'])) 
+        { 
+            $this->db->where('reservation.customer_id', $data['customer']);
+        } 
 
-        $this->db->select('*')->from('reservation');
+        if (isset($data['room'])) 
+        { 
+            $this->db->where('reservation.room_id', $data['room']);
+        } 
+
+        $this->db->where('reservation.checkout_date < CURDATE()');
+        $this->db->where('reservation.checkin_date < CURDATE()');
+        $this->db->where('reservation.status', '1'); 
+ 
+        $this->db->select("DATEDIFF(CURDATE(), reservation.checkout_date) AS overstay_days, customer.customer_id, CONCAT_WS(' ', customer_firstname, customer_lastname) AS customer_name, reservation.room_id, reservation.checkout_date, reservation.checkout_date, reservation.employee_id, reservation.reservation_date, reservation.reservation_price,, reservation.reservation_id, room_type.room_price, (SELECT room_type.room_price*overstay_days) AS overdue_cost")->from('reservation'); 
+
         $this->db->join('customer', "customer.customer_id=reservation.customer_id", "INNER");
         $this->db->join('room', "room.room_id=reservation.room_id", "INNER");
         $this->db->join('room_type', "room_type.room_type=room.room_type", "INNER");
-        return $this->db->get()->result();
+        if (isset($data['customer'])) 
+        {
+            return $this->db->get()->row_array();
+        }
+        return $this->db->get()->result_array();
     }
 
     function deleteReservation($id = '')

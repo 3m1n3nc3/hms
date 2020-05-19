@@ -136,18 +136,29 @@ if ( ! function_exists('imploder'))
      * @param  string 	$delimiter 	the string to put between data
      * @return string    
      */
-    function imploder($array = array(), $index = 'id', $delimiter = ',')
+    function imploder($array = array(), $index = '', $delimiter = ',')
     {
-        if (is_object($array)) 
+        if ($index === NULL) 
         {
-            $array = json_decode(json_encode($array), TRUE);
-        } 
-
-        $new_array = [];
-        foreach ($array as $value) {
-            $new_array[] .= $value[$index];
+            $index = 'id';
         }
-        return implode($delimiter, $new_array);
+
+        if (is_array($array)) 
+        {
+            if (is_object($array)) 
+            {
+                $array = json_decode(json_encode($array), TRUE);
+            } 
+
+            $new_array = [];
+
+            foreach ($array as $key => $value) 
+            {
+                $new_array[] .= $index ? $value[$index] : $value;
+            }
+            return implode($delimiter, $new_array);
+        }
+        return $array;
     }
 }
 

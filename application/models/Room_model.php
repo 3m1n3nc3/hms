@@ -101,7 +101,7 @@ class Room_model extends CI_Model {
         $this->db->order_by('reservation_date '.$order); 
         $this->db->select('reservation.reservation_date AS date')->from('room_sales');
         $query = $this->db->join('reservation', 'room_sales.reservation_id = reservation.reservation_id', 'LEFT')->get();
-        return $query->row_array();
+        return $query->row_array()['date'];
     } 
 
     function addRoomType($data)

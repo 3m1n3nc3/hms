@@ -15,8 +15,8 @@ class Reservation extends Admin_Controller
 		$room_types = $this->room_model->get_room_types();
 		$viewdata = array('room_types' => $room_types);
 		$data = array(
-			'title' => 'Reservation - ' . my_config('site_name'), 
-			'page' => 'reservation', 
+			'title' => 'Reception - ' . my_config('site_name'), 
+			'page' => 'reception', 
 			'has_calendar' => TRUE
 		);
 
@@ -119,7 +119,11 @@ class Reservation extends Admin_Controller
 
         	$data['reservation_ref'] = $this->enc_lib->generateToken(12, 1, 'HRSPR-', TRUE);
 			$data['customer_id']     = $customer->customer_id;
-			$data['room_id'] 	     = $post['room_id'];
+            $data['room_id']         = $post['room_id'];
+            $data['coming_from']     = $post['from'];
+            $data['adults']          = $post['adults'];
+            $data['children']        = $post['children'];
+			$data['destination'] 	 = $post['destination'];
 			$data['checkin_date']    = date('Y-m-d H:i:s', strtotime($post['checkin_date']));
 			$data['checkout_date']   = date('Y-m-d H:i:s', strtotime($post['checkout_date']));
 			$data['reservation_date']  = date('Y-m-d H:i:s', strtotime("NOW"));
@@ -143,23 +147,37 @@ class Reservation extends Admin_Controller
 					unset($_SESSION['change_booking']);
 				}
 
-				// Add the reservation and set the reservation_id to a variable
-				// $reservation_id = $this->reservation_model->add_reservation($data);
+                // Add a new payment record
+                $add_payment_record = array(
+                    'customer_id'  => $data['customer_id'],
+                    'payment_type' => 'admin_room_sale',
+                    'reference'    => $data['reservation_ref'],
+                    'invoice'      => $data['reservation_ref'],
+                    'amount'       => $data['reservation_price'],
+                    'description'  => 
+                        sprintf(lang('reservation_pay_desc'), $room_type_info->room_type.' Room '.$data['room_id'])
+                );
+                $this->payment_model->add_payments($add_payment_record);
 
-				// unset($data['reservation_date'], $data['reservation_price'], $data['reservation_ref']);
+                // Add the reservation and set the reservation_id to a variable
+				$reservation_id = $this->reservation_model->add_reservation($data);
 
-				// $data['reservation_id'] = $reservation_id;
+				unset($data['reservation_date'], $data['reservation_price'], $data['reservation_ref'], $data['coming_from'], $data['destination'], $data['adults'], $data['children']);
+
+				$data['reservation_id'] = $reservation_id;
 				
-				// $this->room_model->add_room_sale($data);
-				$this->session->set_flashdata('message', 
-					alert_notice('Reservation successfully made!<br> 
-						<strong>
-							<a href="'.site_url('reservation/invoice/'.$reservation_id).'" class="text-white">Print Invoice</a>
-						</strong>', 'success'
-					)
-				);  print_r($_POST);
+				$this->room_model->add_room_sale($data);
 
-				// redirect('reservation/make');
+                // Send notifications
+                $re_data = array( 
+                    'type' => 'made_reservation', 
+                    'url'  => site_url('room/reserved_room/'.$data['room_id'].'/'.$data['customer_id'])
+                );
+                $this->CI->notifications->notifyPrivilegedMods($re_data);  
+
+                $print_invoice = anchor_popup('generate/invoice/'.$reservation_id.'/reservation', '<i class="fa fa-print"></i> Print Invoice', ['class'=>'text-white font-weight-bold btn btn-success mb-3']);
+                set_snashdata('message',alert_notice('Reservation successfully made!', 'success') . $print_invoice);   
+				redirect(current_url(), 'refresh');
 			}
 		}
 		else 

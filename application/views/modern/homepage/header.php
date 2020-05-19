@@ -59,7 +59,22 @@
 
         <script type="text/javascript">
           siteUrl = "<?=site_url()?>";
-          site_currency = "$";
+          site_theme = "<?=$this->h_theme?>";
+          currency_symbol = "<?=$this->cr_symbol?>";
+          site_currency = "<?=$this->cr_symbol?>"; 
+          hms_lang = <?php 
+              $ck_idiom = !$this->uid ? 'user_' : 'customer_';
+              echo json_encode(
+                array(
+                  'checkin_from' => $this->cuid ? lang($ck_idiom.'checkin_from') : lang($ck_idiom.'checkin_from'),
+                  'checkout_to' => $this->cuid ? lang($ck_idiom.'checkout_to') : lang($ck_idiom.'checkout_to') 
+                ), JSON_FORCE_OBJECT)?>;
+          function is_logged(){
+            return false;
+          }
+          function site_url(path){
+            return '<?=site_url()?>' + path;
+          }
         </script> 
 
         <!--================Header Area =================-->

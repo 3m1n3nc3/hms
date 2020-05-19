@@ -49,12 +49,12 @@
                                 <div class="col-md-6">
                                     <!-- text input -->
                                     <div class="form-group">
-                                        <label for="date">Date</label>
-                                        <input type="date" id="date" name="date" class="form-control" value="<?= set_value('date') ?>" required>
+                                        <label for="datetimepicker">Date</label>
+                                        <input type="text" id="datetimepicker" name="date" class="form-control" value="<?= set_value('date') ?>" required>
                                         <?= form_error('date'); ?>
                                     </div>
                                 </div>
-
+ 
                                 <div class="col-md-6">
                                     <!-- text input -->
                                     <div class="form-group">

@@ -94,8 +94,8 @@ $autoload['drivers'] = array();
 |	$autoload['helper'] = array('url', 'file');
 */
 $autoload['helper'] = array(
-    'url', 'cookie', 'language', 'file', 'date', 'string', 'text', 'inflector', 'hoolicon', 'passcontest', 'passpreviledge', 
-    'pass_icon', 'locale'
+    'url', 'cookie', 'language', 'file', 'date', 'string', 'text', 'inflector', 'hoolicon', 'passcontest', 
+    'passpreviledge', 'pass_icon', 'locale', 'snashdata_helper'
 );
 
 /*

@@ -31,19 +31,44 @@
                     <hr class="my-0">
                     <div class="form-row p-3 mb-3" id="basic_block"> 
 
-                      <div class="form-group col-md-12">
+                      <div class="form-group col-md-6">
                         <label class="text-info" for="site_name">Site Name</label>
                         <input type="text" name="value[site_name]" value="<?= set_value('value[site_name]', my_config('site_name')) ?>" class="form-control" >
                         <small class="text-muted">The name of this website</small>
                         <?= form_error('value[site_name]'); ?>
                       </div>  
 
-                      <div class="form-group col-md-12">
+                      <div class="form-group col-md-6">
                         <label class="text-info" for="site_name_abbr">Site Name Abbreviation</label>
                         <input type="text" name="value[site_name_abbr]" value="<?= set_value('value[site_name_abbr]', my_config('site_name_abbr')) ?>" class="form-control" >
                         <small class="text-muted">Abbreviation of the Site name</small>
                         <?= form_error('value[site_name_abbr]'); ?>
                       </div>   
+
+                      <div class="form-group col-md-6">
+                          <div class="form-group">
+                              <label class="text-info" for="country"><?=lang('country')?></label>
+                              <select id="country" name="value[site_country]" class="form-control select-country" required>
+                                  <?=select_countries(set_value('value[site_country]', my_config('site_country')))?>
+                              </select>
+                              <small class="text-muted">This will require international visitors to set their nationality and upload a passport </small>
+                              <?= form_error('customer_country'); ?>
+                          </div>
+                      </div>
+
+                      <div class="form-group col-md-6"> 
+                          <div class="form-group">
+                              <label class="text-info" for="debt-tolerance">Debt Tolerance</label>
+                              <select id="debt-tolerance" name="value[debt_tolerance]" class="form-control" required> 
+                                  <option value="0" <?= set_select('value[debt_tolerance]', '0', int_bool(my_config('debt_tolerance') == 0))?>>Allow Checkout</option>
+                                  <option value="1" <?= set_select('value[debt_tolerance]', '1', int_bool(my_config('debt_tolerance') == 1))?>>Allow checkout on purchase debts</option>
+                                  <option value="2" <?= set_select('value[debt_tolerance]', '2', int_bool(my_config('debt_tolerance') == 2))?>>Allow checkout on overstay debts</option>
+                                  <option value="3" <?= set_select('value[debt_tolerance]', '3', int_bool(my_config('debt_tolerance') == 3))?>>Block Checkout on all debts</option>
+                              </select>
+                              <small class="text-muted">Set how debtors will be handled during checkout</small>
+                              <?= form_error('customer_country'); ?>
+                          </div>
+                      </div>
 
                       <div class="form-group col-md-8">
                         <label class="text-info" for="site_logo">Site Logo</label>

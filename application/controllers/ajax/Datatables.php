@@ -386,7 +386,7 @@ class Datatables extends MY_Controller
                 $this->cr_symbol.number_format($rows->amount, 2), 
                 $rows->remark, 
                 $employee ? $employee[0]->employee_firstname . ' ' . $employee[0]->employee_lastname : 'N/A',
-                $rows->date_added,  
+                date("d M Y h:i A", strtotime($rows->date_added)),  
                 $show_btn ? 
                     '<a href="'.site_url('accounting/cashier/expenses_register/'.$rows->id).'" class="btn btn-sm btn-primary m-1" data-toggle="tooltip" title="Edit">
                         <i class="btn-icon-only fa fa-edit text-white fa-fw"></i>
@@ -521,7 +521,7 @@ class Datatables extends MY_Controller
 
         $this->db->limit($length,$start);   
         $content = $this->db->select('*')->get("payments");
-        $data = array();
+        $data    = array();
         foreach($content->result() as $rows)
         {   
             $customer = $this->account_data->fetch($rows->customer_id, 1); 
@@ -531,7 +531,7 @@ class Datatables extends MY_Controller
                 $this->cr_symbol.number_format($rows->amount, 2), 
                 $rows->reference, 
                 $rows->description,  
-                $rows->date, 
+                date("d M Y h:i A", strtotime($rows->date)), 
                 $show_btn ?  '
                     <a href="javascript:void(0)" onclick="return confirmDelete(\''.site_url('accounting/cashier/delete_payment/'.$rows->id).'\', 1)" class="btn btn-danger btn-sm m-1" data-toggle="tooltip" title="Delete">
                         <i class="btn-icon-only fa fa-trash fa-fw text-white"></i>
@@ -679,7 +679,7 @@ class Datatables extends MY_Controller
                 </a>',  
                 $this->cr_symbol.number_format($rows->room_sales_price, 2), 
                 $rows->reservation_ref,  
-                $rows->reservation_date, 
+                date("d M Y h:i A", strtotime($rows->reservation_date)),  
                 $show_btn ?  '
                     <a href="javascript:void(0)" onclick="return confirmDelete(\''.site_url('accounting/cashier/delete_room_sale/'.$rows->reservation_id).'\', 1)" class="btn btn-danger btn-sm m-1" data-toggle="tooltip" title="Delete">
                         <i class="btn-icon-only fa fa-trash fa-fw text-white"></i>

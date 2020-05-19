@@ -6,8 +6,9 @@
       <i class="fa fa-plus mx-2"></i>
       Add Customer
     </a>
-
-    <?= $this->session->flashdata('message') ?? '' ?>
+ 
+    <?=$this->session->flashdata('message') ?> 
+    <?=snashdata('message');?> 
     <?php $customer_TCno = $this->session->flashdata('customer_TCno') ?? set_value('customer_TCno') ?>
 
     <div class="row">

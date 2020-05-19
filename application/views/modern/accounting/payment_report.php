@@ -46,14 +46,13 @@
               </tr>
             </thead>
             <tbody>
-              <?php foreach ($payments as $payment): ?>
-              <?php $customer = $this->account_data->fetch($payment['customer_id'], 1); ?>
+              <?php foreach ($payments as $payment): ?> 
               <tr>
-                <td> <?=$customer['name'];?> </td>
+                <td> <?=$payment['customer_name'];?> </td>
                 <td> <?=$this->cr_symbol.number_format($payment['amount'], 2);?> </td>
                 <td> <?=$payment['reference'];?> </td>
                 <td> <?=$payment['description'];?> </td>
-                <td> <?=$payment['date'];?> </td>
+                <td> <?=date('d M Y h:i A', strtotime($payment['date']));?> </td>
               </tr>
               <?php endforeach; ?>
             </tbody>

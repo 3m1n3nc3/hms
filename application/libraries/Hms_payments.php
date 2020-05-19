@@ -15,10 +15,10 @@ class Hms_payments {
         $this->CI->load->model('payment_model'); 
         $this->CI->load->model('reservation_model'); 
 
-        $this->cuid = $this->CI->session->userdata('cuid');
+        $this->cuid           = $this->CI->session->userdata('cuid');
 
-        $this->post = $this->CI->session->userdata('reservation');
-        $this->customer = $this->CI->account_data->fetch($this->cuid ?? '', 1); 
+        $this->post           = $this->CI->session->userdata('reservation');
+        $this->customer       = $this->CI->account_data->fetch(($this->cuid??''), 1); 
         $this->room_type_info = $this->CI->room_model->getRoomType($this->post['room_type']); 
     }
 
@@ -33,6 +33,8 @@ class Hms_payments {
         $sessioned['checkin_date']      = $this->post['checkin_date'];
         $sessioned['checkout_date']     = $this->post['checkout_date'];
         $sessioned['reservation_ref']   = $this->post['payment_ref']; 
+        $sessioned['adults']            = $this->post['adults']; 
+        $sessioned['children']          = $this->post['children']; 
         $sessioned['reservation_date']  = date('Y-m-d H:i:s');
         $sessioned['reservation_price'] = $this->room_type_info[0]->room_price ?? '';
         $sessioned['employee_id']       = 0;
@@ -61,17 +63,28 @@ class Hms_payments {
                     // Add the reservation and set the reservation_id to a variable
                     $reservation_id = $this->CI->reservation_model->add_reservation($sessioned);
 
-                    unset($sessioned['reservation_date'], $sessioned['reservation_price'], $sessioned['reservation_ref']);
+                    unset($sessioned['reservation_date'], $sessioned['reservation_price'], $sessioned['reservation_ref'], $sessioned['children'], $sessioned['adults']);
 
                     $sessioned['reservation_id'] = $reservation_id;
 
                     $this->CI->room_model->add_room_sale($sessioned); 
-                    $this->CI->session->unset_userdata('reservation'); 
+                    $this->CI->session->unset_userdata('reservation');
 
                     $this->post['invoice_id']  = $reservation_id;
                     $this->post['description'] = $save['description']; 
                     $this->post['date']        = date('Y-m-d', strtotime('NOW'));
-                    
+
+                    $customer_id = $save['customer_id'];
+                    $room_id     = $sessioned['room_id'];
+
+                    $re_data = array( 
+                        'type'          => 'customer_paid_reservation',
+                        'notifier_type' => 'customer',
+                        'user_id'       => $save['customer_id'],
+                        'url'           => site_url('room/reserved_room/'. $room_id .'/'. $customer_id)
+                    );
+                    $this->notifications->notifyPrivilegedMods($re_data); 
+
                     $reserve_room = sprintf($container_holder, alert_notice(lang('reservation_made'), 'success'));
                     $reserve_room .= $this->CI->hms_parser->show_invoice(
                         ['post' => $this->post, 'customer' => $this->customer, 'room' => $this->room_type_info]

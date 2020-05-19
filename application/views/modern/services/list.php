@@ -65,8 +65,8 @@
 			                <div class="col-md-4">
 			                  	<!-- text input -->
 			                  	<div class="form-group">
-			                    	<label for="date">Date</label>
-			                    	<input type="date" id="date" name="date" class="form-control" value="<?= set_value('date') ?>" required>
+			                    	<label for="datetimepicker">Date</label>
+			                    	<input type="text" id="datetimepicker" name="date" class="form-control" value="<?= set_value('date') ?>" autocomplete="off" required>
 			                  		<?= form_error('date'); ?>
 			                  	</div>
 			                </div>  

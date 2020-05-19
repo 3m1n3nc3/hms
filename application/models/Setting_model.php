@@ -15,31 +15,43 @@ class Setting_model extends CI_Model {
      * @param string $key
      * @return mixed
      */
-    public function get_settings($key = null) {
+    public function get_settings($key = null) 
+    {
         $this->db->select('setting_key, setting_value')->from('settings');
         if ($key != null) {
             $this->db->where('setting_key', $key); 
-        } else {
+        } 
+        else 
+        {
             $this->db->order_by('setting_key');
         }
+
         $query = $this->db->get();
-        if ($key != null) {
+
+        if ($key != null) 
+        {
             return $query->row_array()['setting_value'];
-        } else {
+        } 
+        else 
+        {
             return $query->result_array();
         }
     }
 
-    public function save_settings($data) {
-        $insert_id = [];
-        foreach (array_keys($data) as $setting_key) {
-            if ($this->get_settings($setting_key)) { 
+    public function save_settings($data) 
+    { 
+        foreach (array_keys($data) as $setting_key) 
+        {
+            if ($this->get_settings($setting_key) != '') 
+            { 
                 $value = array('setting_value' => $data[$setting_key]);
 
                 $this->db->where('setting_key', $setting_key);
                 $this->db->update('settings', $value); 
-            } else {
-                $value = array('setting_key' => $setting_key, 'setting_value' => $data[$setting_key]);
+            } 
+            else 
+            {
+                $value = array('setting_keyd' => $setting_key, 'setting_value' => $data[$setting_key]);
 
                 $this->db->insert('settings', $value); 
             }

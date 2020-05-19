@@ -1,12 +1,10 @@
 <?php 
 
-defined('BASEPATH') OR exit('No direct script access allowed');
-
-$CI = & get_instance();  
+defined('BASEPATH') OR exit('No direct script access allowed'); 
 
 // --------------------------------------------------------------------
 
-if ( ! function_exists('has_privilege'))
+if ( ! function_exists('has_privilege') )
 {
 	/** 
 	 *
@@ -15,21 +13,24 @@ if ( ! function_exists('has_privilege'))
 	 * @param	string		$role   
 	 * @return	boolen
 	 */
-    function has_privilege($role = '')
+    function has_privilege($role = '', $userData = array())
     {
-    	global $CI; 
-        if (empty($CI->logged_user)) {
+    	$CI = & get_instance();  
+
+        $setUser = (!empty($userData) ? $userData : $CI->logged_user);
+
+        if (empty($setUser)) {
             return false; 
         }
         
-        if ($CI->logged_user['role'] >= 2)
+        if ($setUser['role'] >= 2)
         {
             return true;
         }
 
-        if ($CI->logged_user['role_id'] > 0) 
+        if ($setUser['role_id'] > 0) 
         { 
-            $privilege =  $CI->privilege_model->get($CI->logged_user['role_id']);
+            $privilege =  $CI->privilege_model->get($setUser['role_id']);
             if ($privilege) 
             {
                 $privilege = perfect_privilege($privilege['permissions']);

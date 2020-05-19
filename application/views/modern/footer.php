@@ -82,9 +82,9 @@
 
             $("#get-notifications").click(function(event) {
                 var notf_list = $("#notifications__list");
-                var preloader = notf_list.children('.preloader').clone().removeClass('d-none');
+                var preloader = notf_list.next('.preloader').clone().removeClass('d-none');
                 notf_list.html(preloader);
-                get_notifications();
+                get_notifications();console.log(notf_list.children('.preloader'));
                 delay(function(){
                 
                 },400); 

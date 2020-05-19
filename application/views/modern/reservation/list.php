@@ -6,8 +6,9 @@
       <i class="fa fa-plus mx-2"></i>
       <?=lang('add_customer')?>
     </a>
-
-    <?= $this->session->flashdata('message') ?? '' ?>
+ 
+    <?=$this->session->flashdata('message') ?>
+    <?=snashdata('message');?> 
 
     <div class="row">
       <!-- /.col-md-4 Important Shortcuts -->
@@ -94,10 +95,9 @@
                                     <?php for($j=0; $j<$cols && $i<$size; ++$i, ++$j): ?> 
                                     <td class="td-actions">
                                         <!-- <input type="hidden" name="room_id" value="<?=$rooms[$i]->room_id?>"> -->
-                                        <button onclick="return re(this)" 
-                                            type="button"  
-                                            name="room_id"
-                                            value = "<?=$rooms[$i]->room_id?>" 
+                                        <button name="room_ids" value="<?=$rooms[$i]->room_id?>" 
+                                            onclick="return re(this)"
+                                            type="submit"
                                             class="btn btn-lg py-4 m-2 font-weight-bold btn-success shadow">
                                             <?=$rooms[$i]->room_type;?> 
                                             <br>
@@ -117,7 +117,7 @@
 					<?php endif; ?>
 
 		          	</div>
-		        </div>
+		        </div> 
 	        <?= form_close()?>
 
       		</div>
@@ -128,11 +128,43 @@
 </div>
 <!-- /.content -->
 
-
 <script>
-    function re(e) {
-        console.log($(e));
-        return $('form#rs_form').submit();
+    function re(event) {
+        // return $(event).form.submit();
+
+        var room_id     = $(event).val();
+        var form        = $(event.form);
+        var from        = form.find('input[name="from"]').val();
+        var destination = form.find('input[name="destination"]').val();
+
+                console.log(from);
+        $.post(site_url('ajax/connect/checkroom'), {room_id:room_id}, function(data) {
+            if (data.available==false) {
+                bootbox.dialog({
+                    title: 'Reservation Error',
+                    message: data.message,
+                    size: 'large',
+                    onEscape: true,
+                    backdrop: true 
+                });
+            } else {
+                $('<input />').attr('type', 'hidden')
+                    .attr('name', "room_id")
+                    .attr('value', room_id)
+                    .appendTo($(event.form));
+
+                if (typeof from == 'undefined' || typeof destination == 'undefined') {
+                    fromToDestination(event.form);
+                } else {
+                    bootbox.confirm('Reserve this room?', function(e) {
+                        if (e == true) {
+                            return $(event.form).submit();
+                        }
+                    });
+                }
+            }
+        });
+        return false;
     }
 
     window.onload = function () {
@@ -141,37 +173,6 @@
             '<div class="spinner-light text-info spinner-grow" role="status">'+
                 '<span class="sr-only">Loading...</span>'+
            '</div>'+
-        '</div>';
-
-        room_id = '';
-        // On submit click, set the value
-        $('form button[type="submit"]').click(function(){
-            room_id = $(this).prev('input[name="room_id"]').val();
-        });
-
-        $('form#rs_forms').submit(function(event) {
-            // 
-            var theform = this;
-
-            // var room_id = $(this).prev('input[name="room_id"]').val();
-            $.post(site_url('ajax/connect/checkroom'), {room_id:room_id}, function(data) {
-                if (data.available==false) {
-                    bootbox.dialog({ 
-                        title: 'Reservation Error',
-                        message: data.message,
-                        size: 'large',
-                        onEscape: true,
-                        backdrop: true 
-                    });
-                } else {
-                    bootbox.confirm('Reserve this room?', function(e) {
-                        if (e == true) {
-                            return $(theform).submit();
-                        }
-                    });
-                }
-            });
-           event.preventDefault();
-        });
+        '</div>';  
     }
 </script>

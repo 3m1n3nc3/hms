@@ -10,7 +10,7 @@
                 <div class="small-box bg-info">
                   <div class="inner">
                     <h3><?=$this->cr_symbol.number_format($sales_stats["payments"]);?></h3>
-                    <p>Online Payments</p>
+                    <p>Payments</p>
                   </div>
                   <div class="icon">
                     <i class="far fa-credit-card"></i>
@@ -112,17 +112,27 @@
                     <h5 class="m-0"><i class="fa fa-bookmark mx-2 text-gray"></i>Important Shortcuts</h5>
                   </div>
                   <div class="card-body text-center"> 
-                    <a href="<?=site_url('room')?>" class="btn btn-light px-4">
+                    <a href="<?=site_url('room')?>" class="btn btn-light px-4 border">
                       <i class="fa fa-home fa-2x fa-fw mx-2 text-gray"></i>
-                      <div class="font-weight-bold">Home</div>
+                      <div class="font-weight-bold">Rooms</div>
                     </a>
 
-                    <a href="<?=site_url('employee')?>" class="btn btn-light px-2">
+                    <a href="<?=site_url('employee')?>" class="btn btn-light px-2 border">
                       <i class="fa fa-user-tie fa-2x fa-fw mx-2 text-gray"></i>
                       <div class="font-weight-bold">Employees</div>
                     </a>
 
-                    <a href="<?=site_url('login/logout')?>" class="btn btn-light px-4">
+                    <a href="<?=site_url('customer/list')?>" class="btn btn-light px-2 border">
+                      <i class="fa fa-users fa-2x fa-fw mx-2 text-gray"></i>
+                      <div class="font-weight-bold">Customers</div>
+                    </a>
+
+                    <a href="<?=site_url('accounting/cashier/payments')?>" class="btn btn-light px-2 border">
+                      <i class="fa fa-file fa-2x fa-fw mx-2 text-gray"></i>
+                      <div class="font-weight-bold">Sales Report</div>
+                    </a>
+
+                    <a href="<?=site_url('login/logout')?>" class="btn btn-light px-4 border">
                       <i class="fa fa-power-off  fa-2x fa-fw mx-2 text-gray"></i>
                       <div class="font-weight-bold">Logout</div>
                     </a>

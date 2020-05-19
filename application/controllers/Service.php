@@ -29,8 +29,8 @@ class Service extends Admin_Controller
       $this->restaurant_model->add_service($data); 
 
       $re_data = array( 
-        'type' => 'made_sales',
-        'url' => site_url('services/sales_records') 
+        'type'    => 'made_services_sales', 
+        'url'     => site_url('services/sales_records') 
       );
       $this->notifications->notifyPrivilegedMods($re_data); 
 
@@ -75,3 +75,4 @@ class Service extends Admin_Controller
     $this->load->view($this->h_theme.'/footer');
   }
 } 
+ 

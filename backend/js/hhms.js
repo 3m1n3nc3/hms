@@ -332,6 +332,71 @@ function update_data(){
     },(1000 * 10))
 }
 
+function fromToDestination(the_form) {
+    var inputs = 
+    '<div class="form-row">'+
+        '<div class="form-group col">'+
+            '<label class="input-label">From Address</label>'+
+            '<input class="bootbox-input b-from bootbox-input-text form-control" type="text" placeholder="From" required">'+ 
+            '<small class="text-info">'+hms_lang.checkin_from+'</small>'+
+        '</div>'+ 
+        '<div class="form-group col">'+
+            '<label class="input-label">Destination Address</label>'+
+            '<input class="bootbox-input b-destination bootbox-input-text form-control" type="text" placeholder="Destination" required">'+ 
+            '<small class="text-info">'+hms_lang.checkout_to+'</small>'+
+        '</div>'+ 
+    '</div>';  
+
+    bootbox.dialog({ 
+        title: 'More information is required to reserve this room',
+        message: '<span id="bootbox-message"></span>' + inputs,
+        size: 'large',
+        onEscape: true,
+        backdrop: true,
+        scrollable: true,
+        buttons: {
+            reserve: {
+                label: 'Reserve Room',
+                className: 'btn-success',
+                callback: function(e){
+                    var from        = $(this).find('input.b-from').val();
+                    var destination = $(this).find('input.b-destination').val();
+                    if (from == '' || destination == '') {
+                        return false;
+                    } 
+                    $('<input />').attr('type', 'hidden').attr('name', "from")
+                        .attr('value', from).appendTo($(the_form));
+
+                    $('<input />').attr('type', 'hidden').attr('name', "destination")
+                        .attr('value', destination).appendTo($(the_form)); 
+                    // return false;
+                    return the_form.submit();
+                }
+            }, 
+            cancel: { label: 'Cancel', className: 'btn-danger', callback: function(d){  } }
+        }
+    })
+}
+
+function modalImageViewer(identifier) {   
+    var image_src = $('img' + identifier).attr('src'); 
+    if (typeof image_src == 'undefined') {
+        var image_src = $(identifier).data('src'); 
+    } 
+    var image     = '<img class="img-fluid border-gray" src="'+image_src+'" style="max-height:70vh;" alt="View Image">';
+    bootbox.dialog({ 
+        title: 'Image Viewer',
+        message: '<div class="container text-center" id="bootbox-message"> ' + image + '</div>',
+        size: 'large',
+        onEscape: true,
+        backdrop: true,
+        scrollable: true,
+        buttons: { 
+            close: { label: 'Close', className: 'btn-danger', callback: function(d){  } }
+        }
+    })
+}
+
 /**
  * fetch the image upload modal content and attach to the modal body
  * @param  {String} ){                                 var m_id [id or class of a container to append content]
@@ -342,11 +407,12 @@ function update_data(){
  */
 $('.upload_resize_image').click(function(){
 
-    var m_id = '.modal-content';
+    var m_id        = '.modal-content';
     var endpoint_id = $(this).data('endpoint_id');
-    var endpoint = $(this).data('endpoint');
-    var type = $(this).data('type'); 
-
+    var endpoint    = $(this).data('endpoint');
+    var type        = $(this).data('type'); 
+    var set_elid    = $(this).prev('div').attr('id'); 
+ 
     $.ajax({
         async: true,
         type: 'POST',
@@ -356,6 +422,7 @@ $('.upload_resize_image').click(function(){
         success: function(resps) { 
             $.getScript(siteUrl+"backend/js/plugins/upload-handler.js?time=1211");
             $(m_id).html(resps.content);
+            $('#button_identifiers').val(set_elid);
         },
         error: function(xhr, status, error) {
             error_message(xhr, status, error, m_id);
@@ -412,6 +479,12 @@ jQuery(document).ready(function($) {
         useCurrent: false, 
         format: 'Y-m-d H:i:s',
         defaultDate: $('#checkout_date').val()
+    }); 
+
+    $('#datetimepicker').datetimepicker({
+        useCurrent: false, 
+        format: 'Y-m-d H:i:s',
+        mask: true
     }); 
 
     // Tooltips and toggle Initialization

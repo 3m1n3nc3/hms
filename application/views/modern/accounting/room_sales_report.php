@@ -56,7 +56,7 @@
                   <td> <?=$room['room_type'] . ' ' . lang('room') .' ' . $room_sale['room_id'];?> </td> 
                   <td> <?=$this->cr_symbol.number_format($room_sale['room_sales_price'], 2);?> </td> 
                   <td> <?=$room_sale['reservation_ref'];?> </td>
-                  <td> <?=$room_sale['reservation_date'];?> </td> 
+                  <td> <?=date("d M Y h:i A", strtotime($room_sale['reservation_date']));?> </td> 
                 </tr>
                 <?php endforeach; ?>
               </tbody>

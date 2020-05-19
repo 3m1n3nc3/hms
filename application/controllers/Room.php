@@ -56,30 +56,54 @@ class Room extends Admin_Controller
      * @param  string   $customer_id  	Id of the customer with reservation to this room to check
      * @return null                 	Does not return anything but uses code igniter's view() method to render the page
      */
-	public function reserved_room($room_id = '', $customer_id = '')
-	{ 
+	public function reserved_room($room_id = '', $customer_id = '', $pg = 1)
+	{   
         $room_id     = urldecode($room_id);
         $customer_id = urldecode($customer_id);
 		// Check of employee has permission to take this action
         error_redirect(has_privilege('rooms'), '401');
 
-		$reservation = $this->reservation_model->reserved_rooms(['room' => $room_id, 'customer' => $customer_id, 'uncheck' => TRUE], 1);
-		$rooms     = $this->reservation_model->reserved_rooms(['room' => $room_id, 'uncheck' => TRUE]);
-        $payment   = $this->payment_model->get_payments(['reference' => $reservation['reservation_id']]);
+		$reservation = $this->reservation_model->reserved_rooms(['room' => $room_id, 'customer' => $customer_id, 'uncheck' => TRUE], 1); 
 
-		$viewdata  = array('reservation' => $reservation, 'rooms' => $rooms);
+        $config['uri_segment']  = 5;
+        $config['base_url']     = site_url('room/reserved_room/'.$room_id.'/'.$customer_id.'/');
+        $config['total_rows']   = count($this->reservation_model->reserved_rooms(['room' => $room_id, 'uncheck' => TRUE])); 
+        $this->pagination->initialize($config);
+
+        $_page    = $this->uri->segment(5, 0); 
+
+		$rooms    = $this->reservation_model->reserved_rooms(['room' => $room_id, 'uncheck' => TRUE, 'page' => $pg]);
+        $payment  = $this->payment_model->get_payments(['reference' => $reservation['reservation_id']]);
+
+		$viewdata = array('reservation' => $reservation, 'rooms' => $rooms); 
+
+        $viewdata['pagination']    = $this->pagination->create_links();
 		$viewdata['checkin_date']  = date('Y-m-d', strtotime($reservation['checkin_date']));
 		$viewdata['checkout_date'] = date('Y-m-d', strtotime($reservation['checkout_date']));
+ 
+        $viewdata['print_invoice'] = anchor_popup('generate/invoice/'.$reservation['reservation_id'].'/reservation', '<i class="fa fa-print"></i> Print Invoice', ['class'=>'btn btn-success btn-block text-white font-weight-bold mt-1']);
 
-        $viewdata['invoice_link']  = (isset($payment['reference']) ? 'review/invoice/'.$payment['reference'] : 'reservation/invoice/'.$reservation['reservation_id']); 
+        $viewdata['customer_link'] = anchor('customer/data/'.$reservation['customer_id'], $reservation['customer_name'], ['class'=>'font-weight-bold mt-1']);
+        
+        $viewdata['statistics']    = $viewdata['overstay'] = [];
+        if ($reservation['customer_id']) 
+        {
+            $viewdata['statistics'] = $this->accounting_model->statistics(['customer' => $reservation['customer_id']]);
+            $viewdata['overstay']   = $this->reservation_model->overstayed_room(['customer' => $reservation['customer_id'], 'room' => $room_id]); 
+            
+            // Notify Admins of room overstay
+            if ($viewdata['overstay']['overstay_days']>0) {
+                $re_data = array( 
+                    'type'          => 'overstayed_reservation',
+                    'notifier_type' => 'customer',
+                    'user_id'       => $reservation['customer_id'],
+                    'url'           => site_url('room/reserved_room/'.$room_id.'/'.$reservation['customer_id']) 
+                );
+                $this->notifications->notifyPrivilegedMods($re_data); 
+            }
+        }
 
-        $viewdata['statistics'] = $reservation['customer_id'] ? $this->accounting_model->statistics(['customer' => $reservation['customer_id']]) : [];
-        $viewdata['pagination'] = $this->pagination->create_links();
-
-        $ovrooms   = $this->reservation_model->overstayed_room(['room' => $room_id, 'uncheck' => TRUE]);
-        print_r($ovrooms);
-
-		$data = array('title' => 'Rooms - ' . my_config('site_name'), 'page' => 'reserved');
+		$data = array('title' => 'Reserved Room - ' . my_config('site_name'), 'sub_page_title' => $reservation['room_type'].' Room '.$room_id, 'page' => 'reserved');
 		$this->load->view($this->h_theme.'/header', $data);
 		$this->load->view($this->h_theme.'/room/reserved_room',$viewdata);
 		$this->load->view($this->h_theme.'/footer');
