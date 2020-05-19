@@ -66,18 +66,19 @@ class Hms_parser
     }
 
 
-    public function show_rooms($show = TRUE)
+    public function show_rooms($show = TRUE, $page = '')
     {
         $room_types = $this->CI->room_model->get_room_types(); 
 
         $room_mate = '
-        <section class="accomodation_area section_gap">
-            <div class="container">
+        <section class="accomodation_area'.($page !== 'rooms' ? ' section_gap' : '').'">
+            <div class="container">'.
+                ($page !== 'rooms' ? '
                 <div class="section_title text-center">
-                    <h2 class="title_color">Hotel Accomodation</h2>
-                    <p>We all live in an age that belongs to the young at heart. Life that is becoming extremely fast, </p>
-                </div>
-                <div class="row mb_30">';
+                    <h2 class="title_color">'.lang('show_rooms_title').'</h2>
+                    <p>'.lang('show_rooms_description').'</p>
+                </div>' : '').
+                '<div class="row mb_30">';
             
                 $rooms_format = [];
                 foreach ($room_types as $type) 

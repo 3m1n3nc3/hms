@@ -79,7 +79,7 @@
         <?php endif; ?> 
 
         <!--================ Accomodation Area  =================-->
-        <?= $this->hms_parser->show_rooms(int_bool($content['rooms']))?> 
+        <?= $this->hms_parser->show_rooms(int_bool($content['rooms']), $page)?> 
         <!--================ Accomodation Area  =================-->
         
         <!--================ About History Area  =================--> 

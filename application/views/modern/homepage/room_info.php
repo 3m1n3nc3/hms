@@ -245,7 +245,7 @@
         <?= $this->hms_parser->show_booking_area(int_bool(1), $room->room_type ?? '')?> 
         
         <!--================ Accomodation Area  =================-->
-        <?= $this->hms_parser->show_rooms(int_bool($content['rooms']))?> 
+        <?= $this->hms_parser->show_rooms(int_bool($content['rooms']), $page)?> 
         <!--================ Accomodation Area  =================-->
  
 

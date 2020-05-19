@@ -207,6 +207,11 @@ $lang['your_account']           = 'Your Account';
 $lang['your_profile_updated']   = 'Your profile has been updated.';
 $lang['your_reservations']      = 'Your Reservations';
 
+// Containers
+// ----------------------------------------------------------------------------------------------------
+$lang['show_rooms_title']       = 'Hotel Accommodation';
+$lang['show_rooms_description'] = 'Hayatt Regency Suite is in a class of its own.';
+
 // Notifications
 // ----------------------------------------------------------------------------------------------------
 
