@@ -111,12 +111,7 @@
                   <div class="card-header">
                     <h5 class="m-0"><i class="fa fa-bookmark mx-2 text-gray"></i>Important Shortcuts</h5>
                   </div>
-                  <div class="card-body text-center"> 
-                    <a href="<?=site_url('room')?>" class="btn btn-light px-4 border">
-                      <i class="fa fa-home fa-2x fa-fw mx-2 text-gray"></i>
-                      <div class="font-weight-bold">Rooms</div>
-                    </a>
-
+                  <div class="card-body text-center">  
                     <a href="<?=site_url('employee')?>" class="btn btn-light px-2 border">
                       <i class="fa fa-user-tie fa-2x fa-fw mx-2 text-gray"></i>
                       <div class="font-weight-bold">Employees</div>
