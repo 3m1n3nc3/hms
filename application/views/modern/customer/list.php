@@ -33,11 +33,11 @@
                   <tbody>
                     <?php if ($customers): ?>
                     <?php foreach ($customers as $customer): ?>
-                    <?php $stats = $this->accounting_model->statistics(['customer' => $customer['customer_id']]); ?>
+                    <?php $stats = $this->accounting_model->statistics(['customer' => $customer->customer_id]); ?>
                     <tr>
                       <td>
                         <a href="<?= $customer->customer_id !== '0' ? site_url('customer/data/'.$customer->customer_TCno) : 'javascript:void(0)' ?>">
-                          <?=$customer->customer_firstname . ' ' . $customer->customer_lastname;?>
+                          <?=$customer->name;?>
                         </a>
                       </td>
                       <td> <?=$customer->customer_telephone;?> </td>
