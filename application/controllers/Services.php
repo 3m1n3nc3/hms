@@ -129,7 +129,7 @@ class Services extends Admin_Controller {
                 'type' => ($new_item_id) ? 'added_inventory_item' : 'updated_inventory_item',
                 'url'  => site_url('services/inventory')
             );
-            $this->CI->notifications->notifyPrivilegedMods($re_data);  
+            $this->notifications->notifyPrivilegedMods($re_data);  
 
 			$mit = $inventory_item ? 'updated' : 'added';
 			$this->session->set_flashdata('message', alert_notice('Inventory Item '.$mit, 'success')); 

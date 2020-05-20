@@ -383,7 +383,7 @@ class Customer extends Admin_Controller
                     'type' => 'cleared_a_debt',
                     'url'  => site_url('generate/invoice/' . $paid_info['id'] . '/debt_payment')
                 );
-                $this->CI->notifications->notifyPrivilegedMods($re_data);  
+                $this->notifications->notifyPrivilegedMods($re_data);  
 
                 $resp['message'] .= $this->load->view($this->h_theme.'/extra_layout/generic_invoice', $invoice, true);
             }

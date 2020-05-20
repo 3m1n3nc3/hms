@@ -46,3 +46,14 @@ CREATE TABLE IF NOT EXISTS `notifications` (
     KEY `notifier_id` (`notifier_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+CREATE TABLE IF NOT EXISTS `debt_payments` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `payment_id` int(11) DEFAULT NULL,
+    `payment_table` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+    `amount` decimal(10,2) DEFAULT NULL,
+    `description` text CHARACTER SET utf8 COLLATE utf8_general_ci,
+    `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`) USING BTREE,
+    KEY `reference` (`payment_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;

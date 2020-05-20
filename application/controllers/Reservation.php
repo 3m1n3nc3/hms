@@ -173,7 +173,7 @@ class Reservation extends Admin_Controller
                     'type' => 'made_reservation', 
                     'url'  => site_url('room/reserved_room/'.$data['room_id'].'/'.$data['customer_id'])
                 );
-                $this->CI->notifications->notifyPrivilegedMods($re_data);  
+                $this->notifications->notifyPrivilegedMods($re_data);  
 
                 $print_invoice = anchor_popup('generate/invoice/'.$reservation_id.'/reservation', '<i class="fa fa-print"></i> Print Invoice', ['class'=>'text-white font-weight-bold btn btn-success mb-3']);
                 set_snashdata('message',alert_notice('Reservation successfully made!', 'success') . $print_invoice);   
