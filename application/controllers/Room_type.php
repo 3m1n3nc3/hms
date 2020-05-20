@@ -71,6 +71,7 @@ class Room_type extends Admin_Controller
 
 	function delete($room_type)
 	{
+        $room_type = urldecode($room_type);
         // Check if employee has permission to take this action
         error_redirect(has_privilege('room-types'), '401');
 
@@ -86,6 +87,7 @@ class Room_type extends Admin_Controller
      */
 	public function edit($room_type)
 	{
+        $room_type = urldecode($room_type);
         // Check if employee has permission to take this action
         error_redirect(has_privilege('room-types'), '401');
 
