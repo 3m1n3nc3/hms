@@ -51,7 +51,7 @@ class Setting_model extends CI_Model {
             } 
             else 
             {
-                $value = array('setting_keyd' => $setting_key, 'setting_value' => $data[$setting_key]);
+                $value = array('setting_key' => $setting_key, 'setting_value' => $data[$setting_key]);
 
                 $this->db->insert('settings', $value); 
             }
