@@ -50,7 +50,7 @@
                               <?= $rt->room_service ? '<i title="Room Services" class="fa fa-handshake">' : '' ?>  
                             </td>
           							    <td class="td-actions"> 
-                              <a href="<?= site_url('room-type/edit/'.$rt->room_type)?>" class="btn btn-sm btn-primary">
+                              <a href="<?= site_url('room-type/edit/'.$rt->id)?>" class="btn btn-sm btn-primary">
                                   <i class="btn-icon-only fa fa-edit text-white"></i>
                               </a>
                               <a href="javascript:void(0)" onclick="return confirmDelete('<?= site_url('room-type/delete/'.$rt->room_type)?>', 1)" class="btn btn-danger btn-sm">
