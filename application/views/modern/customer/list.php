@@ -37,7 +37,7 @@
                     <tr>
                       <td>
                         <a href="<?= $customer->customer_id !== '0' ? site_url('customer/data/'.$customer->customer_TCno) : 'javascript:void(0)' ?>">
-                          <?=$customer->name;?>
+                          <?=$customer->name??$customer->customer_username;?>
                         </a>
                       </td>
                       <td> <?=$customer->customer_telephone;?> </td>
