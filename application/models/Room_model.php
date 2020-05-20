@@ -118,7 +118,9 @@ class Room_model extends CI_Model {
 
     function getRoomType($room_type, $array = FALSE)
     {
-        $query = $this->db->get_where('room_type', array('room_type' => $room_type));
+        $this->db->where('room_type', $room_type);
+        $this->db->or_where('id', $room_type);
+        $query = $this->db->get('room_type');
 
         if ($array) 
         { 
@@ -129,7 +131,14 @@ class Room_model extends CI_Model {
 
     function editRoomType($data)
     { 
-        $this->db->where('room_type', $data['room_type']);
+        if (isset($data['id'])) 
+        {
+            $this->db->where('id', $data['id']);
+        }
+        else
+        {
+            $this->db->where('room_type', $data['room_type']);
+        }
         $this->db->update('room_type', $data); 
     }
 

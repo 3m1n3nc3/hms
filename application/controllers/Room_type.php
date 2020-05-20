@@ -91,33 +91,34 @@ class Room_type extends Admin_Controller
         // Check if employee has permission to take this action
         error_redirect(has_privilege('room-types'), '401');
 
+        $room_type = $this->room_model->getRoomType($room_type, TRUE);
+
 		if($this->input->post("type") && $this->input->post("price") /*&& $this->input->post("quantity")*/)
 		{
-			$save['room_type']  = $this->input->post("type");
-			$save['room_price'] = $this->input->post("price");
+            $save['id']            = $room_type['id'];
+			$save['room_type']     = $this->input->post("type");
+			$save['room_price']    = $this->input->post("price");
 			$save['room_details']  = $this->input->post("details");
 			$save['room_quantity'] = $this->input->post("quantity");
-			$save['max_adults'] = $this->input->post("max_adults");
-			$save['max_kids']   = $this->input->post("max_kids");
-			$save['wifi'] = $this->input->post("wifi");
-			$save['pool'] = $this->input->post("pool");
-			$save['pool'] = $this->input->post("pool");
-			$save['room_service'] = $this->input->post("service");
+			$save['max_adults']    = $this->input->post("max_adults");
+			$save['max_kids']      = $this->input->post("max_kids");
+			$save['wifi']          = $this->input->post("wifi");
+			$save['pool']          = $this->input->post("pool");
+			$save['pool']          = $this->input->post("pool");
+			$save['room_service']  = $this->input->post("service");
 
 			$this->room_model->editRoomType($save);
             $this->session->set_flashdata(
                 'message', 
                 alert_notice('Room type updated', 'success')
             ); 
-			// redirect("room-type");
+			redirect("room-type/edit/".$room_type['id']);
 		}
 		
 		$data = array('title' => 'Edit Room Type - ' . my_config('site_name'), 'page' => 'room_type');
 		$this->load->view($this->h_theme.'/header', $data);
-
-		$room_type = $this->room_model->getRoomType($room_type);
 		
-		$viewdata = array('room_type'  => $room_type[0]);
+		$viewdata = array('room_type'  => $room_type);
 		$this->load->view($this->h_theme.'/room-type/edit',$viewdata);
 
 		$this->load->view($this->h_theme.'/footer');

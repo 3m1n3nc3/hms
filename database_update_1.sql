@@ -57,3 +57,7 @@ CREATE TABLE IF NOT EXISTS `debt_payments` (
     PRIMARY KEY (`id`) USING BTREE,
     KEY `reference` (`payment_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+ALTER TABLE `room_type` 
+    ADD `id` INT(11) NOT NULL AUTO_INCREMENT FIRST, ADD INDEX `id` (`id`),
+    DROP PRIMARY KEY, ADD PRIMARY KEY (`room_type`, `id`) USING BTREE;
