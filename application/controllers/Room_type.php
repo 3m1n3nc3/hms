@@ -104,12 +104,12 @@ class Room_type extends Admin_Controller
 			$save['pool'] = $this->input->post("pool");
 			$save['room_service'] = $this->input->post("service");
 
-			$this->session->set_flashdata(
-				'message', 
-				alert_notice('Room type updated', 'success')
-			); 
 			$this->room_model->editRoomType($save);
-			redirect("room-type");
+            $this->session->set_flashdata(
+                'message', 
+                alert_notice('Room type updated', 'success')
+            ); 
+			// redirect("room-type");
 		}
 		
 		$data = array('title' => 'Edit Room Type - ' . my_config('site_name'), 'page' => 'room_type');
