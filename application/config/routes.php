@@ -76,9 +76,8 @@ $route['page/rooms/(:any)']        = "homepage/rooms/$1";
 $route['dashboard']                = "admin/dashboard/";
 $route['dashboard/(:any)']         = "admin/$1";
 
-$route['room-type']                = "room_type";
-$route['room-type/(:any)']         = "room_type/$1";
-$route['room-type/edit/(:any)']    = "room_type/edit/$1";
+$route['room-type']                = "room_type"; 
+$route['room-type/(:any)/(:any)']  = "room_type/$1/$2";
 
 $route['admin']                    = "admin/configuration";
 
