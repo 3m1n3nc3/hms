@@ -8,7 +8,7 @@
                 if (paymentBtn) {
                     paymentBtn.addEventListener("click", payWithPaystack);
                 }
- 
+
                 function payWithPaystack() {
 
                     $('#paybtn').html($loader);
@@ -18,7 +18,7 @@
                         key: '<?= my_config('paystack_public') ?>', // Replace with your public key
                         email: '<?= $customer['customer_email'] ?>',
                         currency: '<?= my_config('currency_code') ?>',
-                        amount: '<?= ($room[0]->room_price*$room[0]->vat/100)+$room[0]->room_price*100 ?>',
+                        amount: '<?= (($post['amount'] ?? $room[0]->room_price)*$room[0]->vat/100)+($post['amount'] ?? $room[0]->room_price)*100 ?>',
                         firstname: '<?= $customer['customer_firstname'] ?>',
                         lastname: '<?= $customer['customer_lastname'] ?>',
                         ref: '<?= $post['payment_ref'] ?>',
@@ -33,7 +33,7 @@
                             });
                         },
                         callback: function(response){
-                            window.location.href = '<?php echo site_url('page/rooms/book/'.$room[0]->room_type) ?>?reference=' + response.reference; 
+                            window.location.href = '<?php echo site_url('page/rooms/book/'.$room[0]->id) ?>?reference=' + response.reference; 
                         }
                     });
                       

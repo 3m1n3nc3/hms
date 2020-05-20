@@ -75,17 +75,19 @@ class Room extends Admin_Controller
 		$rooms    = $this->reservation_model->reserved_rooms(['room' => $room_id, 'uncheck' => TRUE, 'page' => $pg]);
         $payment  = $this->payment_model->get_payments(['reference' => $reservation['reservation_id']]);
 
-		$viewdata = array('reservation' => $reservation, 'rooms' => $rooms); 
-
-        $viewdata['pagination']    = $this->pagination->create_links();
-		$viewdata['checkin_date']  = date('Y-m-d', strtotime($reservation['checkin_date']));
-		$viewdata['checkout_date'] = date('Y-m-d', strtotime($reservation['checkout_date']));
- 
-        $viewdata['print_invoice'] = anchor_popup('generate/invoice/'.$reservation['reservation_id'].'/reservation', '<i class="fa fa-print"></i> Print Invoice', ['class'=>'btn btn-success btn-block text-white font-weight-bold mt-1']);
-
-        $viewdata['customer_link'] = anchor('customer/data/'.$reservation['customer_id'], $reservation['customer_name'], ['class'=>'font-weight-bold mt-1']);
-        
-        $viewdata['statistics']    = $viewdata['overstay'] = [];
+		$viewdata = array(
+            'reservation'   => $reservation, 
+            'customer'      => $reservation, 
+            'rooms'         => $rooms,
+            'pagination'    => $this->pagination->create_links(),
+            'checkin_date'  => date('Y-m-d', strtotime($reservation['checkin_date'])),
+            'checkout_date' => date('Y-m-d', strtotime($reservation['checkout_date'])),
+            'statistics'    => array(),
+            'overstay'      => array(),
+            'print_invoice' => anchor_popup('generate/invoice/'.$reservation['reservation_id'].'/reservation', '<i class="fa fa-print"></i> Print Invoice', ['class'=>'btn btn-success btn-block text-white font-weight-bold mt-1']),
+            'customer_link' =>  anchor('customer/data/'.$reservation['customer_id'], $reservation['customer_name'], ['class'=>'font-weight-bold mt-1'])
+        );    
+         
         if ($reservation['customer_id']) 
         {
             $viewdata['statistics'] = $this->accounting_model->statistics(['customer' => $reservation['customer_id']]);

@@ -15,7 +15,7 @@
                         <div class="banner_content text-center">
                             <h6><?= $content['intro'] ?></h6>
                             <h2 <?= $content['color'] ? 'class="'.$content['color'].'"' : ''?>><?= $content['title'] ?></h2>
-                            <p><?= showBBcodes($content['content']) ?></p>
+                            <p><?= showBBcodes(decode_html($content['content'])) ?></p>
                             <?= $content['button'] ? showBBcodes($content['button'], 'btn theme_btn button_hover') : ''?> 
                         </div>
                     </div>
@@ -68,7 +68,7 @@
                 <div class="section_title text-center">
                     <h6><?= $content['intro'] ?></h6>
                     <h2 <?= $content['color'] ? 'class="'.$content['color'].'"' : ''?>><?= $content['title'] ?></h2>
-                    <p><?= showBBcodes($content['content']) ?></p>
+                    <p><?= showBBcodes(decode_html($content['content'])) ?></p>
                     <?= $content['button'] ? showBBcodes($content['button'], 'btn theme_btn button_hover') : ''?> 
                 </div> 
             </div>
@@ -102,7 +102,7 @@
                         <div class="<?= $info['banner'] ? 'col-md-6' : 'col-md-12' ?> d_flex align-items-center">
                             <div class="about_content ">
                                 <h2 class="title <?=$info['color']?> title_color"><?= $info['title']?></h2>
-                                <p><?= showBBcodes($info['content'])?></p>
+                                <p><?= showBBcodes(decode_html($info['content']))?></p>
                                 <?= $info['button'] ? showBBcodes($info['button'], 'button_hover theme_btn_two') : ''?>  
                             </div>
                         </div>
@@ -121,7 +121,7 @@
         <!--================ About History Area  =================-->  
         
         <!--================ Facilities Area  =================--> 
-        <?= $this->hms_parser->show_facilities(int_bool($content['facilities']))?> 
+        <?= $this->hms_parser->show_facilities(int_bool($content['facilities']), $page)?> 
         <!--================ Facilities Area  =================-->
 
         <!--================Contact Area =================-->

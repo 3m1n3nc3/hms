@@ -45,18 +45,18 @@
                         <?= form_error('value[site_name_abbr]'); ?>
                       </div>   
 
-                      <div class="form-group col-md-6">
+                      <div class="form-group col-md-4">
                           <div class="form-group">
                               <label class="text-info" for="country"><?=lang('country')?></label>
                               <select id="country" name="value[site_country]" class="form-control select-country" required>
                                   <?=select_countries(set_value('value[site_country]', my_config('site_country')))?>
                               </select>
                               <small class="text-muted">This will require international visitors to set their nationality and upload a passport </small>
-                              <?= form_error('customer_country'); ?>
+                              <?= form_error('value[customer_country]'); ?>
                           </div>
                       </div>
 
-                      <div class="form-group col-md-6"> 
+                      <div class="form-group col-md-4"> 
                           <div class="form-group">
                               <label class="text-info" for="debt-tolerance">Debt Tolerance</label>
                               <select id="debt-tolerance" name="value[debt_tolerance]" class="form-control" required> 
@@ -66,7 +66,19 @@
                                   <option value="3" <?= set_select('value[debt_tolerance]', '3', int_bool(my_config('debt_tolerance') == 3))?>>Block Checkout on all debts</option>
                               </select>
                               <small class="text-muted">Set how debtors will be handled during checkout</small>
-                              <?= form_error('customer_country'); ?>
+                              <?= form_error('value[debt_tolerance]'); ?>
+                          </div>
+                      </div>
+
+                      <div class="form-group col-md-4"> 
+                          <div class="form-group">
+                              <label class="text-info" for="show_link_back">Show Link Back</label>
+                              <select id="show_link_back" name="value[show_link_back]" class="form-control" required> 
+                                  <option value="0" <?= set_select('value[show_link_back]', '0', int_bool(my_config('show_link_back') == 0))?>>Hide</option>
+                                  <option value="1" <?= set_select('value[show_link_back]', '1', int_bool(my_config('show_link_back') == 1))?>>Show</option> 
+                              </select>
+                              <small class="text-muted">The public facing section of this software has been designed by Colorlib and licensed under CC BY 3.0, You can choose to show or hide the credits.</small>
+                              <?= form_error('value[show_link_back]'); ?>
                           </div>
                       </div>
 
@@ -239,7 +251,7 @@
 
                       <div class="form-group col-md-12">
                         <label class="text-info" for="contact_address"><?=lang('contact').' ' .lang('address')?></label>
-                        <textarea name="value[contact_address]" class="form-control" ><?= set_value('value[contact_address]', my_config('contact_address')) ?></textarea>
+                        <textarea name="value[contact_address]" class="form-control textarea" ><?= set_value('value[contact_address]', my_config('contact_address')) ?></textarea>
                         <small class="text-muted">The site's contact or office address</small>
                         <?= form_error('value[contact_address]'); ?>
                       </div> 

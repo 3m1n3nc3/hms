@@ -112,22 +112,22 @@
                     <h5 class="m-0"><i class="fa fa-bookmark mx-2 text-gray"></i>Important Shortcuts</h5>
                   </div>
                   <div class="card-body text-center">  
-                    <a href="<?=site_url('employee')?>" class="btn btn-light px-2 border">
+                    <a href="<?=site_url('employee')?>" class="btn btn-light px-2 m-1 border">
                       <i class="fa fa-user-tie fa-2x fa-fw mx-2 text-gray"></i>
                       <div class="font-weight-bold">Employees</div>
                     </a>
 
-                    <a href="<?=site_url('customer/list')?>" class="btn btn-light px-2 border">
+                    <a href="<?=site_url('customer/list')?>" class="btn btn-light px-2 m-1 border">
                       <i class="fa fa-users fa-2x fa-fw mx-2 text-gray"></i>
                       <div class="font-weight-bold">Customers</div>
                     </a>
 
-                    <a href="<?=site_url('accounting/cashier/payments')?>" class="btn btn-light px-2 border">
+                    <a href="<?=site_url('accounting/cashier/payments')?>" class="btn btn-light px-2 m-1 border">
                       <i class="fa fa-file fa-2x fa-fw mx-2 text-gray"></i>
                       <div class="font-weight-bold">Sales Report</div>
                     </a>
 
-                    <a href="<?=site_url('login/logout')?>" class="btn btn-light px-4 border">
+                    <a href="<?=site_url('login/logout')?>" class="btn btn-light px-4 m-1 border">
                       <i class="fa fa-power-off  fa-2x fa-fw mx-2 text-gray"></i>
                       <div class="font-weight-bold">Logout</div>
                     </a>

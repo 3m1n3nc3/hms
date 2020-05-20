@@ -39,7 +39,7 @@ class Room_type extends Admin_Controller
 		{
 			$save['room_type']  = $this->input->post("type");
 			$save['room_price'] = $this->input->post("price");
-			$save['room_details']  = $this->input->post("details");
+			$save['room_details']  = encode_html($this->input->post("details"));
 			$save['room_quantity'] = $this->input->post("quantity");
 			$save['max_adults'] = $this->input->post("max_adults") ?? 0;
 			$save['max_kids']   = $this->input->post("max_kids") ?? 0;
@@ -98,7 +98,7 @@ class Room_type extends Admin_Controller
             $save['id']            = $room_type['id'];
 			$save['room_type']     = $this->input->post("type");
 			$save['room_price']    = $this->input->post("price");
-			$save['room_details']  = $this->input->post("details");
+			$save['room_details']  = encode_html($this->input->post("details"));
 			$save['room_quantity'] = $this->input->post("quantity");
 			$save['max_adults']    = $this->input->post("max_adults");
 			$save['max_kids']      = $this->input->post("max_kids");

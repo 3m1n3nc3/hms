@@ -280,7 +280,13 @@ class Admin extends Admin_Controller {
             $save = $this->input->post();
             $msg  = lang('page_created');
 
-            $save['in_footer'] = (isset($save['in_footer']) && !$save['parent']) ? '1' : '0';
+            $save['in_footer']  = (isset($save['in_footer']) && !$save['parent']) ? '1' : '0';
+            $save['in_header']  = (isset($save['in_header']) && !$save['parent']) ? '1' : '0';
+            $save['rooms']      = (isset($save['rooms'])) ? '1' : '0';
+            $save['booking']    = (isset($save['booking'])) ? '1' : '0';
+            $save['facilities'] = (isset($save['facilities'])) ? '1' : '0';
+            $save['contact']    = (isset($save['contact'])) ? '1' : '0';
+
             if ($item_id) 
             {
                 $msg = lang('page_updated');
@@ -288,19 +294,21 @@ class Admin extends Admin_Controller {
             }
 
             $save['safelink'] = (!$save['safelink'] ? url_title($save['title'], '_', TRUE) : $save['safelink']);
-            $save['safelink'] = ($content['safelink'] === 'homepage' ? $content['safelink'] : $save['safelink']);
+            $save['safelink'] = ($content['safelink'] === 'homepage' || $content['safelink'] === 'footer' ? $content['safelink'] : $save['safelink']);
 
             if (!$content['parent']) 
             {
                 $this->content_model->update_parent(['safelink' => $content['safelink'], 'parent' => $save['safelink']]);
             }
+            $save['content'] = encode_html($save['content']);
+
             $saved_id = $this->content_model->add($save);
             $this->session->set_flashdata('message', alert_notice($msg, 'success'));
             redirect('admin/create_page/edit/'.($content['id'] ?? $saved_id)); 
         }
 
 		$viewdata = array( 
-			'content'  => $content,
+			'content'  => decode_html($content),
 			'children' => $this->content_model->get(['parent' => $parent]),
             'parent'   => $content['parent'],
 			'children_title' => $item_id ? 'Page Content' : 'Pages'

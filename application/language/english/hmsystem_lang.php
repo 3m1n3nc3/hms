@@ -79,7 +79,6 @@ $lang['employee_deleted']           = 'Employee Deleted';
 $lang['employee_id']                = 'Employee ID';
 $lang['employee_updated']           = 'Employee Profile Updated';
 $lang['employee_type']              = 'Employee Type';
-$lang['error_processing_payment']   = 'There was an error processing your payment.';  
 $lang['facilities']                 = 'Facilities';
 $lang['facility']                   = 'Facility';
 $lang['facebook']                   = 'Facebook';
@@ -102,11 +101,9 @@ $lang['kid']                    = 'kid';
 $lang['lastname']               = 'Last Name';
 $lang['list_facilities']        = 'List Facilities';
 $lang['list_users']			    = 'List Users';
-$lang['list_payments']          = 'List Payments'; 
 $lang['manage_pages']           = 'Manage Pages'; 
 $lang['manage_privileges']      = 'Manage Privileges'; 
 $lang['my_account']             = 'My Account';
-$lang['my_payments']            = 'My Payments';
 $lang['nationality']            = 'Nationality';
 $lang['my_reservations']        = 'My Reservations';
 $lang['new_customer_added']     = 'You have successfully added a new customer.';
@@ -114,9 +111,7 @@ $lang['new_privilege_created']  = 'You have created a new user privilege.';
 $lang['no_available_rooms']     = 'There are no available rooms for %s.';
 $lang['no_more_reservations']   = 'No more reservations';
 $lang['no_more_reservations_this_room'] = 'No more reservations for this room';
-$lang['no_payment_records']     = 'No payment records available.';
 $lang['no_sales_records']       = 'No Sales Records available.';
-$lang['online_payments']        = 'Online Payments';
 $lang['page_created']           = 'Page Created';
 $lang['page_not_found_404']     = 'Error 404 Page not found';
 $lang['page']                   = 'Page';
@@ -124,10 +119,6 @@ $lang['page_title']             = 'Page Title';
 $lang['page_updated']           = 'Page Updated';
 $lang['passport_number']        = 'Passport Number';
 $lang['password']               = 'Password';
-$lang['payment_success']        = 'Payment Success';
-$lang['payments']               = 'Payments';
-$lang['payment']                = 'Payment';
-$lang['payment_error']          = 'Payment Error';
 $lang['permission']             = 'Permission';
 $lang['permissions']            = 'Permissions';
 $lang['phone']                  = 'Phone Number';
@@ -146,7 +137,6 @@ $lang['reservation']            = 'Reservation';
 $lang['reservations']           = 'Reservations';
 $lang['reservation_date']       = 'Reservation Date';
 $lang['reservation_made']       = 'Reservation Has been successfully made!';
-$lang['reservation_pay_desc']   = 'Reservation payments for %s'; 
 $lang['reserved_room']          = 'Reserved Room';
 $lang['reserved_rooms']         = 'Reserved Rooms';
 $lang['required_upload_passport'] = 'You may be required to upload the data page of your passport.';
@@ -156,8 +146,6 @@ $lang['room_number']            = 'Room Number';
 $lang['room_service']           = 'Room Service';
 $lang['room_sale']              = 'Room Sale';
 $lang['room_type']              = 'Room Type';
-$lang['payment_already_done']	= 'This payment has already been processed'; 
-$lang['payment_proccessed']		= ' Thank you, your payment has been processed you can now set up your '; 
 $lang['registration_failed']    = 'Registration Failed'; 
 $lang['room_not_available']     = 'This room is not available';
 $lang['sales_report']           = 'Sales Report';
@@ -207,14 +195,31 @@ $lang['your_account']           = 'Your Account';
 $lang['your_profile_updated']   = 'Your profile has been updated.';
 $lang['your_reservations']      = 'Your Reservations';
 
+// Payments and Invoice
+// ----------------------------------------------------------------------------------------------------
+$lang['error_processing_payment'] = 'There was an error processing your payment.';  
+$lang['list_payments']            = 'List Payments'; 
+$lang['my_payments']              = 'My Payments';
+$lang['no_payment_records']       = 'No payment records available.';
+$lang['online_payments']          = 'Online Payments';
+$lang['payment_success']          = 'Payment Success';
+$lang['payments']                 = 'Payments';
+$lang['payment']                  = 'Payment';
+$lang['payment_error']            = 'Payment Error';
+$lang['payment_already_done']     = 'This payment has already been processed'; 
+$lang['payment_proccessed']       = ' Thank you, your payment has been processed you can now set up your '; 
+$lang['reservation_invoice_desc'] = 'Reservation payments for %s %s for %s days'; 
+$lang['reservation_pay_desc']     = 'Reservation payments for %s'; 
+
+
 // Containers
 // ----------------------------------------------------------------------------------------------------
-$lang['show_rooms_title']       = 'Hotel Accommodation';
 $lang['show_rooms_description'] = 'Hayatt Regency Suite is in a class of its own.';
+$lang['show_rooms_title']       = 'Hotel Accommodation';
+
 
 // Notifications
 // ----------------------------------------------------------------------------------------------------
-
 $lang['added_inventory_item']              = 'Added an inventory item';
 $lang['added_inventory_item_message']      = '%s added a new inventory item.';
 $lang['added_new_customer']                = 'Registered a new customer';

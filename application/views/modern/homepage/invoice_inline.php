@@ -1,9 +1,9 @@
 			<?php if ($post['invoice_id']): ?>
-			<div class="container border p-0 m-5">
+			<div class="container p-0 my-5 mr-auto">
 				<div class="row">
 					<div class="col-12"> 
 						<!-- Main content -->
-						<div class="invoice p-3 m-3">
+						<div class="invoice border p-3 m-3">
 							<!-- title row -->
 							<div class="row">
 								<div class="col-12">
@@ -94,7 +94,7 @@
 											</tr>
 											<tr>
 												<th>
-													Vat (<?= $room[0]->vat ?>%)
+													Vat (<?= $room[0]->vat??0 ?>%)
 												</th>
 												<td>
 													<?= $this->cr_symbol.number_format(($post['amount'] ?? $room[0]->room_price)*$room[0]->vat/100, 2) ?> 

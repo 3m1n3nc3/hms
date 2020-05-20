@@ -35,9 +35,13 @@ class Connect extends MY_Controller {
 	        $page = $this->content_model->get(array('id' => $endpoint_id));
 	        // $room = $this->room_model->getRoom(array('id' => $endpoint_id));
 	        // $roomType = $this->room_model->getRoomType($endpoint_id/*$room['room_type']*/, 1);
-	        if ($endpoint === 'page') 
+            if ($endpoint === 'page') 
             {
                 $data = $this->content_model->get(array('id' => $endpoint_id));
+            }
+            elseif ($endpoint === 'facility') 
+            {
+                $data = $this->content_model->get_facilities(array('id' => $endpoint_id));
             }
             else 
 	        {
@@ -46,7 +50,7 @@ class Connect extends MY_Controller {
 	        $sub_folder  = $endpoint . '/';
 		} 
 
-		$table_index = ($endpoint === 'page') ? 'banner' : ($endpoint === 'passport') ? 'passport' : 'image'; 
+		$table_index = ($endpoint === 'page' ? 'banner' : ($endpoint === 'passport' ? 'passport' : 'image')); 
 
 		$upload_type = $this->input->post('set_type');
 		if ($upload_type === 'cover') 
@@ -108,15 +112,23 @@ class Connect extends MY_Controller {
 							elseif ($endpoint === 'employee') 
 							{ 	 
 								$this->employee_model->addEditEmployee(['employee_id' => $data['employee_id'], $table_index => $data_img]);
-							} 
-					        if ($endpoint === 'page') 
+							} else {
+                                // Create a new $data instance
+                                $data = ['id' => $data['id'], $table_index => $data_img];
+                            }
+                            
+                            if ($endpoint === 'page') 
 					        { 
-								$this->content_model->add(['id' => $data['id'], $table_index => $data_img]);
+								$this->content_model->add($data);
 					        }
-					        if ($endpoint === 'room')
-					        { 
-								$this->room_model->editRoomType(['room_type' => $data['room_type'], $table_index => $data_img]);
-					        }  
+                            elseif ($endpoint === 'room')
+                            { 
+                                $this->room_model->editRoomType($data);
+                            }  
+                            elseif ($endpoint === 'facility')
+                            { 
+                                $this->content_model->add_facility($data);
+                            }  
 
 		                    chmod($_config['upload_path'].'/'.$new_image, 0777); 
 		                    $data['success'] = $this->my_config->alert('Your upload was completed successfully.', 'success');

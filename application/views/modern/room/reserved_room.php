@@ -102,7 +102,7 @@
                             <?= alert_notice('You have unpaid debts of up to '.$this->cr_symbol.number_format($statistics['debt'], 2).', you can visit the reception to clear these debts.', 'danger')?>
                         <?php endif;?> 
                     <?php endif;?> 
-                </div>
+                </div> 
 
                 <?php if (isset($this->cuid) && $this->cuid == $customer['customer_id'] && $customer['customer_nationality'] && $customer['customer_nationality'] !== config_item('site_country') && !$customer['passport']):?>
                     <?php alert_notice('You are required to upload the data page of your passport!', 'danger', TRUE, FALSE) ?>

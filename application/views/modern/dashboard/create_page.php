@@ -174,7 +174,7 @@
                     </div>
                     <div class="form-group col-md-12">
                       <label for="content">Content</label>
-                      <textarea class="form-control" id="content" name="content"><?= $content['content']; ?></textarea>
+                      <textarea class="form-control textarea" id="content" name="content"><?= $content['content']; ?></textarea>
                       <?= form_error('content'); ?>
                     </div>
   
@@ -202,7 +202,7 @@
               <div class="card-body box-profile"> 
                 <div class="text-center mb-3">
                   <a href="<?//= $link ?>">
-                    <img class="profile-user-img img-fluid border-gray" src="<?= $this->creative_lib->fetch_image($content['banner']); ?>" alt="...">
+                    <img class="profile-user-img img-fluid border-gray page" src="<?= $this->creative_lib->fetch_image($content['banner']); ?>" alt="...">
                   </a>
                 </div>
                 

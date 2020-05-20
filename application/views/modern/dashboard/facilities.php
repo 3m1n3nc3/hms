@@ -45,7 +45,7 @@
 								<!-- text input -->
 								<div class="form-group">
 									<label>Description</label>
-									<textarea name="details" class="form-control" required><?=set_value('details', $facilities['details'])?></textarea>
+									<textarea name="details" class="form-control textarea" required><?=set_value('details', decode_html($facilities['details']))?></textarea>
 	                  				<?= form_error('details'); ?>
 								</div>
 							</div> 
@@ -86,6 +86,25 @@
 
 					</div>
 				</div>
+				<div class="card card-primary card-outline">
+					<div class="card-header">
+						<h5 class="card-title"><?= lang('content_image') ?></h5>
+					</div>
+					<div class="card-body box-profile">
+						<div class="text-center mb-3">
+							<a href="<?//= $link ?>">
+								<img class="profile-user-img img-fluid border-gray facility" src="<?= $this->creative_lib->fetch_image($facilities['image']); ?>" alt="...">
+							</a>
+						</div>
+						
+						<?php if ($facilities): ?>
+						<div id="upload_resize_image" data-endpoint="facility" data-endpoint_id="<?= $facilities['id']; ?>" class="d-none"></div>
+						<button type="button" id="upload_resize_image_button" class="btn btn-success btn-block text-white upload_resize_image" data-endpoint="facility" data-endpoint_id="<?= $facilities['id']; ?>" data-toggle="modal" data-target="#uploadModal"><b><?=lang('change_image')?></b></button>
+						<?php else: ?>
+						<?php alert_notice(lang('save_to_upload'), 'info', TRUE, 'FLAT') ?>
+						<?php endif; ?>
+					</div>
+				</div>
 			</div>
 
 		</div>
@@ -93,3 +112,17 @@
 	</div><!-- /.container-fluid -->
 </div>
 <!-- /.content -->
+
+
+  <?php
+      $param = array(
+          'modal_target' => 'uploadModal',
+          'modal_title' => 'Upload Image',
+          'modal_size' => 'modal-md',
+          'modal_content' => ' 
+            <div class="m-0 p-0 text-center" id="upload_loader">
+                <div class="loader"><div class="spinner-grow text-warning"></div></div> 
+            </div>'
+      );
+      $this->load->view($this->h_theme.'/modal', $param);
+  ?>

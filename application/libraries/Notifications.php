@@ -245,7 +245,7 @@ class Notifications {
 					$notif_conf = $this->notifyPrivilege($data['type'], $employee);
 				}
 
-				if ($privileged_uid && ($privileged_uid != $user_id || $this->cuid) && $notif_conf) {
+				if ($privileged_uid && ($privileged_uid != $user_id || !empty($this->cuid)) && $notif_conf) {
 					$re_data = array(
 						'notifier_id' => $user_id,
 						'recipient_id' => $privileged_uid,

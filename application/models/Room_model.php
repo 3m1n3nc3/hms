@@ -196,7 +196,7 @@ class Room_model extends CI_Model {
             return false;
         }
         $price = $query->result();
-        $data['room_sales_price'] = $price[0]->room_price;
+        $data['room_sales_price'] = $data['room_sales_price']??$price[0]->room_price;
         $data['total_service_price'] = 0;
         $this->db->insert('room_sales', $data);
     }

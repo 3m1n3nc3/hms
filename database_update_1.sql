@@ -61,3 +61,10 @@ CREATE TABLE IF NOT EXISTS `debt_payments` (
 ALTER TABLE `room_type` 
     ADD `id` INT(11) NOT NULL AUTO_INCREMENT FIRST, ADD INDEX `id` (`id`),
     DROP PRIMARY KEY, ADD PRIMARY KEY (`room_type`, `id`) USING BTREE;
+
+---------------------------------------------------------------------------------
+ALTER TABLE `facilities` 
+    ADD `image` VARCHAR(255) NULL DEFAULT NULL AFTER `icon`;
+
+ALTER TABLE `debt_payments` 
+    ADD `payment_ids` VARCHAR(128) NULL DEFAULT NULL AFTER `payment_id`;

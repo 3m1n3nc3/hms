@@ -117,8 +117,14 @@ class Reservation extends Admin_Controller
 			$viewdata       = array();
 			$data           = array();
 
+            $booked_days    = dateDifference($post['checkin_date'], $post['checkout_date']); 
+            $booked_days    = $booked_days > 0 ? $booked_days : 1;
+            $amount         = ($room_type_info->room_price ?? 0)*$booked_days;
+
         	$data['reservation_ref'] = $this->enc_lib->generateToken(12, 1, 'HRSPR-', TRUE);
 			$data['customer_id']     = $customer->customer_id;
+            $data['employee_id']     = UID;
+            $data['status']          = 1;
             $data['room_id']         = $post['room_id'];
             $data['coming_from']     = $post['from'];
             $data['adults']          = $post['adults'];
@@ -127,9 +133,7 @@ class Reservation extends Admin_Controller
 			$data['checkin_date']    = date('Y-m-d H:i:s', strtotime($post['checkin_date']));
 			$data['checkout_date']   = date('Y-m-d H:i:s', strtotime($post['checkout_date']));
 			$data['reservation_date']  = date('Y-m-d H:i:s', strtotime("NOW"));
-			$data['reservation_price'] = $room_type_info->room_price;
-			$data['employee_id']       = UID;
-			$data['status']            = 1;
+			$data['reservation_price'] = $amount;
  
 			$date_s = date('Y-m-d H:i:s', strtotime("NOW"));
 			if($date_s > $data['checkin_date']) 
@@ -153,10 +157,10 @@ class Reservation extends Admin_Controller
                     'payment_type' => 'admin_room_sale',
                     'reference'    => $data['reservation_ref'],
                     'invoice'      => $data['reservation_ref'],
-                    'amount'       => $data['reservation_price'],
+                    'amount'       => $amount,
                     'description'  => 
-                        sprintf(lang('reservation_pay_desc'), $room_type_info->room_type.' Room '.$data['room_id'])
-                );
+                        sprintlang('reservation_invoice_desc', [$room_type_info->room_type,$data['room_id'],$booked_days])
+                ); 
                 $this->payment_model->add_payments($add_payment_record);
 
                 // Add the reservation and set the reservation_id to a variable
@@ -164,8 +168,9 @@ class Reservation extends Admin_Controller
 
 				unset($data['reservation_date'], $data['reservation_price'], $data['reservation_ref'], $data['coming_from'], $data['destination'], $data['adults'], $data['children']);
 
-				$data['reservation_id'] = $reservation_id;
-				
+                // Add the room sale
+				$data['reservation_id']   = $reservation_id;
+                $data['room_sales_price'] = $amount;
 				$this->room_model->add_room_sale($data);
 
                 // Send notifications

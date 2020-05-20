@@ -56,6 +56,8 @@
     <script src="<?= base_url('backend/modern/plugins/bootbox/bootbox.all.js'); ?>"></script>
     <!-- DateTimePicker -->
     <script src="<?= base_url('backend/modern/plugins/datetimepicker/build/jquery.datetimepicker.full.js'); ?>"></script> 
+    <!-- Summernote -->
+    <script src="<?= base_url('backend/modern/plugins/summernote/summernote-bs4.js'); ?>"></script> 
     <!-- Hotel Management System -->
     <script src="<?= base_url('backend/js/hhms.js?time='.strtotime('NOW')); ?>"></script>  
 
@@ -88,7 +90,10 @@
                 delay(function(){
                 
                 },400); 
-            });
+            });   
+            
+            // Summernote
+            $('.textarea').summernote();
         });
       </script>
     <?php endif ?>

@@ -152,6 +152,11 @@ class Payment_model extends CI_Model {
             $this->db->where('payment_id', $data['payment_id']);  
         }
 
+        if (isset($data['payment_ids'])) 
+        {
+            $this->db->where('payment_ids', $data['payment_ids']);  
+        }
+
         if (isset($data['table'])) 
         {
             $this->db->where('payment_table', $data['table']);

@@ -67,7 +67,7 @@
                       <?php else: ?> 
                       <td><?= $content['title'] ?></td>
                       <?php endif; ?> 
-                      <td><?= word_limiter($content['content'], 30);?></td>   
+                      <td><?= word_limiter(decode_html($content['content']), 30);?></td>   
                       <td class="td-actions text-right">
                         <a href="<?= site_url('admin/create_page/edit/'.$content['id']);?>" class="btn btn-info text-white m-1">
                             <i class="fa fa-edit fa-fw"></i>

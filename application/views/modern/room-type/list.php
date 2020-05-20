@@ -38,8 +38,8 @@
           							<?php foreach ($room_types as $rt): ?>
           							  <tr>
           							    <td> <?=$rt->room_type ?> </td>
-          							    <td> <?=$rt->room_price ?>$ </td>
-          							    <td> <?=$rt->room_details ?> </td> 
+          							    <td> <?=$this->cr_symbol.number_format($rt->room_price,2) ?> </td>
+          							    <td> <?=decode_html($rt->room_details) ?> </td> 
                             <td class="text-gray"> 
                               <i class="fa fa-child"></i><?=$rt->max_kids ?> 
                               <i class="fa fa-user"></i><?=$rt->max_adults ?> 

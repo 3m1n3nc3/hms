@@ -210,8 +210,9 @@ class Homepage extends Frontsite_Controller {
     { 
         $action = urldecode($action);
         $this->account_data->is_customer_logged_in(TRUE);
-        $customer = $this->account_data->fetch(($this->cuid), 1);
+        $customer    = $this->account_data->fetch(($this->cuid), 1);
         $reservation = $this->reservation_model->reserved_rooms(['customer' => $customer['customer_id']], 1);  
+        $booked_days = dateDifference($reservation['checkin_date'], $reservation['checkout_date']); 
 
         $data = array(
             'page'          => 'account',
@@ -366,14 +367,19 @@ class Homepage extends Frontsite_Controller {
         $reference = urldecode($reference);
         error_redirect(has_privilege('cashier-report') OR $this->account_data->is_customer_logged_in(), '401');
     	$fetch_invoice = $this->payment_model->get_payments(['reference' => $reference]); 
+
+        $booked_days = 1;
+
     	if (!$fetch_invoice) 
     	{
-    		$fetch_invoice = $this->session->userdata('reservation'); 
+    		$fetch_invoice       = $this->session->userdata('reservation');  
+            $booked_days         = dateDifference($fetch_invoice['checkin_date'], $fetch_invoice['checkout_date']); 
+
             error_redirect($fetch_invoice);
 
     		$cust = $this->customer_model->get_customer(['email' => $fetch_invoice['email']]);
     		$fetch_invoice['customer_id'] = $cust['customer_id'];
-    		$fetch_invoice['description'] = 'Reservation payments for ' . $fetch_invoice['room_type'] . ' room ' . $fetch_invoice['room_id'];
+    		$fetch_invoice['description'] = sprintlang('reservation_invoice_desc', [$fetch_invoice['room_type'],$fetch_invoice['room_id'],$booked_days]); 
 
     	}
 
@@ -381,15 +387,16 @@ class Homepage extends Frontsite_Controller {
         
     	$invoice = $fetch_invoice; 
 
-        $customer = $this->account_data->fetch($invoice['customer_id'] ?? '', 1); 
-        $post = $this->reservation_model->fetch_reservation(['reservation_ref' => $reference]); 
-        $room = $this->room_model->getRoom(['id' => $post['room_id'] ?? $invoice['room_id']]);  
+        $customer       = $this->account_data->fetch($invoice['customer_id'] ?? '', 1); 
+        $post           = $this->reservation_model->fetch_reservation(['reservation_ref' => $reference]); 
+        $room           = $this->room_model->getRoom(['id' => $post['room_id'] ?? $invoice['room_id']]);  
         $room_type_info = $this->room_model->getRoomType($room['room_type']); 
-        $room_info = (array)($room_type_info[0] ?? []);   
+        $room_info      = o2Array($room_type_info[0] ?? []);  
 
-        $post['invoice_id']  = $invoice['id'] ?? 'pending';
-        $post['amount']      = $invoice['amount'] ?? $room_info['room_price'];
+
+        $post['invoice_id']  = $invoice['id'] ?? 'pending'; 
         $post['description'] = $invoice['description']; 
+        $post['amount']      = $invoice['amount'] ?? (($room_info['room_price'] ?? 0)*$booked_days); 
         $post['payment_ref'] = $invoice['reference'] ?? $invoice['payment_ref'];
         $post['room_type']   = $invoice['room_type'] ?? $room_info['room_type'];
         $post['room_id']     = $room['room_id'] ?? $invoice['room_id'];
@@ -549,17 +556,18 @@ class Homepage extends Frontsite_Controller {
      */
     public function rooms($room_id = '', $action = '')
     { 
-    	// If the user opens another room, remove the current room from the session
-    	$changeable = $this->session->userdata('reservation');
-    	if (isset($_SESSION['reservation']) && strtolower($room_id) !== strtolower($changeable['room_type'])) 
-    	{
-    		$this->session->unset_userdata('reservation');
-    	}
-
         // Get a default page to render here 
         $room_id = urldecode($room_id); 
         $action  = urldecode($action);
         $query   = array('safelink' => 'homepage');  
+
+    	// If the user opens another room, remove the current room from the session
+    	$ch      = $this->session->userdata('reservation');
+        $ch_room = isset($_SESSION['reservation']) && (strtolower($room_id) !== strtolower($ch['room_type'])) && ($room_id !== $ch['room_type_id']); 
+    	if ($ch_room) 
+    	{
+    		$this->session->unset_userdata('reservation');
+    	}
 
         $content = $this->content_model->get($query);
 
@@ -570,6 +578,11 @@ class Homepage extends Frontsite_Controller {
         	'room' => $this->room_model->getRoomType($room_id)[0] ?? [],
         	'has_banner' => $content['banner'] ? TRUE : FALSE 
         ); 
+        if ($data['room']->id??null) 
+        {
+            $data['room_type_id'] = $data['room']->id;
+        }
+
         // If the page does not exist or the content has a parent, show 404 page
         if (!$data['content']) 
         {
@@ -577,7 +590,7 @@ class Homepage extends Frontsite_Controller {
         }
 
         // Process the checkin request
-        $post = $this->input->post(NULL, TRUE); 
+        $post     = $this->input->post(NULL, TRUE); 
         $customer = [];
         if (isset($post['email']) || isset($post['username'])) 
         {
@@ -588,7 +601,8 @@ class Homepage extends Frontsite_Controller {
         {
         	if ($customer) 
         	{ 
-        		$_POST['email'] = $post['email'];
+                $_POST['email']         = $post['email'];
+        		$_POST['room_type_id']  = $post['room_type_id'];
         		$_POST['customer_TCno'] = $post['customer_TCno'] = $customer['customer_TCno'];
         		unset($post['email']);
         	} 	
@@ -612,8 +626,8 @@ class Homepage extends Frontsite_Controller {
 
     			if ($this->account_data->customer_logged_in()) 
     			{
-					redirect('page/rooms/book/' . $post['room_type']);
-    			}
+					redirect('page/rooms/book/' . $data['room']->id);
+    			} 
     		}
 
     		// Check if the customer is logged in
@@ -621,7 +635,7 @@ class Homepage extends Frontsite_Controller {
     		{
 	    		$login_session = $this->session->userdata('reservation');
 
-	    		$data['login_box'] = $customer ? 'login' : 'register';
+	    		$data['login_box']    = $customer ? 'login' : 'register';
 	    		$data['login_action'] = 'page/rooms/book/' . ($login_session['room_type'] ?? '');
 
 				$pre_session = $this->session->userdata('reservation');
@@ -654,7 +668,7 @@ class Homepage extends Frontsite_Controller {
 	    		$data['reserve_room'] = $this->load->view($this->h_theme.'/homepage/login_box', $data, TRUE);
     		}
     	}
- 
+
     	// Reserve the room
     	if (isset($_SESSION['reservation']) && isset($this->logged_customer['customer_id']))
     	{
@@ -667,16 +681,12 @@ class Homepage extends Frontsite_Controller {
 			{
 				// Prepare the data for insert
 				$sessioned = array();
-				$sessioned['customer_id']       = $customer['customer_id'];
-				$sessioned['room_id'] 	        = $post['room_id'];
-				$sessioned['checkin_date']      = $post['checkin_date'];
-				$sessioned['checkout_date']     = $post['checkout_date'];
-				$sessioned['reservation_date']  = date('Y-m-d');
-				$sessioned['reservation_price'] = $room_type_info[0]->room_price ?? '';
-				$sessioned['employee_id']       = 0;
+                $booked_days         = dateDifference($post['checkin_date'], $post['checkout_date']);
+                $post['booked_days'] = $booked_days > 0 ? $booked_days : 1;
+				$post['amount']      = ($room_type_info[0]->room_price ?? 0)*$post['booked_days']; 
 	 
 				$date = date('Y-m-d');
-				if($date > $sessioned['checkin_date']) 
+				if($date > $post['checkin_date']) 
 				{ 
 					// If reservation date is in the past (show error)
 					$data['reserve_room'] = '
@@ -694,7 +704,7 @@ class Homepage extends Frontsite_Controller {
 		        	{
         				$post['date']    	  = date('Y-m-d', strtotime('NOW'));
     					$post['invoice_id']   = 'pending';
-    					$post['description']  = 'Reservation payments for '.$post['room_type'].' room '.$post['room_id']; 
+    					$post['description']  = sprintlang('reservation_invoice_desc', [$post['room_type'],$post['room_id'],$post['booked_days']]); 
 		        		$data['reserve_room'] = $this->hms_parser->show_invoice(
 		        			['post' => $post, 'customer' => $customer, 'room' => $room_type_info]
 		        		);

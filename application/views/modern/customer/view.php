@@ -310,11 +310,17 @@
 				            <table class="table table-striped">
 				              	<thead>
 					                <tr> 
+					                	<th>
+											<div class="custom-control custom-checkbox">
+												<input class="custom-control-input ck_all" type="checkbox" id="ck_all" value="option1">
+												<label for="ck_all" class="custom-control-label"></label>
+											</div>
+					                	</th> 
 					                  	<th> Made At </th>
 					                  	<th> Items </th>
 					                  	<th> Paid </th>
 					                  	<th> Bal. </th>
-					                  	<?php if (has_privilege('customers') && $statistics['debt']): ?>
+					                  	<?php if (has_privilege('customers') && $statistics['service_debt']): ?>
 					                  	<th class="td-actions"> Actions </th>
 					                  	<?php endif; ?>
 					                </tr>
@@ -324,11 +330,17 @@
 					                <?php foreach ($purchases as $purchase): 
 					                	$debt = $purchase['order_price']-$purchase['paid'];
 					                	?>
-						                <tr> 
+						                <tr id="debt_row<?=$purchase['id']?>" data-id="<?=$purchase['id']?>" data-debt="<?=$this->cr_symbol.number_format($debt, 2)?>"> 
+						                	<td>
+												<div class="custom-control custom-checkbox">
+													<input class="custom-control-input pay_ck" type="checkbox" id="ck_<?=$purchase['id']?>" value="option1">
+													<label for="ck_<?=$purchase['id']?>" class="custom-control-label"></label>
+												</div>
+						                	</td>
 						                  	<td> <?=$purchase['service_name']?> </td>
 						                  	<td> <?=$this->hms_data->explode_sales_items($purchase['order_items'], $purchase['order_quantity'], ', ')?> </td>
-						                  	<td id="paid_<?=$purchase['id']?>"> <?=$this->cr_symbol.number_format($purchase['paid'], 2)?> </td>
-						                  	<td id="debt_<?=$purchase['id']?>"> <?=$this->cr_symbol.number_format($debt, 2)?> </td> 
+						                  	<td id="paid_<?=$purchase['id']?>" data-amount="<?=$purchase['paid']?>"> <?=$this->cr_symbol.number_format($purchase['paid'], 2)?> </td>
+						                  	<td id="debt_<?=$purchase['id']?>" data-amount="<?=$debt?>"> <?=$this->cr_symbol.number_format($debt, 2)?> </td> 
 						                  	<?php if (has_privilege('customers') && $debt > 0): ?> 
 						                  	<td class="td-actions">
 							                    <a href="javascript:void(0)" class="btn btn-danger text-white btn-sm update_debt" data-toggle="tooltip" data-id="<?=$purchase['id']?>" data-ref="<?=$customer['customer_TCno']?>" title="Update">
@@ -345,6 +357,8 @@
 				                <?php endif; ?>
 				              	</tbody>
 				            </table>
+			                <button type="button" class="btn btn-info m-3 text-white btn-sm pay-selected" disabled>Update Selected<span> (0)</span></button>
+			                <br>
 						</div> <!-- /.card-body -->
 				        <?php if ($pagination): ?>
 							<div class="card-footer mb-0 pb-0"> <?=$pagination?> </div>
@@ -434,6 +448,7 @@
 			            		$('#bootbox-message').html(data.message);
 			            		$('.modal-title span, #debt_'+item_id).html(data.debt);
 			            		$('#paid_'+item_id).html(data.paid);
+			            		$('#service_debt').html(data.debt); 
 			            		$('#customer_debt').html(data.total_debt);
 			            		$(e.target).removeAttr('disabled').text('Clear Debt');
 			            	})
@@ -444,5 +459,68 @@
 			    }
 			})
     	});
+
+	    $('.ck_all').on('click', function(event) {
+	        $('input:checkbox').not(this).prop('checked', this.checked);
+	    });
+	    $('.pay_ck, .ck_all').change(function(event) {
+	        $('.pay-selected').attr('disabled', false);
+	        $('.pay-selected').find('span').text(' (' + $('.pay_ck:checked').length + ')');
+	        if ($('.pay_ck:checked').length <=0) {
+	        	$('.pay-selected').attr('disabled', true);
+	        }
+	    }); 
+	    $('.pay-selected').on('click', function(event) {
+    		var link = siteUrl+'customer/update_debt/';
+	        event.preventDefault();
+	        data = new Array();
+	        $('td input:checked').parents('tr').each(function () {
+	            data.push($(this).attr('data-id'));
+	        });
+
+	        var total = 0; 
+            $.each( data, function( index, value ){
+	        	console.log(value);
+	        	total += $('#debt_'+value).data('amount');
+            });
+
+	        console.log(data);
+			bootbox.dialog({ 
+			    title: 'Clear customer\'s debt of <span>' + currency_symbol + total + '</span>',
+			    message: '<span id="bootbox-message"></span><input class="bootbox-input bootbox-input-number form-control" value="'+total+'" type="number" placeholder="Amount" required id="update_amount" readonly>',
+			    size: 'large',
+			    onEscape: true,
+			    backdrop: true,
+			    scrollable: true,
+			    buttons: { 
+			        clear: {
+			            label: 'Clear Debt',
+			            className: 'btn-primary',
+			            callback: function(e){
+			            	$('.pay-selected').attr('disabled',true).text('Please Wait...');
+			            	$(e.target).attr('disabled',true).text('Please Wait...');
+			            	$.post(link+'multiple',{item_ids:data}, function(resp){
+			            		$('#bootbox-message').html(resp.message);
+				                $.each( data, function( index, value ) { 
+			            		    $('#paid_' + value).html(currency_symbol + ($('#debt_'+value).data('amount')+$('#paid_'+value).data('amount')));
+			            			$('#debt_' + value).html(resp.debt); 
+				                });
+				                $('th.td-actions').remove();
+				                $('td.td-actions').remove();
+			            		$('.modal-title span').html(resp.debt); 
+			            		$('#service_debt').html(resp.debt).parent('li').toggleClass('text-danger').toggleClass('text-success');
+			            		$('#customer_debt').html(resp.total_debt); 
+
+			            		$(e.target).text('Update Selected');
+			            		$('.pay-selected').text('Update Selected');
+	        					$('input:checkbox').removeAttr('checked');
+			            	})
+			            	return false;
+			            }
+			        }, 
+			        cancel: { label: 'Cancel', className: 'btn-danger', callback: function(d){  } }
+			    }
+			}) 
+	    });
 	}
 </script>

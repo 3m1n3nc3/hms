@@ -318,3 +318,22 @@ if ( ! function_exists('db_dec'))
         return $CI->db->set($tags . $Prop . $tags, $data, FALSE);
     }
 }
+
+
+if ( ! function_exists('encode_html') ) 
+{
+    function encode_html($html = "")
+    {
+        return htmlspecialchars($html);
+    }
+}
+
+
+
+if ( ! function_exists('decode_html') ) 
+{
+    function decode_html($html = "")
+    {
+        return htmlspecialchars_decode($html);
+    }
+}

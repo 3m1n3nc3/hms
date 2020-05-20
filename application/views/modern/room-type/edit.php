@@ -50,7 +50,7 @@
 									<!-- text input -->
 									<div class="form-group">
 										<label>Details</label>
-										<textarea id="details" name="details" class="form-control" rows="3" placeholder="Details" required=""><?=$room_type['room_details']?></textarea>
+										<textarea id="details" name="details" class="form-control textarea" rows="3" placeholder="Details" required=""><?=decode_html($room_type['room_details'])?></textarea>
 									</div>
 								</div> 
 							</div>
@@ -95,12 +95,12 @@
 					<div class="card-body box-profile">
 						<div class="text-center mb-3">
 							<a href="<?//= $link ?>">
-								<img class="profile-user-img img-fluid border-gray" src="<?= $this->creative_lib->fetch_image($room_type['image']); ?>" alt="...">
+								<img class="profile-user-img img-fluid border-gray room" src="<?= $this->creative_lib->fetch_image($room_type['image']); ?>" alt="...">
 							</a>
 						</div>
 						
 						<?php if ($room_type): ?>
-						<div id="upload_resize_image" data-endpoint="room" data-endpoint_id="<?= $room_type['room_type']; ?>" class="d-none"></div>
+						<div id="upload_resize_image" data-endpoint="room" data-endpoint_id="<?= $room_type['id']; ?>" class="d-none"></div>
 						<button type="button" id="upload_resize_image_button" class="btn btn-success btn-block text-white upload_resize_image" data-endpoint="room" data-endpoint_id="<?= $room_type['room_type']; ?>" data-toggle="modal" data-target="#uploadModal"><b><?=lang('change_image')?></b></button>
 						<?php else: ?>
 						<?php alert_notice(lang('save_to_upload'), 'info', TRUE, 'FLAT') ?>

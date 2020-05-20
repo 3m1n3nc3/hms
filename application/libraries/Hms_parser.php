@@ -88,9 +88,9 @@ class Hms_parser
                         <div class="accomodation_item text-center">
                             <div class="hotel_img">
                                 <img src="'.$this->CI->creative_lib->fetch_image($type->image).'" alt="" style="max-height:250px;">
-                                <a href="'.site_url('page/rooms/book/'.$type->room_type).'" class="btn theme_btn button_hover">Book Now</a>
+                                <a href="'.site_url('page/rooms/book/'.$type->id).'" class="btn theme_btn button_hover">Book Now</a>
                             </div>
-                            <a href="'.site_url('page/rooms/'.$type->room_type).'"><h4 class="sec_h4">'.$type->room_type.'</h4></a> 
+                            <a href="'.site_url('page/rooms/'.$type->id).'"><h4 class="sec_h4">'.$type->room_type.'</h4></a> 
                             <h5>'.$this->CI->cr_symbol.number_format($type->room_price, 2).'<small>/night</small></h5>
                         </div>
                     </div>';
@@ -108,7 +108,7 @@ class Hms_parser
     }
 
 
-    public function show_facilities($show = TRUE)
+    public function show_facilities($show = TRUE, $page = '')
     {
         $facilities = $this->CI->content_model->get_facilities(); 
 
@@ -118,7 +118,7 @@ class Hms_parser
             </div>
             <div class="container">
                 '.(
-                    my_config('facilities_title') ? '
+                    $page !== 'facilities' && my_config('facilities_title') ? '
                     <div class="section_title text-center">
                         <h2 class="title_w">'.my_config('facilities_title').'</h2>
                         <p>'.my_config('facilities_content').'</p>
@@ -129,11 +129,17 @@ class Hms_parser
                 $facility_format = [];
                 foreach ($facilities as $facility) 
                 {
+                    $facility_details = ($page !== 'facilities' ? strip_tags(decode_html($facility['details'])) : decode_html($facility['details']));
+
                     $facility_format[] .= '
                     <div class="col-lg-4 col-md-6">
+                        '.(
+                            $page === 'facilities' ? '
+                            <img class="img-fluid rounded mb-2" src="'.$this->CI->creative_lib->fetch_image($facility['image']).'" alt="'.$facility['title'].' Img">' : ''
+                        ).'
                         <div class="facilities_item">
                             <h4 class="sec_h4"><i class="fa '.pass_icon(3, $facility['icon']).'"></i>'.$facility['title'].'</h4>
-                            <p>'.$facility['details'].'</p>
+                            <p>'.decode_html($facility_details).'</p>
                         </div>
                     </div> ';
                 }
@@ -152,23 +158,17 @@ class Hms_parser
 
     public function show_booking_area($show = TRUE, $room_id = '')
     {   
-        $get_room_type = $this->CI->room_model->getRoomType($room_id)[0] ?? [];
+        $room_type      = $this->CI->room_model->getRoomType($room_id, TRUE);
+        $rand_room_type = o2Array($this->CI->room_model->get_room_types(NULL, TRUE));
+        shuffle($rand_room_type); 
 
-        if (!$get_room_type) 
+        if (!$room_type) 
         {   
-            $room_types = $this->CI->room_model->get_room_types();
-            shuffle($room_types);
-            $get_room_type = $room_types[0] ?? [];
-        } 
-
-        if (is_object($get_room_type)) 
-        {
-            $get_room_type = json_decode(json_encode($get_room_type), true);
-        }
-        $room = $get_room_type ?? [];
+            $room_type = $rand_room_type[0];
+        }  
         
-        $booking_area = $this->CI->load->view($this->CI->h_theme.'/homepage/booking_area', array('room' => $room), TRUE);
-        if ($show && $room) 
+        $booking_area = $this->CI->load->view($this->CI->h_theme.'/homepage/booking_area', array('room_type' => $room_type), TRUE);
+        if ($show && $room_type) 
         {
             return $booking_area;
         }
@@ -199,7 +199,7 @@ class Hms_parser
     public function navbar_links($page = '', $subpage = '', $show = TRUE)
     {   
         $links = [];
-        foreach($this->CI->content_model->get(['parent' => 'non', 'order_field' => ['name' => 'safelink', 'id' => 'homepage']]) AS $navbar_link)
+        foreach($this->CI->content_model->get(['parent' => 'non', 'in' => 'header', 'order_field' => ['name' => 'safelink', 'id' => 'homepage']]) AS $navbar_link)
         {
             $link_title = ($navbar_link['safelink'] == 'homepage' ? lang('home') : $navbar_link['title']);
             $links[] .= '

@@ -45,7 +45,7 @@
                 <div class="section_title text-center">
                     <h6><?= $content['intro'] ?></h6>
                     <h2 <?= $content['color'] ? 'class="'.$content['color'].'"' : ''?>><?= $content['title'] ?></h2>
-                    <p><?= showBBcodes($content['content']) ?></p>
+                    <p> <?= showBBcodes(decode_html($content['content'])) ?></p>
                     <?= $content['button'] ? showBBcodes($content['button'], 'btn theme_btn button_hover') : ''?> 
                 </div> 
             </div>
@@ -62,9 +62,11 @@
                 <!-- /.col-md-4 Important Shortcuts -->
                 <div class="col-lg-12">
                     
-                    <?= form_open('page/rooms/book/' . $room->room_type)?>
+                    <?= form_open('page/rooms/book/' . $room->id)?>
                     <input type="hidden" id="reserve_room" name="reserve_room" value="1">
+                    <input type='hidden' name="room_type_id" value="<?=$room_type_id?>">
                     <input type="hidden" id="email" name="email" value="<?= set_value('email')?>">
+
                     <div class="row">
                         <div class="col-sm-3">
                             <!-- text input -->
@@ -248,53 +250,50 @@
         <?= $this->hms_parser->show_rooms(int_bool($content['rooms']), $page)?> 
         <!--================ Accomodation Area  =================-->
  
+        <script>
+            function re(event) {
+                // return $(event).form.submit();
 
+                var room_id     = $(event).val();
+                var form        = $(event.form);
+                var from        = form.find('input[name="from"]').val();
+                var destination = form.find('input[name="destination"]').val();
 
-<script>
-    function re(event) {
-        // return $(event).form.submit();
+                $.post(site_url('ajax/connect/checkroom'), {room_id:room_id}, function(data) {
+                    if (data.available==false) {
+                        bootbox.dialog({
+                            title: 'Reservation Error',
+                            message: data.message,
+                            size: 'large',
+                            onEscape: true,
+                            backdrop: true 
+                        });
+                    } else {
+                        $('<input />').attr('type', 'hidden')
+                            .attr('name', "room_id")
+                            .attr('value', room_id)
+                            .appendTo($(event.form));
 
-        var room_id     = $(event).val();
-        var form        = $(event.form);
-        var from        = form.find('input[name="from"]').val();
-        var destination = form.find('input[name="destination"]').val();
-
-                console.log(from);
-        $.post(site_url('ajax/connect/checkroom'), {room_id:room_id}, function(data) {
-            if (data.available==false) {
-                bootbox.dialog({
-                    title: 'Reservation Error',
-                    message: data.message,
-                    size: 'large',
-                    onEscape: true,
-                    backdrop: true 
-                });
-            } else {
-                $('<input />').attr('type', 'hidden')
-                    .attr('name', "room_id")
-                    .attr('value', room_id)
-                    .appendTo($(event.form));
-
-                if (typeof from == 'undefined' || typeof destination == 'undefined') {
-                    fromToDestination(event.form);
-                } else {
-                    bootbox.confirm('Reserve this room?', function(e) {
-                        if (e == true) {
-                            return $(event.form).submit();
+                        if (typeof from == 'undefined' || typeof destination == 'undefined') {
+                            fromToDestination(event.form);
+                        } else {
+                            bootbox.confirm('Reserve this room?', function(e) {
+                                if (e == true) {
+                                    return $(event.form).submit();
+                                }
+                            });
                         }
-                    });
-                }
+                    }
+                });
+                return false;
             }
-        });
-        return false;
-    }
 
-    window.onload = function () {
-        var loader = 
-        '<div class="text-center preloader">'+
-            '<div class="spinner-light text-info spinner-grow" role="status">'+
-                '<span class="sr-only">Loading...</span>'+
-           '</div>'+
-        '</div>';  
-    }
-</script>
+            window.onload = function () {
+                var loader = 
+                '<div class="text-center preloader">'+
+                    '<div class="spinner-light text-info spinner-grow" role="status">'+
+                        '<span class="sr-only">Loading...</span>'+
+                   '</div>'+
+                '</div>';  
+            }
+        </script>

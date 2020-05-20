@@ -27,6 +27,10 @@ class Hms_payments {
         $container_holder = '<div class="container mt-5">%s</div>';
 
         // Prepare the data for insert
+        $booked_days         = dateDifference($this->post['checkin_date'], $this->post['checkout_date']);
+        $post['booked_days'] = $booked_days > 0 ? $booked_days : 1;
+        $amount              = ($room_type_info[0]->room_price ?? 0)*$post['booked_days']; 
+
         $sessioned = array();
         $sessioned['customer_id']       = $this->customer['customer_id'];
         $sessioned['room_id']           = $this->post['room_id'];
@@ -36,7 +40,7 @@ class Hms_payments {
         $sessioned['adults']            = $this->post['adults']; 
         $sessioned['children']          = $this->post['children']; 
         $sessioned['reservation_date']  = date('Y-m-d H:i:s');
-        $sessioned['reservation_price'] = $this->room_type_info[0]->room_price ?? '';
+        $sessioned['reservation_price'] = $amount;
         $sessioned['employee_id']       = 0;
         $sessioned['status']            = 1; 
 
@@ -55,7 +59,7 @@ class Hms_payments {
                 $save['customer_id']  = $this->customer['customer_id']; 
                 $save['payment_type'] = 'reservation'; 
                 $save['amount']       = $sessioned['reservation_price']; 
-                $save['description']  = 'Reservation payments for ' . $this->post['room_type'] . ' room ' . $this->post['room_id']; 
+                $save['description']  = sprintlang('reservation_invoice_desc', [$this->post['room_type'],$this->post['room_id'],$booked_days]); 
                 $data['payment_id']   = $this->CI->payment_model->add_payments($save);    
 
                 if ($data['payment_id']) 
@@ -65,8 +69,10 @@ class Hms_payments {
 
                     unset($sessioned['reservation_date'], $sessioned['reservation_price'], $sessioned['reservation_ref'], $sessioned['children'], $sessioned['adults']);
 
-                    $sessioned['reservation_id'] = $reservation_id;
-
+                    $sessioned['reservation_id']   = $reservation_id;
+                    $sessioned['room_sales_price'] = $sessioned['reservation_price'];
+                    
+                    // Add the room sale
                     $this->CI->room_model->add_room_sale($sessioned); 
                     $this->CI->session->unset_userdata('reservation');
 

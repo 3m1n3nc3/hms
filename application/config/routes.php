@@ -69,9 +69,9 @@ $route['my-payments']                    = "homepage/payments";
 $route['my-payments/(:any)']             = "homepage/payments/$1";
 
 // For this route, the id as the first parameter is routed as the second parameter
+$route['page/rooms/(:any)']        = "homepage/rooms/$1";
 $route['page/rooms/(:any)/(:any)'] = "homepage/rooms/$2/$1/";
 // ----------------------------------------------------------------------------------
-$route['page/rooms/(:any)']        = "homepage/rooms/$1";
 
 $route['dashboard']                = "admin/dashboard/";
 $route['dashboard/(:any)']         = "admin/$1";

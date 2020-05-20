@@ -50,7 +50,7 @@
 									<!-- text input -->
 									<div class="form-group">
 										<label>Details</label>
-										<textarea id="details" name="details" class="form-control" rows="3" placeholder="Details" required=""><?= set_value('details')?></textarea>
+										<textarea id="details" name="details" class="form-control textarea" rows="3" placeholder="Details" required=""><?= set_value('details')?></textarea>
 									</div>
 								</div> 
 							</div>

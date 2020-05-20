@@ -275,19 +275,22 @@ class Customer extends Admin_Controller
      */
     function update_debt($action = '') 
     {
-        $resp['message']         = alert_notice('Permission Denied', 'danger');
-        $resp['reservation_ref'] = $this->enc_lib->generateToken(12, 1, 'HRSPR-', TRUE);
+        $data = $this->input->post(NULL, TRUE);
+        
+        if (has_privilege('customers') && $data) {
+            $resp['message']         = alert_notice('An error occurred', 'danger');
+            $resp['ref_token']       = $this->enc_lib->generateToken(12, 1, 'HRSPR-', TRUE);
 
-        $nm_prop = $am_prop = $pd_prop = $id_prop = $append_item = null;
-
-        if (has_privilege('customers')) {
-            $data = $this->input->post(NULL, TRUE);
+            $nm_prop = $am_prop = $pd_prop = $id_prop = $append_item = null;
 
             $done = 'updated';
 
-            $amount_note = $this->cr_symbol.number_format($data['amount'], 2);
+            if (!empty($data['amount']))
+            {
+                $amount_note = $this->cr_symbol.number_format($data['amount'], 2);
+            }
 
-            $update_debt_records = false;
+            $upd_debt_record = false;
             if ($action == 'update' || $action == 'clear') 
             {
                 $item      = $this->customer_model->purchases(['item_id' => $data['item_id']]);
@@ -300,10 +303,10 @@ class Customer extends Admin_Controller
                 }
 
                 $debt_data['payment_table'] = 'sales_service_orders';
-                $append_item                = ' Purchase';
-                $amt_prop                   = 'order_price';
+                $append_item                = ' Purchase'; 
                 $success_message            = "Debt has been $done, $amount_note was paid.";
                 $debt_data['description']   = "$amount_note Was paid off for a debt of $debt_note";
+                $resvn['customer_id']       = $item['customer_id'];
                 if ($data['amount'] > $item['order_price'] || $data['amount'] <= 0) 
                 {
                     $resp['message'] = alert_notice("Amount cannot be 0 and cannot be greater than $debt_note");
@@ -313,9 +316,32 @@ class Customer extends Admin_Controller
                     $upd_debt_record = $this->customer_model->update_debt($data);
                 }
             }
+            elseif ($action == 'multiple') 
+            {
+                if (!empty($data['item_ids']))
+                {
+                    $amount_not = 0;
+                    foreach ($data['item_ids'] AS $item_id) {
+                        $item             = $this->customer_model->purchases(['item_id' => $item_id]); 
+                        $amount_not      += $item['order_price']-$item['paid'];  
+                        $udata['item_id'] = $item_id;
+                        $udata['amount']  = $item['order_price']-$item['paid'];
+                        $upd_debt_record  = $this->customer_model->update_debt($udata);
+                    }
+                    $am_prop                    = 'paid';
+                    $amount_note                = $this->cr_symbol.number_format($amount_not, 2); 
+                    $append_item                = ' Purchase'; 
+                    $success_message            = "Debt has been cleared, $amount_note was paid.";
+                    $resvn['customer_id']       = $item['customer_id'];
+                    $data['amount']             = $amount_not;
+                    $debt_data['payment_id']    = $data['item_id'] = $item_id;
+                    $debt_data['payment_ids']   = implode(',', $data['item_ids']);
+                    $debt_data['payment_table'] = 'sales_service_orders';
+                    $debt_data['description']   = "$amount_note Was paid off for a debt of $amount_note";
+                }
+            }
             elseif ($action == 'pay_overstay') 
             {
-
                 $resvn = $this->reservation_model->fetch_reservation(['id' => $data['item_id']]);
                 $item  = $this->reservation_model->overstayed_room(['customer' => $resvn['customer_id'], 'room' => $resvn['room_id']]); 
 
@@ -345,8 +371,8 @@ class Customer extends Admin_Controller
                 $add_payment_record = array(
                     'customer_id'  => $resvn['customer_id'],
                     'payment_type' => 'debt_payments',
-                    'reference'    => $resp['reservation_ref'],
-                    'invoice'      => $resp['reservation_ref'],
+                    'reference'    => $resp['ref_token'],
+                    'invoice'      => $resp['ref_token'],
                     'amount'       => $data['amount'],
                     'description'  => $debt_data['description']
                 );
@@ -375,7 +401,7 @@ class Customer extends Admin_Controller
                     'amount' => $paid_info['amount'],
                     'action' => 'homepage/generic_invoice/' . $paid_info['id'] . '/-post',
                     'vat' => 0,
-                    'variables' => ['invoice_type' => 'debt_payment', 'width' => 11, 'post' => [], 'room' => [], 'customer' => []] 
+                    'variables' => ['invoice_type' => 'debt_payment', 'width' => 11] 
                 );
 
                 // Send notifications
@@ -389,15 +415,26 @@ class Customer extends Admin_Controller
             }
 
             $statistics['debt'] = $update['paid'] = $update['order_price'] = 0;
-            if ($action == 'update' || $action == 'clear') 
+            if ($action == 'update' || $action == 'clear' || $action == 'multiple') 
             {
                 $update         = $this->customer_model->purchases(['item_id' => $data['item_id']]);
                 $statistics     = $this->accounting_model->statistics(['customer' => $item['customer_id']]);
                 $resp['total_debt'] = $this->cr_symbol.number_format($statistics['debt'], 2);
-                $resp['paid']       = $this->cr_symbol.number_format($update['paid'], 2);
-                $resp['debt']       = $this->cr_symbol.number_format($update['order_price']-$update['paid'], 2);
+                if (!empty($data['item_ids']))
+                {
+                    $paid = $debt = 0;
+                    foreach ($data['item_ids'] AS $item_id) {
+                        $update = $this->customer_model->purchases(['item_id' => $item_id]);
+                        $paid  += $update['paid'];
+                        $debt  += ($update['order_price']-$update['paid']);
+                    }
+                } 
+                $resp['paid'] = $this->cr_symbol.number_format($paid??$update['paid'], 2);
+                $resp['debt'] = $this->cr_symbol.number_format($debt??($update['order_price']-$update['paid']), 2); 
             }
-        } 
+        } else {
+            $resp['message'] = alert_notice('Permission Denied', 'danger');
+        }
 
         header('Content-type: application/json'); 
         echo json_encode($resp);

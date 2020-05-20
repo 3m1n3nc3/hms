@@ -26,6 +26,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- DateTimePicker -->
     <link rel="stylesheet" href="<?= base_url('backend/modern/plugins/datetimepicker/jquery.datetimepicker.css'); ?>">
     
+    <!-- Summernote -->
+    <link rel="stylesheet" href="<?= base_url('backend/modern/plugins/summernote/summernote-bs4.css'); ?>">
+    
     <!-- Datatables -->
     <?php if (isset($use_table) && $use_table): ?>
         <link rel="stylesheet" href="<?php echo base_url(); ?>backend/modern/plugins/datatables-bs4/css/dataTables.bootstrap4.css">
