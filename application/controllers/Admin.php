@@ -307,9 +307,8 @@ class Admin extends Admin_Controller {
             redirect('admin/create_page/edit/'.($content['id'] ?? $saved_id)); 
         }
 
-		$viewdata = array( 
-            'content'  => $content,
-			'content'  => ['content' => decode_html($content['content'])],
+		$viewdata = array(  
+			'content'  => [$content, 'content' => decode_html($content['content'])],
 			'children' => $this->content_model->get(['parent' => $parent]),
             'parent'   => $content['parent'],
 			'children_title' => $item_id ? 'Page Content' : 'Pages'
