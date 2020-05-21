@@ -309,7 +309,7 @@ class Admin extends Admin_Controller {
 
 		$viewdata = array( 
             'content'  => $content,
-			'content'  => decode_html($content['content']),
+			'content'  => ['content' => decode_html($content['content'])],
 			'children' => $this->content_model->get(['parent' => $parent]),
             'parent'   => $content['parent'],
 			'children_title' => $item_id ? 'Page Content' : 'Pages'
