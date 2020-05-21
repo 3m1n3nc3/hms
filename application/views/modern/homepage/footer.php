@@ -88,7 +88,7 @@
                     <p class="col-lg-8 col-sm-12 footer-text m-0">
                         <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                         Copyright &copy;<?=date('Y')?> All rights reserved. <?= my_config('site_name')?>  
-                        <?= !my_config('show_link_back') ? ' | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib </a>' : ''?>
+                        <?= my_config('show_link_back') ? ' | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib </a>' : ''?>
                         <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
                     <div class="col-lg-4 col-sm-12 footer-social">
                         <a href="<?=social_link(my_config('contact_facebook'), 'facebook');?>"><i class="socicon-facebook"></i></a>
