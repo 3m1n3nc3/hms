@@ -170,6 +170,7 @@ class Admin extends Admin_Controller {
                         $post['id'] = $id;
                     }
                     $this->session->set_flashdata('message', alert_notice($msg, 'success'));
+                    unset($post['files']);
                     $insert = $this->content_model->add_facility($post);
                     redirect('admin/facilities/edit/' . ($post['id'] ?? $insert));
                 } 
