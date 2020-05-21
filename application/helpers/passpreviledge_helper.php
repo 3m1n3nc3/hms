@@ -125,10 +125,10 @@ if ( ! function_exists('list_permissions'))
 
 if ( ! function_exists('verify_permision'))
 {
-    function verify_permision($role = '')
+    function verify_permision($previleges = '', $role = '')
     {   
         if ($role) {
-            $privileges = perfect_privilege($role);
+            $privileges = perfect_privilege($previleges);
             return is_array($privileges) && in_array($role, $privileges);
         }
     }

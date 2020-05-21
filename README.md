@@ -71,5 +71,5 @@ Thanks
 
 ### Available Privileges
 default,        dashboard,     reservation,          rooms,            room-sales,     room-types,       payments,
-reserved-rooms, customers,     manage-configuration, manage-privilege, manage-pages,   manage-employee,
+reserved-rooms, customers,     manage-configuration, manage-privilege, manage-pages,   manage-employee,  *super*
 sales-services, sales-records, inventory,            service-point,    cashier-report, expense-register, 
