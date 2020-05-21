@@ -174,7 +174,7 @@
                     </div>
                     <div class="form-group col-md-12">
                       <label for="content">Content</label>
-                      <textarea class="form-control textarea" id="content" name="content"><?= $content['content']; ?></textarea>
+                      <textarea class="form-control textarea" id="content" name="content"><?= $content['content']??''; ?></textarea>
                       <?= form_error('content'); ?>
                     </div>
   
