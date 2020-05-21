@@ -78,9 +78,9 @@
 
 					<?php if ($rooms): ?>
 						<?php
-							$size = count($rooms);
-							$cols = ceil(sqrt($size));
-                            $rows = ceil($size/$cols);
+							$size  = count($rooms);
+							$cols  = ceil(sqrt($size));
+                            $rows  = ceil($size/$cols);
 							$today = date('Y-m-d H:i:s', time());
                             $booked_days = dateDifference(set_value('checkin_date'), set_value('checkout_date')); 
                             $booked_days = $booked_days > 0 ? $booked_days : 1;
