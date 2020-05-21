@@ -314,4 +314,18 @@ class Connect extends MY_Controller {
 
         echo json_encode($response);
     }
+
+
+    /**
+     * Jodit FileBrowser Connector for Jodit v.3.0
+     * Official Jodit WYSIWYG PHP connector
+     * @return NULL     Echoes a json string containing the notifications
+     */
+    public function responsive_filemanager()
+    {
+        define('JODIT_ROOT', FCPATH . 'uploads/jodit/');
+        
+        include_once APPPATH . '/third_party/RFileManager/dialog.php';
+
+    }
 }

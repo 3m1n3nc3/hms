@@ -15,8 +15,7 @@
             </div>'
         );
         $this->load->view($this->h_theme.'/modal', $param);
-      ?>
- 
+      ?> 
       <!-- Main Footer -->
       <footer class="main-footer text-sm">
         <!-- To the right -->
@@ -57,7 +56,7 @@
     <!-- DateTimePicker -->
     <script src="<?= base_url('backend/modern/plugins/datetimepicker/build/jquery.datetimepicker.full.js'); ?>"></script> 
     <!-- Summernote -->
-    <script src="<?= base_url('backend/modern/plugins/summernote/summernote.js'); ?>"></script> 
+    <script src="<?= base_url('backend/modern/plugins/jodit/jodit.js'); ?>"></script> 
     <!-- Hotel Management System -->
     <script src="<?= base_url('backend/js/hhms.js?time='.strtotime('NOW')); ?>"></script>  
 
@@ -80,6 +79,22 @@
     <!-- Notifications and more -->
     <?php if ($this->account_data->logged_in()): ?>
       <script>
+
+        responsiveFileManager = function (modal_id = '') { 
+          $.ajax({
+              url: site_url('backend/RFileManager/dialog.php?type=1&editor=ckeditor&fldr='),
+              type: 'GET',
+              dataType: 'html'
+          })
+          .done(function(data) {
+            $('.modal-dialog').addClass('modal-xl').removeClass('modal-sm');
+            $('.modal-title').html('Responsive File Manager');
+            $('.modal-body').html('');
+            $(modal_id).modal('show');
+          });
+        } 
+                    
+           
         jQuery(document).ready(function($) {
 
             $("#get-notifications").click(function(event) {
@@ -90,10 +105,12 @@
                 delay(function(){
                 
                 },400); 
-            });   
-            
-            // Summernote
-            // $('.textarea').summernote();
+            });  
+
+           // Jodit
+            $('.textarea').each(function () { 
+                var editor = new Jodit(this);
+            });
         });
       </script>
     <?php endif ?>
