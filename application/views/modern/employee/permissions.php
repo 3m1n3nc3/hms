@@ -84,7 +84,7 @@
                         <small class="text-secondary text-md"><?= lang('list_privileges'); ?></small>
                     </div>
 
-                    <?php if (verify_permision($privileges['permissions'], 'super') && !has_privilege('super')): //super ?>
+                    <?php if (!verify_permision($privileges['permissions'], 'super') || has_privilege('super')): //super ?>
                     <div class="form-group col-12">
                         <div class="send-button">
                             <button type="submit" class="btn btn-primary btn-md"><?=  $action == 'create' && $action_id ? lang('update_privilege') : lang('create_privilege') ?></button>
