@@ -94,7 +94,7 @@
 					</div>
 					<div class="card-body box-profile">
 						<div class="text-center mb-3">
-							<a href="javavascript:void(0)">
+							<a href="javascript:void(0)" onclick="modalImageViewer('.profile-user-img')">
 								<img class="profile-user-img img-fluid border-gray room" src="<?= $this->creative_lib->fetch_image($room_type['image']); ?>" alt="...">
 							</a>
 						</div>
