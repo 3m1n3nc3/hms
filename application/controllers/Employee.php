@@ -222,7 +222,7 @@ class Employee extends Admin_Controller
 
         if ($action == 'assign') 
         {
-            $u = $this->account_data->fetch($save['id']);
+            $u = $this->account_data->fetch($action_id);
             error_redirect(has_privilege('super') || !has_privilege('super', o2Array($u)), '401'); 
         }
 
