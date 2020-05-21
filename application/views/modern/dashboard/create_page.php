@@ -201,7 +201,7 @@
               </div>
               <div class="card-body box-profile"> 
                 <div class="text-center mb-3">
-                  <a href="<?//= $link ?>">
+                  <a href="javascript:void(0)" onclick="modalImageViewer('.profile-user-img')">
                     <img class="profile-user-img img-fluid border-gray page" src="<?= $this->creative_lib->fetch_image($content['banner']); ?>" alt="...">
                   </a>
                 </div>

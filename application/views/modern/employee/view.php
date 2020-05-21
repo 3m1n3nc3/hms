@@ -10,7 +10,9 @@
 				<div class="card card-primary card-outline">
 					<div class="card-body box-profile">
 						<div class="text-center">
-							<img class="profile-user-img img-fluid img-circle" src="<?= $this->creative_lib->fetch_image($employee['image'], 3); ?>" alt="User profile picture">
+                            <a href="javascript:void(0)" onclick="modalImageViewer('.profile-user-img')">
+								<img class="profile-user-img img-fluid rounded img-thumbnail customer" src="<?= $this->creative_lib->fetch_image($employee['image'], 3); ?>" alt="Employee profile picture">
+							</a> 
 						</div>
 						<h3 class="profile-username text-center"><?=$employee['employee_firstname'] . ' ' .$employee['employee_lastname']?></h3>
 						<p class="text-muted text-center"><?=$employee['employee_type']?></p>
