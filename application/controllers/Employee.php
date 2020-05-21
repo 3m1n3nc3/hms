@@ -71,7 +71,6 @@ class Employee extends Admin_Controller
             // Check if the user has permission to access this module and redirect to 401 if not
             error_redirect(has_privilege('manage-employee'), '401'); 
         }
-
 		$departments = $this->services_model->get_service(); 
 		$employee = $this->employee_model->getEmployee($employee_id, 1);
 		$viewdata = array('departments' => $departments, 'employee' => $employee);
@@ -220,6 +219,13 @@ class Employee extends Admin_Controller
         $data['privileges']  = $this->privilege_model->get($action == 'create' ? $action_id : '');
         $data['action_id']   = $action_id;
         $data['action'] = $action;
+
+        if ($action == 'assign') 
+        {
+            $u = $this->account_data->fetch($save['id']);
+            error_redirect(has_privilege('super') || !has_privilege('super', o2Array($u)), '401'); 
+        }
+
         // Generate or assign privileges  
         if ($this->input->post('action')) 
         {
