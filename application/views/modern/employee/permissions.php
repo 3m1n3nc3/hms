@@ -31,8 +31,13 @@
                             <select class="form-control" id="role_id" name="role_id">
                                 <option value="0" <?= set_select('role_id', '0'); ?>>Reset</option>
                                 <?php foreach ($this->privilege_model->get() AS $option): ?>
-                                <option value="<?= $option['id']; ?>" <?= set_select('role_id', $option['id']); ?>><?= $option['title']; ?> 
-                                </option>
+                                    <?php $p = $this->privilege_model->get($option['id']); 
+                                          if (!verify_permision($p['permissions'], 'super') || has_privilege('super')):
+                                    ?>
+                                        <option value="<?= $option['id']; ?>" <?= set_select('role_id', $option['id']); ?>>
+                                            <?= $option['title']; ?> 
+                                        </option>
+                                    <?php endif; ?>
                                 <?php endforeach; ?>
                             </select>
                             <?php echo form_error('role_id'); ?>
