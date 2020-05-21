@@ -53,6 +53,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Google Font: Source Sans Pro -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 
+    <style type="text/css">
+      .calendar {
+        -webkit-user-select: none; -moz-user-select: none;
+      }
+    </style> 
+
   </head>
   <body class="hold-transition sidebar-mini accent-info" data-page="<?=$page?>">
     
@@ -95,7 +101,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <!-- SEARCH FORM -->
         <?= form_open('search', ['class' => 'form-inline ml-3', 'method' => 'post'])?> 
           <div class="input-group input-group-sm">
-            <input type="text" name="customer" class="form-control form-control-navbar" type="search" placeholder="Search Customer" aria-label="Search" value="<?= set_value('customer')?>">
+            <input type="text" name="customer" class="form-control form-control-navbar"  placeholder="Search Customer" aria-label="Search" value="<?= set_value('customer')?>">
             <div class="input-group-append">
               <button class="btn btn-navbar" type="submit">
               <i class="fas fa-search"></i>
@@ -159,7 +165,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <a href="<?= site_url() ?>" class="brand-link text-sm">
           <img src="<?= $this->creative_lib->fetch_image(my_config('site_logo'), 2); ?>" alt="<?=my_config('site_name')?> Logo" class="brand-image elevation-3"
           style="opacity: .8">
-          <span class="brand-text font-weight-light"></i> <?=my_config('site_name_abbr') ?? '&nbsp;'?></span>
+          <span class="brand-text font-weight-light"> <?=my_config('site_name_abbr') ?? '&nbsp;'?></span>
         </a>
         <!-- Sidebar -->
         <div class="sidebar"> 
@@ -304,9 +310,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <?php if (service_point_access($service->id) || has_privilege('sales-services')): ?>
                       <ul class="nav nav-treeview">
                         <li class="nav-item">
-                          <a href="<?= site_url('service/point/'.$service->service_name)?>" class="nav-link<?= $active?>">
+                          <a href="<?= site_url('service/point/'.($service->service_name))?>" class="nav-link<?= $active?>">
                             <i class="fa<?= ($active ? 's' : 'r')?> fa-circle nav-icon"></i>
-                            <p><?= $service->service_name?></p>
+                            <p><?= $service->service_name; ?></p>
                           </a>
                         </li>  
                       </ul>

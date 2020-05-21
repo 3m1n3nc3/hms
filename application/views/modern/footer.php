@@ -10,7 +10,7 @@
           'modal_title' => 'Action Modal',
           'modal_size' => 'modal-sm',
           'modal_content' => ' 
-            <div class="m-0 p-0 text-center" id="upload_loader">
+            <div class="m-0 p-0 text-center" id="upload_loader1">
                 <div class="loader"><div class="spinner-grow text-warning"></div></div> 
             </div>'
         );
@@ -57,7 +57,7 @@
     <!-- DateTimePicker -->
     <script src="<?= base_url('backend/modern/plugins/datetimepicker/build/jquery.datetimepicker.full.js'); ?>"></script> 
     <!-- Summernote -->
-    <script src="<?= base_url('backend/modern/plugins/summernote/summernote-bs4.js'); ?>"></script> 
+    <script src="<?= base_url('backend/modern/plugins/summernote/summernote.js'); ?>"></script> 
     <!-- Hotel Management System -->
     <script src="<?= base_url('backend/js/hhms.js?time='.strtotime('NOW')); ?>"></script>  
 
@@ -74,7 +74,7 @@
 
     <script src="<?= base_url('backend/js/excanvas.min.js'); ?>"></script> 
     <script src="<?= base_url('backend/js/chart.min.js'); ?>" type="text/javascript"></script> 
-    <script language="javascript" type="text/javascript" src="<?= base_url('backend/js/full-calendar/fullcalendar.min.js'); ?>"></script>
+    <script src="<?= base_url('backend/js/full-calendar/fullcalendar.min.js'); ?>"></script>
     <script src="<?= base_url('backend/js/base.js'); ?>"></script> 
 
     <!-- Notifications and more -->
@@ -93,7 +93,7 @@
             });   
             
             // Summernote
-            $('.textarea').summernote();
+            // $('.textarea').summernote();
         });
       </script>
     <?php endif ?>
@@ -262,11 +262,5 @@
       <!--/Welcome Guide-->
 
     <?php endif; ?>
-
-    <style type="text/css">
-      .calendar {
-        -webkit-user-select: none; -moz-user-select: none;
-      }
-    </style> 
   </body>
 </html>  
