@@ -167,8 +167,7 @@ $('.image-selection').on('change', function () {
     resized.croppie('bind',{
       url: e.target.result
     }).then(function(){
-      console.log('jQuery bind complete');
-      console.log($('.image-selection-label'));
+      console.log('jQuery bind complete'); 
     });
   }
 
