@@ -1,7 +1,12 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Employee extends Admin_Controller { 
+class Employee extends Admin_Controller 
+{ 
 
+    /**
+     * This will list all employees 
+     * @return null             Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function index()
 	{
         // Check if the user has permission to access this module and redirect to 401 if not
@@ -23,6 +28,11 @@ class Employee extends Admin_Controller {
 		$this->load->view($this->h_theme.'/footer');
 	}
 
+
+    /**
+     * An alias of the index 
+     * @return null             Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function list()
 	{
         // Check if the user has permission to access this module and redirect to 401 if not
@@ -44,6 +54,12 @@ class Employee extends Admin_Controller {
 		$this->load->view($this->h_theme.'/footer');
 	}
 
+
+    /**
+     * This methods allow for adding and updating employees
+     * @param  string   $employee_id    Id of the employee records to retrieve if updating
+     * @return null                     Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function add($employee_id = '')
 	{
         if ($employee_id == 'my_profile') 
@@ -55,7 +71,6 @@ class Employee extends Admin_Controller {
             // Check if the user has permission to access this module and redirect to 401 if not
             error_redirect(has_privilege('manage-employee'), '401'); 
         }
-
 		$departments = $this->services_model->get_service(); 
 		$employee = $this->employee_model->getEmployee($employee_id, 1);
 		$viewdata = array('departments' => $departments, 'employee' => $employee);
@@ -113,6 +128,12 @@ class Employee extends Admin_Controller {
 		$this->load->view($this->h_theme.'/footer');
 	}
 
+
+    /**
+     * This methods allow viewing of a employee's profile
+     * @param  string   $employee_id    Id of the employee records to retrieve 
+     * @return null                     Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function profile($employee_id = '')
 	{
 		if ($employee_id == 'my_profile') 
@@ -126,7 +147,7 @@ class Employee extends Admin_Controller {
         }
 
 		$employee = $this->employee_model->getEmployee($employee_id, 1);
-		$department = $this->employee_model->employee_department($employee['department_id']);
+		$department = $this->services_model->getService($employee['department_id'], 1);
 		$viewdata = array('department' => $department, 'employee' => $employee);
 		$data = array('title' => $employee['employee_firstname'] . ' ' .$employee['employee_lastname'] .' - '. my_config('site_name'), 'page' => 'employee');
  
@@ -163,6 +184,12 @@ class Employee extends Admin_Controller {
 		$this->load->view($this->h_theme.'/footer');
 	}
 
+
+    /**
+     * Deletes an employee record
+     * @param  string   $employee_id    Id of the employee to delete
+     * @return null                     Redirects to the employee list
+     */
 	function delete($employee_id = '')
 	{
         // Check if the user has permission to access this module and redirect to 401 if not
@@ -175,6 +202,13 @@ class Employee extends Admin_Controller {
 		}
 	} 
 
+
+    /**
+     * This methods allows for assigning permissions and privileges to employees
+     * @param  string   $action     Specifies if you are to {create} and update or {assign} privileges
+     * @param  string   $action_id  Id of the customer to assign privilege or privilege to update
+     * @return null                 Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function permissions($action = 'create', $action_id = '')
 	{
         // Check if the user has permission to access this module and redirect to 401 if not
@@ -185,6 +219,13 @@ class Employee extends Admin_Controller {
         $data['privileges']  = $this->privilege_model->get($action == 'create' ? $action_id : '');
         $data['action_id']   = $action_id;
         $data['action'] = $action;
+
+        if ($action == 'assign') 
+        {
+            $u = $this->account_data->fetch($action_id);
+            error_redirect(has_privilege('super') || !has_privilege('super', o2Array($u)), '401'); 
+        }
+
         // Generate or assign privileges  
         if ($this->input->post('action')) 
         {
@@ -250,7 +291,4 @@ class Employee extends Admin_Controller {
 		$this->load->view($this->h_theme.'/employee/permissions',$data);
 		$this->load->view($this->h_theme.'/footer');
 	}
-}
-
-/* End of file welcome.php */
-/* Location: ./application/controllers/welcome.php */
+} 

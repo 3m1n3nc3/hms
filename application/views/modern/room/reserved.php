@@ -48,7 +48,7 @@
                             <a href="<?= site_url('room/reserved_room/'.$rm->room_id.'/'.$rm->customer_id)?>" class="btn btn-sm btn-primary">
                               <i class="btn-icon-only fa fa-calendar-check text-white"></i>
                             </a>
-                            <a href="javascript:void(0)" onclick="return confirmDelete('<?= site_url('room/reserved/delete_reservation/'.$rm->room_id)?>', 1)" class="btn btn-danger btn-sm">
+                            <a href="javascript:void(0)" onclick="return confirmDelete('<?= site_url('room/delete_reservation/'.$rm->reservation_id)?>', 1)" class="btn btn-danger btn-sm">
                               <i class="btn-icon-only fa fa-trash text-white"></i>
                             </a>
                           </td>
@@ -64,14 +64,16 @@
                         <?php endforeach; ?>
                       <?php else: ?>
                       <tr>
-                        <td colspan="6"><?php alert_notice('No rooms available', 'info', TRUE, FALSE) ?></td>
+                        <td colspan="7" class="text-center"><?php alert_notice('No reserved rooms!', 'info', TRUE, FALSE) ?></td>
                       </tr>
                       <?php endif; ?>
                       </tbody>
                     </table>
-
                   </div>
                 </div>  
+
+                <?=$pagination ?>
+
               </div>
               <!-- /.col-md-6 -->
             </div>

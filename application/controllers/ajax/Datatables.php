@@ -1,21 +1,33 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-class Datatables extends MY_Controller {
+
+/**
+ * Sends response with data records to jquery datatable
+ */ 
+class Datatables extends MY_Controller 
+{ 
+    
     public function index()
     {
         // $this->load->view('datatable');
     } 
     
+
+    /**
+     * Get the inventory
+     * @param  string   $id 
+     * @return null     Does not return anything but echoes a JSON Object with the response
+     */
     public function inventory($id = null)
     {
-        $draw = intval($this->input->post("draw"));
-        $start = intval($this->input->post("start"));
+        $draw   = intval($this->input->post("draw"));
+        $start  = intval($this->input->post("start"));
         $length = intval($this->input->post("length"));
-        $order = $this->input->post("order");
-        $search= $this->input->post("search");
+        $order  = $this->input->post("order");
+        $search = $this->input->post("search");
         $search = $search['value'];
-        $col = 0;
-        $dir = "";
+        $col    = 0;
+        $dir    = "";
         if(!empty($order))
         {
             foreach($order as $o)
@@ -103,7 +115,13 @@ class Datatables extends MY_Controller {
         echo json_encode($output);
         exit();
     }
+    
 
+    /**
+     * Get count of the inventory
+     * @param  string   $id 
+     * @return Object 
+     */
     public function total_inventory($id = null)
     {      
         $query = $this->db->select("COUNT(item_id) as num")->get("sales_service_stock");
@@ -112,16 +130,22 @@ class Datatables extends MY_Controller {
         return 0;
     }
     
-    public function sales_records($id = null)
+
+    /**
+     * Get the sales records
+     * @param  string   $service_id 
+     * @return Object
+     */
+    public function sales_records($service_id = null)
     {
-        $draw = intval($this->input->post("draw"));
-        $start = intval($this->input->post("start"));
+        $draw   = intval($this->input->post("draw"));
+        $start  = intval($this->input->post("start"));
         $length = intval($this->input->post("length"));
-        $order = $this->input->post("order");
-        $search= $this->input->post("search");
+        $order  = $this->input->post("order");
+        $search = $this->input->post("search");
         $search = $search['value'];
-        $col = 0;
-        $dir = "";
+        $col    = 0;
+        $dir    = "";
         if(!empty($order))
         {
             foreach($order as $o)
@@ -138,11 +162,10 @@ class Datatables extends MY_Controller {
 
         $valid_columns = array(
             0=>'order_items',
-            1=>'order_quantity', 
-            2=>'order_price',  
-            4=>'service_name', 
-            5=>'employee_id', 
-            6=>'ordered_datetime' 
+            1=>'order_price',  
+            2=>'customer_id',  
+            3=>'service_name', 
+            4=>'employee_id' 
         );
 
         if(!isset($valid_columns[$col]))
@@ -152,6 +175,12 @@ class Datatables extends MY_Controller {
         else
         {
             $order = $valid_columns[$col];
+        }
+
+        if($service_id)
+        {
+            $service_id = urldecode($service_id);
+            $this->db->where('service_name', $service_id);
         }
 
         if($order !=null)
@@ -172,6 +201,30 @@ class Datatables extends MY_Controller {
                 {
                     $this->db->or_like($sterm,$search);
                 }
+
+                if($sterm == 'customer_id')
+                {
+                    $csq = $this->db->query(
+                        "SELECT customer_id FROM customer WHERE CONCAT_WS(' ', customer_firstname, customer_lastname) LIKE '%$search%'"
+                    ); 
+                    $cxx = [];
+                    foreach ($csq->result_array() as $cx) {
+                        $cxx[] = $cx['customer_id'];
+                    } 
+                    $this->db->or_where_in($sterm, implode(',', $cxx));
+                }
+
+                if($sterm == 'employee_id')
+                {
+                    $esq = $this->db->query(
+                        "SELECT employee_id FROM employee WHERE CONCAT_WS(' ', employee_firstname, employee_lastname) LIKE '%$search%'"
+                    ); 
+                    $exx = [];
+                    foreach ($esq->result_array() as $ex) {
+                        $exx[] = $ex['employee_id'];
+                    } 
+                    $this->db->or_where_in($sterm, implode(',', $exx));
+                }
                 $x++;
             }                 
         }
@@ -183,7 +236,7 @@ class Datatables extends MY_Controller {
         {  
             $item_name = [];
             foreach (explode(',', $rows->order_items) as $sid) {
-                $items = $this->CI->services_model->get_stock(array('item_id' => $sid));
+                $items = $this->services_model->get_stock(array('item_id' => $sid));
                 $item_name[] = $items['item_name'];
             }
 
@@ -191,12 +244,13 @@ class Datatables extends MY_Controller {
             $customer = $this->account_data->fetch($rows->customer_id ?? '', 1); 
 
             $data[]= array(  
-                implode(', ', $item_name), 
-                $rows->order_quantity, 
+                $this->hms_data->explode_sales_items($rows->order_items, $rows->order_quantity, ', '),  
                 $this->cr_symbol.number_format($rows->order_price, 2), 
                 $customer['name'], 
                 $rows->service_name, 
-                $employee ? $employee[0]->employee_firstname . ' ' . $employee[0]->employee_lastname : 'N/A',
+                $employee ? $employee[0]->employee_firstname . ' ' . $employee[0]->employee_lastname : 'N/A', 
+                $this->cr_symbol.number_format($rows->paid, 2), 
+                $this->cr_symbol.number_format($rows->order_price-$rows->paid, 2), 
                 $rows->ordered_datetime,  
                 '<a href="javascript:void(0)" onclick="return confirmDelete(\''.site_url('services/delete_record/sales_records/'.$rows->id).'\', 1)" class="btn btn-danger btn-sm m-1" data-toggle="tooltip" title="Delete">
                     <i class="btn-icon-only fa fa-trash text-white fa-fw"></i>
@@ -204,7 +258,7 @@ class Datatables extends MY_Controller {
                 20 => 'tr_'.$rows->id
             );     
         }
-        $total_content = $this->total_sales_records($id);
+        $total_content = $this->total_sales_records($service_id);
         $output = array(
             "draw" => $draw,
             "recordsTotal" => $total_content,
@@ -214,25 +268,43 @@ class Datatables extends MY_Controller {
         echo json_encode($output);
         exit();
     }
+    
 
-    public function total_sales_records($id = null)
+    /**
+     * Get count of the the sales records
+     * @param  string   $id 
+     * @return Object
+     */
+    public function total_sales_records($service_id = null)
     {      
+        if($service_id)
+        {
+            $service_id = urldecode($service_id);
+            $this->db->where('service_name', $service_id);
+        }
+
         $query = $this->db->select("COUNT(id) as num")->get("sales_service_orders");
         $result = $query->row();
         if(isset($result)) return $result->num;
         return 0;
     }
     
+
+    /**
+     * Get the cashier report
+     * @param  string   $show_btn 
+     * @return null     Does not return anything but echoes a JSON Object with the response
+     */
     public function cashier_report($show_btn = TRUE)
     {
-        $draw = intval($this->input->post("draw"));
-        $start = intval($this->input->post("start"));
+        $draw   = intval($this->input->post("draw"));
+        $start  = intval($this->input->post("start"));
         $length = intval($this->input->post("length"));
-        $order = $this->input->post("order");
-        $search= $this->input->post("search");
+        $order  = $this->input->post("order");
+        $search = $this->input->post("search");
         $search = $search['value'];
-        $col = 0;
-        $dir = "";
+        $col    = 0;
+        $dir    = "";
         if(!empty($order))
         {
             foreach($order as $o)
@@ -314,7 +386,7 @@ class Datatables extends MY_Controller {
                 $this->cr_symbol.number_format($rows->amount, 2), 
                 $rows->remark, 
                 $employee ? $employee[0]->employee_firstname . ' ' . $employee[0]->employee_lastname : 'N/A',
-                $rows->date_added,  
+                date("d M Y h:i A", strtotime($rows->date_added)),  
                 $show_btn ? 
                     '<a href="'.site_url('accounting/cashier/expenses_register/'.$rows->id).'" class="btn btn-sm btn-primary m-1" data-toggle="tooltip" title="Edit">
                         <i class="btn-icon-only fa fa-edit text-white fa-fw"></i>
@@ -336,7 +408,13 @@ class Datatables extends MY_Controller {
         echo json_encode($output);
         exit();
     }
+    
 
+    /**
+     * Get count of the  the cashier report
+     * @param  string   $id 
+     * @return Object
+     */
     public function total_cashier_report($get_query)
     {       
         if ($get_query) 
@@ -358,16 +436,22 @@ class Datatables extends MY_Controller {
         return 0;
     }
     
+
+    /**
+     * Get the payment report
+     * @param  string   $show_btn 
+     * @return null     Does not return anything but echoes a JSON Object with the response
+     */
     public function payment_report($show_btn = TRUE)
     {
-        $draw = intval($this->input->post("draw"));
-        $start = intval($this->input->post("start"));
+        $draw   = intval($this->input->post("draw"));
+        $start  = intval($this->input->post("start"));
         $length = intval($this->input->post("length"));
-        $order = $this->input->post("order");
-        $search= $this->input->post("search");
+        $order  = $this->input->post("order");
+        $search = $this->input->post("search");
         $search = $search['value'];
-        $col = 0;
-        $dir = "";
+        $col    = 0;
+        $dir    = "";
         if(!empty($order))
         {
             foreach($order as $o)
@@ -437,7 +521,7 @@ class Datatables extends MY_Controller {
 
         $this->db->limit($length,$start);   
         $content = $this->db->select('*')->get("payments");
-        $data = array();
+        $data    = array();
         foreach($content->result() as $rows)
         {   
             $customer = $this->account_data->fetch($rows->customer_id, 1); 
@@ -447,7 +531,7 @@ class Datatables extends MY_Controller {
                 $this->cr_symbol.number_format($rows->amount, 2), 
                 $rows->reference, 
                 $rows->description,  
-                $rows->date, 
+                date("d M Y h:i A", strtotime($rows->date)), 
                 $show_btn ?  '
                     <a href="javascript:void(0)" onclick="return confirmDelete(\''.site_url('accounting/cashier/delete_payment/'.$rows->id).'\', 1)" class="btn btn-danger btn-sm m-1" data-toggle="tooltip" title="Delete">
                         <i class="btn-icon-only fa fa-trash fa-fw text-white"></i>
@@ -466,7 +550,13 @@ class Datatables extends MY_Controller {
         echo json_encode($output);
         exit();
     }
+    
 
+    /**
+     * Get the count of the total payment report
+     * @param  string   $get_query 
+     * @return Object
+     */
     public function total_payment_report($get_query)
     {       
         if ($get_query) 
@@ -488,16 +578,22 @@ class Datatables extends MY_Controller {
         return 0;
     }
     
+
+    /**
+     * Get the room sales report
+     * @param  string   $show_btn 
+     * @return null     Does not return anything but echoes a JSON Object with the response
+     */
     public function room_sales_report($show_btn = TRUE)
     {
-        $draw = intval($this->input->post("draw"));
-        $start = intval($this->input->post("start"));
+        $draw   = intval($this->input->post("draw"));
+        $start  = intval($this->input->post("start"));
         $length = intval($this->input->post("length"));
-        $order = $this->input->post("order");
-        $search= $this->input->post("search");
+        $order  = $this->input->post("order");
+        $search = $this->input->post("search");
         $search = $search['value'];
-        $col = 0;
-        $dir = "";
+        $col    = 0;
+        $dir    = "";
         if(!empty($order))
         {
             foreach($order as $o)
@@ -583,7 +679,7 @@ class Datatables extends MY_Controller {
                 </a>',  
                 $this->cr_symbol.number_format($rows->room_sales_price, 2), 
                 $rows->reservation_ref,  
-                $rows->reservation_date, 
+                date("d M Y h:i A", strtotime($rows->reservation_date)),  
                 $show_btn ?  '
                     <a href="javascript:void(0)" onclick="return confirmDelete(\''.site_url('accounting/cashier/delete_room_sale/'.$rows->reservation_id).'\', 1)" class="btn btn-danger btn-sm m-1" data-toggle="tooltip" title="Delete">
                         <i class="btn-icon-only fa fa-trash fa-fw text-white"></i>
@@ -602,7 +698,13 @@ class Datatables extends MY_Controller {
         echo json_encode($output);
         exit();
     }
+    
 
+    /**
+     * Get count of the total the room sales
+     * @param  string   $get_query 
+     * @return Object
+     */
     public function total_room_sales_report($get_query)
     {       
         if ($get_query) 

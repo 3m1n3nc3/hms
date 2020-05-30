@@ -20,6 +20,25 @@ class My_config {
         return isset($config[$index], $config[$index][$item]) ? $config[$index][$item] : NULL;
     }
 
+    public function load_items()
+    {   
+        $configuration = $this->CI->setting_model->get_settings();
+        $config        = array();
+        foreach ($configuration as $key => $value) 
+        {
+            if ($this->CI->config->item($value['setting_key']) !== NULL) 
+            {
+                $config[$value['setting_key']] = $this->CI->config->item($value['setting_key']);
+            } 
+            else 
+            {
+                $config[$value['setting_key']] = $value['setting_value'];
+            }
+        }
+
+        return isset($config) ? $config : NULL;
+    }
+
 	public function alert($msg = '', $type = 'info')
 	{	
 		$icon = '';

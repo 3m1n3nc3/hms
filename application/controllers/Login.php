@@ -1,7 +1,12 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Login extends MY_Controller { 
+class Login extends MY_Controller 
+{ 
 
+    /**
+     * This methods allows for employees to login 
+     * @return null                 Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function index()
 	{ 
 		$viewdata = array();
@@ -67,6 +72,10 @@ class Login extends MY_Controller {
 		// $this->load->view($this->h_theme.'/footer');
 	}
 
+
+    /**
+     * This methods will log all users out
+     */
 	public function logout()
 	{
 		$this->account_data->user_logout();

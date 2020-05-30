@@ -60,7 +60,8 @@ $autoload['packages'] = array();
 */
 $autoload['libraries'] = array(
 	'database', 'form_validation', 'session', 'upload', 'pagination', 'licenser', 'Aes', 'enc_lib', 'Curler', 
-	'Account_Data', 'my_config', 'creative_lib', 'ip', 'intl', 'hms_parser', 'hms_data', 'hms_payments'
+	'Account_Data', 'my_config', 'creative_lib', 'ip', 'intl', 'hms_parser', 'hms_data', 'hms_payments', 
+    'notifications'
 );
 
 /*
@@ -93,8 +94,8 @@ $autoload['drivers'] = array();
 |	$autoload['helper'] = array('url', 'file');
 */
 $autoload['helper'] = array(
-    'url', 'cookie', 'language', 'file', 'date', 'string', 'text', 'inflector', 'hoolicon', 'passcontest', 'passpreviledge', 
-    'pass_icon', 'locale'
+    'url', 'cookie', 'language', 'file', 'date', 'string', 'text', 'inflector', 'hoolicon', 'passcontest', 
+    'passpreviledge', 'pass_icon', 'locale', 'snashdata_helper'
 );
 
 /*
@@ -109,7 +110,7 @@ $autoload['helper'] = array(
 | config files.  Otherwise, leave it blank.
 |
 */
-$autoload['config'] = array();
+$autoload['config'] = array('');
 
 /*
 | -------------------------------------------------------------------

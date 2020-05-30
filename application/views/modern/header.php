@@ -4,6 +4,7 @@ This is a starter template page. Use this page to start your new project from
 scratch. This page gets rid of all links and provides the needed markup only.
 -->
 <?php 
+  header('Content-type: text/html'); 
   $list_services = $this->services_model->get_service();
   $employee = $this->employee_model->getEmployee($this->uid, 1);
 ?>
@@ -21,6 +22,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
     <!-- icheck bootstrap -->
     <link rel="stylesheet" href="<?= base_url('backend/modern/plugins/icheck-bootstrap/icheck-bootstrap.min.css'); ?>">
+    
+    <!-- DateTimePicker -->
+    <link rel="stylesheet" href="<?= base_url('backend/modern/plugins/datetimepicker/jquery.datetimepicker.css'); ?>">
+    
+    <!-- Summernote -->
+    <link rel="stylesheet" href="<?= base_url('backend/modern/plugins/jodit/jodit.css'); ?>">
     
     <!-- Datatables -->
     <?php if (isset($use_table) && $use_table): ?>
@@ -46,14 +53,33 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Google Font: Source Sans Pro -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 
+    <style type="text/css">
+      .calendar {
+        -webkit-user-select: none; -moz-user-select: none;
+      }
+    </style> 
+
   </head>
-  <body class="hold-transition sidebar-mini accent-info">
+  <body class="hold-transition sidebar-mini accent-info" data-page="<?=$page?>">
     
     <script type="text/javascript">
       siteUrl = "<?=site_url()?>";
       site_theme = "<?=$this->h_theme?>";
       currency_symbol = "<?=$this->cr_symbol?>";
-      site_currency = "<?=$this->cr_symbol?>";
+      site_currency = "<?=$this->cr_symbol?>"; 
+      hms_lang = <?php 
+          $ck_idiom = $this->cuid ? 'user_' : 'customer_';
+          echo json_encode(
+            array(
+              'checkin_from' => $this->cuid ? lang($ck_idiom.'checkin_from') : lang($ck_idiom.'checkin_from'),
+              'checkout_to' => $this->cuid ? lang($ck_idiom.'checkout_to') : lang($ck_idiom.'checkout_to') 
+            ), JSON_FORCE_OBJECT)?>  
+      function is_logged() {
+        return '<?=$this->account_data->logged_in()?>';
+      }
+      function site_url(path){
+        return '<?=site_url()?>' + path;
+      }
     </script>
  
     <div class="wrapper">
@@ -75,7 +101,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <!-- SEARCH FORM -->
         <?= form_open('search', ['class' => 'form-inline ml-3', 'method' => 'post'])?> 
           <div class="input-group input-group-sm">
-            <input type="text" name="customer" class="form-control form-control-navbar" type="search" placeholder="Search Customer" aria-label="Search" value="<?= set_value('customer')?>">
+            <input type="text" name="customer" class="form-control form-control-navbar"  placeholder="Search Customer" aria-label="Search" value="<?= set_value('customer')?>">
             <div class="input-group-append">
               <button class="btn btn-navbar" type="submit">
               <i class="fas fa-search"></i>
@@ -87,9 +113,23 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <!-- Right navbar links -->
         <ul class="navbar-nav ml-auto">
 
-          <!-- Add Messages Dropdown Menu Here --> 
+          <!-- Add Messages Dropdown Menu Here -->       
+          <li class="nav-item dropdown">
+            <a class="nav-link" data-toggle="dropdown" id="get-notifications" href="#">
+              <i class="far fa-bell" id="notification_bell"></i>
+              <span class="badge badge-danger navbar-badge" id="new__notif"></span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" id="notifications__list">
 
-          <!-- Add Notifications Dropdown Menu Here --> 
+            </div>
+            <div class="text-center preloader d-none"> 
+              <div class="spinner-light text-info spinner-grow" role="status"> 
+                <span class="sr-only">Loading...</span> 
+              </div>
+            </div>
+          </li>
+
+          <!-- Add Notifications Dropdown Menu Here -->  
 
           <?php if(UID): ?> 
           <li class="nav-item dropdown user-menu">
@@ -123,9 +163,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
       <aside class="main-sidebar sidebar-light-warning elevation-4">
         <!-- Brand Logo -->
         <a href="<?= site_url() ?>" class="brand-link text-sm">
-          <img src="<?= $this->creative_lib->fetch_image(my_config('site_logo'), 4); ?>" alt="<?=my_config('site_name')?> Logo" class="brand-image elevation-3"
+          <img src="<?= $this->creative_lib->fetch_image(my_config('site_logo'), 2); ?>" alt="<?=my_config('site_name')?> Logo" class="brand-image elevation-3"
           style="opacity: .8">
-          <span class="brand-text font-weight-light"></i> <?=my_config('site_name_abbr') ?? '&nbsp;'?></span>
+          <span class="brand-text font-weight-light"> <?=my_config('site_name_abbr') ?? '&nbsp;'?></span>
         </a>
         <!-- Sidebar -->
         <div class="sidebar"> 
@@ -149,10 +189,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
               <?php if (has_privilege('reservation')): ?>
                 <li class="nav-item">
-                  <a href="<?= site_url('reservation')?>" class="nav-link <?= ($page == "reservation" ? 'active' : '')?>">
+                  <a href="<?= site_url('reservation')?>" class="nav-link <?= ($page == "reception" ? 'active' : '')?>">
                     <i class="nav-icon fas fa-tasks"></i>
                     <p>
-                      Reservation
+                      Reception
                     </p>
                   </a>
                 </li>
@@ -270,9 +310,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <?php if (service_point_access($service->id) || has_privilege('sales-services')): ?>
                       <ul class="nav nav-treeview">
                         <li class="nav-item">
-                          <a href="<?= site_url('service/point/'.$service->service_name)?>" class="nav-link<?= $active?>">
+                          <a href="<?= site_url('service/point/'.($service->service_name))?>" class="nav-link<?= $active?>">
                             <i class="fa<?= ($active ? 's' : 'r')?> fa-circle nav-icon"></i>
-                            <p><?= $service->service_name?></p>
+                            <p><?= $service->service_name; ?></p>
                           </a>
                         </li>  
                       </ul>
@@ -283,8 +323,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
               <?php endif; ?>
 
               <?php if (has_privilege('cashier-report') || has_privilege('expense-register') || has_privilege('payments') || has_privilege('room-sales')): ?>
-                <li class="nav-item has-treeview <?= ($page == "cashier-report" || $page == "expenses-register" || $page == "online_payments" || $page == "room_sales" ? 'menu-open' : '')?>">
-                  <a href="#" class="nav-link <?= ($page == "cashier-report" || $page == "expenses-register" || $page == "online_payments" || $page == "room_sales" ? 'active' : '')?>">
+                <li class="nav-item has-treeview <?= ($page == "cashier-report" || $page == "expenses-register" || $page == "sales_report" || $page == "room_sales" ? 'menu-open' : '')?>">
+                  <a href="#" class="nav-link <?= ($page == "cashier-report" || $page == "expenses-register" || $page == "sales_report" || $page == "room_sales" ? 'active' : '')?>">
                     <i class="nav-icon fas fa-calculator"></i>
                     <p>
                       Cashier
@@ -313,9 +353,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   
                   <?php if (has_privilege('payments')): ?>
                     <li class="nav-item">
-                      <a href="<?= site_url('accounting/cashier/payments')?>" class="nav-link <?= ($page == "online_payments" ? 'active' : '')?>">
-                        <i class="fa<?= ($page == "online_payments" ? 's' : 'r')?> fa-circle nav-icon"></i>
-                        <p>Online Payments</p>
+                      <a href="<?= site_url('accounting/cashier/payments')?>" class="nav-link <?= ($page == "sales_report" ? 'active' : '')?>">
+                        <i class="fa<?= ($page == "sales_report" ? 's' : 'r')?> fa-circle nav-icon"></i>
+                        <p>Sales Report</p>
                       </a>
                     </li> 
                   <?php endif;?> 
@@ -397,7 +437,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
                   </ul>
                 </li>
-              <?php endif; ?>
+              <?php endif;?>
+                <li class="nav-item border border-info text-center rounded"<?=hide_c_state($this->uid, $page)?>>
+                  <a href="javascript:void(0)" class="nav-link mb-0 text-info font-weight-bold" data-toggle="modal" data-target="#actionModal" id="view_closed_views">
+                    <i class="nav-icon fas fa-bars"></i>
+                    <p>
+                      Closed Views
+                    </p>
+                  </a>
+                </li> 
 
             </ul>
           </nav>

@@ -3,6 +3,11 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-lg-12"> 
+
+                    <a href="<?= site_url('services/sales_records/' . $service->service_name)?>" class="btn btn-primary text-white my-2">
+                        <i class="fa fa-book"></i> Sales Records
+                    </a>
+
                     <?= $this->session->flashdata('message') ?? '' ?>
                 </div>
 
@@ -25,7 +30,7 @@
                                 <input type="hidden" id="last_item_id" value="">
                                 <input type="hidden" id="service" name="service" class="form-control" value="<?= $service->service_name ?? '';?>" required>
 
-                                <div class="col-md-12">
+                                <div class="col-md-6">
                                     <!-- text input -->
                                     <div class="form-group">
                                         <label for="customer">Customer</label>
@@ -44,11 +49,25 @@
                                 <div class="col-md-6">
                                     <!-- text input -->
                                     <div class="form-group">
-                                        <label for="date">Date</label>
-                                        <input type="date" id="date" name="date" class="form-control" value="<?= set_value('date') ?>" required>
+                                        <label for="datetimepicker">Date</label>
+                                        <input type="text" id="datetimepicker" name="date" class="form-control" value="<?= set_value('date') ?>" required>
                                         <?= form_error('date'); ?>
                                     </div>
                                 </div>
+ 
+                                <div class="col-md-6">
+                                    <!-- text input -->
+                                    <div class="form-group">
+                                        <label for="payment">Amount Paid</label>
+                                        <input type="text" id="payment" name="payment" class="form-control" value="<?= set_value('payment') ?>" required>
+                                        <?= form_error('payment'); ?>
+                                        <small class="text-info">
+                                            Enter <span class="text-danger">c</span> if customer paid in full
+                                            or <span class="text-danger">0</span> if customer paid nothing.
+                                        </small>
+                                    </div>
+                                </div>
+
                                 <div class="col-md-6">
                                     <!-- text input -->
                                     <div class="form-group">
@@ -61,22 +80,23 @@
                                 Choose Items
                                 </button>
                                 <?php
-                                $param = array(
-                                'modal_target' => 'stockitems-modal',
-                                'modal_title' => 'Choose Items to Buy',
-                                'modal_content' => '
-                                <div class="col-md-12">
-                                    <div class="row p-2" id="stock_item">
-                                        <div class="col-12">'.alert_notice('This store has no items on stock', 'error', FALSE, FALSE).'</div>
-                                    </div>
-                                </div>'
-                                );
-                                echo $this->load->view($this->h_theme.'/modal', $param, TRUE);
+                                    $param = array(
+                                        'modal_btn'     => TRUE,
+                                        'modal_target'  => 'stockitems-modal',
+                                        'modal_title'   => 'Choose Items to Buy',
+                                        'modal_content' => '
+                                        <div class="col-md-12">
+                                            <div class="row p-2" id="stock_item">
+                                                <div class="col-12">'.alert_notice('This store has no items on stock', 'error', FALSE, FALSE).'</div>
+                                            </div>
+                                        </div>'
+                                    );
+                                    echo $this->load->view($this->h_theme.'/modal', $param, TRUE);
                                 ?>
                             </div>
                             <?= form_close() ?>
                         </div>
-                    </div>
+                    </div> 
                 </div>
             </div>
             <!-- /.row -->

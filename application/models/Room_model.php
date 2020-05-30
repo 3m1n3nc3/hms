@@ -101,7 +101,7 @@ class Room_model extends CI_Model {
         $this->db->order_by('reservation_date '.$order); 
         $this->db->select('reservation.reservation_date AS date')->from('room_sales');
         $query = $this->db->join('reservation', 'room_sales.reservation_id = reservation.reservation_id', 'LEFT')->get();
-        return $query->row_array();
+        return $query->row_array()['date'];
     } 
 
     function addRoomType($data)
@@ -118,7 +118,9 @@ class Room_model extends CI_Model {
 
     function getRoomType($room_type, $array = FALSE)
     {
-        $query = $this->db->get_where('room_type', array('room_type' => $room_type));
+        $this->db->where('room_type', $room_type);
+        $this->db->or_where('id', $room_type);
+        $query = $this->db->get('room_type');
 
         if ($array) 
         { 
@@ -129,7 +131,14 @@ class Room_model extends CI_Model {
 
     function editRoomType($data)
     { 
-        $this->db->where('room_type', $data['room_type']);
+        if (isset($data['id'])) 
+        {
+            $this->db->where('id', $data['id']);
+        }
+        else
+        {
+            $this->db->where('room_type', $data['room_type']);
+        }
         $this->db->update('room_type', $data); 
     }
 
@@ -172,13 +181,22 @@ class Room_model extends CI_Model {
         return $this->db->affected_rows();
     }
 
+    function checkoutCustomer($data)
+    { 
+        $this->db->where('reservation_id', $data['reservation_id']);
+        $this->db->update('reservation', $data); 
+
+        $this->db->where('reservation_id', $data['reservation_id']);
+        $this->db->update('room_sales', $data); 
+    }
+
     function add_room_sale($data) {
         $query = $this->db->join("room_type","room_type.room_type = room.room_type", "left")->get_where("room", array('room_id' => $data['room_id']));
         if(!$query || $query->num_rows() == 0) {
             return false;
         }
         $price = $query->result();
-        $data['room_sales_price'] = $price[0]->room_price;
+        $data['room_sales_price'] = $data['room_sales_price']??$price[0]->room_price;
         $data['total_service_price'] = 0;
         $this->db->insert('room_sales', $data);
     }

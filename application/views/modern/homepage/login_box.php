@@ -103,8 +103,8 @@
                                             <div class="col-md-6">
                                                 <div class="form-group mb-3">
                                                     <label class="font-weight-bold" for="email"><?=lang('email_address')?></label> 
-                                                    <input type="email" id="email" name="customer_email" class="form-control" value="<?= set_value('customer_email') ?>" placeholder="<?=lang('email_address')?>" required> 
-                                                    <?= form_error('customer_email'); ?>
+                                                    <input type="email" id="email" name="customer_email" class="form-control" value="<?= set_value('customer_email', ($_SESSION['reservation']['email']??null)) ?>" placeholder="<?=lang('email_address')?>" required> 
+                                                    <?= form_error('customer_email');?>
                                                 </div>
                                             </div>
                                                 
@@ -173,6 +173,32 @@
                                                     <?= form_error('customer_city'); ?>
                                                 </div>
                                             </div> 
+                  
+                                    
+                                            <label for="country" class="text-info"><?= sprintlang('for_non_citizens', config_item('site_country'))?> </label>
+                                            <div class="col-md-12 border p-3 mb-3">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label for="nationality"><?=lang('nationality')?></label>
+                                                            <select id="nationality" name="customer_nationality" class="form-control" required>
+                                                                <?=select_countries(set_value('customer_nationality'), 0, TRUE)?>
+                                                            </select>
+                                                            <?= form_error('customer_nationality'); ?>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <!-- text input -->
+                                                        <div class="form-group">
+                                                            <label for="passport_no"><?=lang('passport_number')?></label>
+                                                            <input type="text" id="passport_no" name="customer_passport_no" class="form-control" value="<?= set_value('customer_passport_no') ?>">
+                                                            <?= form_error('customer_passport_no'); ?>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <?=lang('required_upload_passport', 'passport_no', ['class'=>'text-danger font-weight-light'])?>
+                                            </div>
+
 
                                             <div class="col-md-12">
                                                 <!-- text input -->
@@ -187,7 +213,7 @@
                                         <div class="row">
                                             <div class="col-8">
                                                 <div class="icheck-primary">
-                                                    <input type="checkbox" id="remember" name="remember">
+                                                    <input value="1" type="checkbox" id="remember" name="accept" required>
                                                     <label for="remember">
                                                         <?=lang('read_accepted_terms')?>
                                                     </label>

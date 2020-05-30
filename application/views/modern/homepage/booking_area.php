@@ -1,4 +1,4 @@
-            <div class="hotel_booking_area position">
+            <div class="hotel_booking_area position mb-5">
                 <div class="container">
                     <div class="hotel_booking_table">
                         <div class="col-md-3">
@@ -6,24 +6,26 @@
                         </div>
                         <div class="col-md-9">
                             <div class="boking_table">
-                                <?=form_open('page/rooms/book/'.$room['room_type'])?>
+                                <?=form_open('page/rooms/book/'.$room_type['id'])?>
+
+                                <input type='hidden' name="room_type" value="<?=$room_type['room_type']?>">
+                                <input type='hidden' name="room_type_id" value="<?=$room_type['id']?>">
+                                <input type='hidden' name="by_booking_area" value="1">
+                                
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="book_tabel_item">
                                             <div class="form-group">
-                                                <input type='hidden' name="room_type" value="<?=$room['room_type']?>">
-                                                <input type='hidden' name="by_booking_area" value="1">
-
-                                                <div class='input-group date' id='datetimepicker11'>
-                                                    <input type='text' name="checkin_date" class="form-control" style="padding: 19px;" value="<?=set_value('checkin_date')?>" placeholder="<?=lang('arrival').' '.lang('date')?>" required>
+                                                <div class='input-group date'>
+                                                    <input type='text' id="checkin_date" name="checkin_date" class="form-control" style="padding: 19px;" value="<?=set_value('checkin_date')?>" placeholder="<?=lang('arrival').' '.lang('date')?>" required autocomplete="off">
                                                     <span class="input-group-addon">
                                                         <i class="fa fa-calendar" aria-hidden="true"></i>
                                                     </span>
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <div class='input-group date' id='datetimepicker1'>
-                                                    <input type='text' name="checkout_date" class="form-control" style="padding: 19px;" value="<?=set_value('checkout_date')?>" placeholder="<?=lang('departure').' '.lang('date')?>" required>
+                                                <div class='input-group dat'>
+                                                    <input type='text' id="checkout_date" name="checkout_date" class="form-control" style="padding: 19px;" value="<?=set_value('checkout_date')?>" placeholder="<?=lang('departure').' '.lang('date')?>" required autocomplete="off">
                                                     <span class="input-group-addon">
                                                         <i class="fa fa-calendar" aria-hidden="true"></i>
                                                     </span>
@@ -38,8 +40,8 @@
                                                     <option value="0" data-display="<?=plural(lang('adult'))?>">
                                                         <?=plural(lang('adult'))?>
                                                      </option>
-                                                    <?php if (isset($room['max_adults'])):?>
-                                                        <?php for ($i = 0; $room['max_adults'] > $i; $i++):?>
+                                                    <?php if (isset($room_type['max_adults'])):?>
+                                                        <?php for ($i = 0; $room_type['max_adults'] > $i; $i++):?>
                                                         <?php $x = ($i+1)?>
                                                         <option value="<?=$x?>"<?=set_select('adults', $x)?>>
                                                             <?=$x?>
@@ -60,8 +62,8 @@
                                                     <option value="0" data-display="<?=lang('children')?>">
                                                         <?=lang('children')?>
                                                     </option>
-                                                    <?php if (isset($room['max_kids'])):?>
-                                                        <?php for ($i = 0; $room['max_kids'] > $i; $i++):?>
+                                                    <?php if (isset($room_type['max_kids'])):?>
+                                                        <?php for ($i = 0; $room_type['max_kids'] > $i; $i++):?>
                                                         <?php $x = ($i+1)?>
                                                         <option value="<?=$x?>"<?=set_select('children', $x)?>>
                                                             <?=$x?>

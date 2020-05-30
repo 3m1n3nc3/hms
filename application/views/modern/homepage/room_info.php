@@ -10,7 +10,7 @@
                 <div class="overlay bg-parallax" data-stellar-ratio="0.8" data-stellar-vertical-offset="0" data-background=""></div>
                 <div class="container">
                     <div class="page-cover text-center">
-                        <h2 class="page-cover-tittle"><?= $room->room_type?></h2>
+                        <h2 class="page-cover-tittle"><?= $room->room_type??''?></h2>
                         <ol class="breadcrumb">
                         <?php if ($this->uri->segment(1, NULL) && !$this->uri->segment(2, NULL)): ?>
                             <li class="active">
@@ -45,7 +45,7 @@
                 <div class="section_title text-center">
                     <h6><?= $content['intro'] ?></h6>
                     <h2 <?= $content['color'] ? 'class="'.$content['color'].'"' : ''?>><?= $content['title'] ?></h2>
-                    <p><?= showBBcodes($content['content']) ?></p>
+                    <p> <?= showBBcodes(decode_html($content['content'])) ?></p>
                     <?= $content['button'] ? showBBcodes($content['button'], 'btn theme_btn button_hover') : ''?> 
                 </div> 
             </div>
@@ -62,9 +62,11 @@
                 <!-- /.col-md-4 Important Shortcuts -->
                 <div class="col-lg-12">
                     
-                    <?= form_open('page/rooms/book/' . $room->room_type)?>
+                    <?= form_open('page/rooms/book/' . $room->id)?>
                     <input type="hidden" id="reserve_room" name="reserve_room" value="1">
+                    <input type='hidden' name="room_type_id" value="<?=$room_type_id?>">
                     <input type="hidden" id="email" name="email" value="<?= set_value('email')?>">
+
                     <div class="row">
                         <div class="col-sm-3">
                             <!-- text input -->
@@ -121,9 +123,11 @@
                             <?php if ($book_rooms): ?>
                             <?php
                                 $rooms = $book_rooms;
-                                $size = count($rooms);
-                                $cols = ceil(sqrt($size));
-                                $rows = ceil($size/$cols);
+                                $size  = count($rooms);
+                                $cols  = ceil(sqrt($size));
+                                $rows  = ceil($size/$cols);
+                                $booked_days = dateDifference(set_value('checkin_date'), set_value('checkout_date')); 
+                                $booked_days = $booked_days > 0 ? $booked_days : 1;
                             ?>
                             <table>
                                 <thead>
@@ -135,14 +139,21 @@
                                     <?php for ($t=0, $i=0; $t<$rows; ++$t): ?>
                                     <tr>
                                         <?php for($j=0; $j<$cols && $i<$size; ++$i, ++$j): ?>
-                                        <td class="td-actions">
-                                            <button name="room_id" value="<?=$rooms[$i]->room_id?>" onclick="return confirm('Reserve this room?')" class="btn btn-lg py-4 m-2 font-weight-bold btn-success shadow">
-                                                <?=$rooms[$i]->room_type?>
+                                        <td class="td-actions"> 
+                                            <button name="room_ids" value="<?=$rooms[$i]->room_id?>" 
+                                                onclick="return re(this)"
+                                                type="submit"
+                                                class="btn btn-lg py-4 m-2 px-5 font-weight-bold btn-light border shadow">
+                                                <?=$rooms[$i]->room_type;?> 
                                                 <br>
                                                 Room <?=$rooms[$i]->room_id?>
                                                 <i class="btn-icon-only fa fa-calendar-check"> </i>
                                                 <br>
-                                                <?='At $' . $rooms[$i]->room_price;?>
+                                                At <?=$this->cr_symbol . number_format($rooms[$i]->room_price, 2);?>
+                                                <br><hr>
+                                                <span class="text-success">
+                                                <?=$this->cr_symbol . number_format($rooms[$i]->room_price*$booked_days, 2) . ' for ' . $booked_days . ' days';?>
+                                                </span>
                                             </button>
                                         </td>
                                         <?php endfor; ?>
@@ -245,5 +256,53 @@
         <?= $this->hms_parser->show_booking_area(int_bool(1), $room->room_type ?? '')?> 
         
         <!--================ Accomodation Area  =================-->
-        <?= $this->hms_parser->show_rooms(int_bool($content['rooms']))?> 
+        <?= $this->hms_parser->show_rooms(int_bool($content['rooms']), $page)?> 
         <!--================ Accomodation Area  =================-->
+ 
+        <script>
+            function re(event) {
+                // return $(event).form.submit();
+
+                var room_id     = $(event).val();
+                var form        = $(event.form);
+                var from        = form.find('input[name="from"]').val();
+                var destination = form.find('input[name="destination"]').val();
+
+                $.post(site_url('ajax/connect/checkroom'), {room_id:room_id}, function(data) {
+                    if (data.available==false) {
+                        bootbox.dialog({
+                            title: 'Reservation Error',
+                            message: data.message,
+                            size: 'large',
+                            onEscape: true,
+                            backdrop: true 
+                        });
+                    } else {
+                        $('<input />').attr('type', 'hidden')
+                            .attr('name', "room_id")
+                            .attr('value', room_id)
+                            .appendTo($(event.form));
+
+                        if (typeof from == 'undefined' || typeof destination == 'undefined') {
+                            fromToDestination(event.form);
+                        } else {
+                            bootbox.confirm('Reserve this room?', function(e) {
+                                if (e == true) {
+                                    return $(event.form).submit();
+                                }
+                            });
+                        }
+                    }
+                });
+                return false;
+            }
+
+            window.onload = function () {
+                var loader = 
+                '<div class="text-center preloader">'+
+                    '<div class="spinner-light text-info spinner-grow" role="status">'+
+                        '<span class="sr-only">Loading...</span>'+
+                   '</div>'+
+                '</div>';  
+            }
+        </script>

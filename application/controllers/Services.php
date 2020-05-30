@@ -2,6 +2,11 @@
 
 class Services extends Admin_Controller { 
 
+
+    /**
+     * This methods lists all the available services 
+     * @return null                 Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function index()
 	{
         error_redirect(has_privilege('sales-services'), '401');
@@ -17,27 +22,33 @@ class Services extends Admin_Controller {
 		$this->load->view($this->h_theme.'/footer');
 	}
 
+
+    /**
+     * This methods lists all room sales records
+     * @param string 	$set_service 	The service with the records to list
+     * @return null                 	Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function sales_records($set_service = '')
 	{  
         error_redirect(has_privilege('sales-records'), '401');
-
-		$services = $this->services_model->get_service();
+ 
+		$services  = $this->services_model->get_service();
 		$customers = $this->customer_model->get_active_customers(); 
 
 		$config['base_url']   = site_url('services/inventory/');
         $config['total_rows'] = count($this->services_model->get_stock()); 
 
         $this->pagination->initialize($config);
-        $_page = $this->uri->segment($set_service ? 3 : 4, 0);
+        $_page = $this->uri->segment($set_service ? 4 : 3, 0);
 
 		$inventory = $this->services_model->get_stock(['page' => $_page]);
 
 		$viewdata = array(
-			'inventory' => $inventory, 
-			'services' => $services, 
-			'customers' => $customers, 
-			'use_table' => TRUE, 
-			'table_method' => 'sales_records'
+			'inventory'    => $inventory, 
+			'services'     => $services, 
+			'customers'    => $customers, 
+			'use_table'    => TRUE, 
+			'table_method' => 'sales_records'.($set_service ? '/' . $set_service : '')
 		);  
         $viewdata['pagination'] = $this->pagination->create_links();
 
@@ -47,6 +58,12 @@ class Services extends Admin_Controller {
 		$this->load->view($this->h_theme.'/footer', $viewdata);
 	}
 
+
+    /**
+     * This methods lists all inventory records
+     * @param string 	$set_service 	The service with the records to list
+     * @return null                 	Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function inventory($set_service = '')
 	{
         error_redirect(has_privilege('inventory'), '401');
@@ -57,7 +74,7 @@ class Services extends Admin_Controller {
         $config['total_rows'] = count($this->services_model->get_stock()); 
 
         $this->pagination->initialize($config);
-        $_page = $this->uri->segment($set_service ? 3 : 4, 0);
+        $_page = $this->uri->segment($set_service ? 4 : 3, 0);
 
 		$inventory = $this->services_model->get_stock(['page' => $_page]);
 
@@ -70,28 +87,34 @@ class Services extends Admin_Controller {
 		$this->load->view($this->h_theme.'/footer', $viewdata);
 	}
 
+ 
+    /**
+     * This methods allows for adding or updating new items to the inventory
+     * @param string 	$set_item_id 	The Id of the item to edit if updating
+     * @return null                 	Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function add_inventory($set_item_id = '')
 	{
         error_redirect(has_privilege('inventory'), '401');
 
-		$services = $this->services_model->get_service();
+		$services       = $this->services_model->get_service();
 		$inventory_item = $this->services_model->get_stock(['item_id' => $set_item_id]);  
 
 		if($this->input->post("item_name"))
 		{
-			$item_name = $this->input->post("item_name");
-			$item_details = $this->input->post("item_details");
+			$item_name     = $this->input->post("item_name");
+			$item_details  = $this->input->post("item_details");
 			$item_quantity = $this->input->post("item_quantity");
-			$item_price = $this->input->post("item_price");
-			$item_service = $this->input->post("item_service");
+			$item_price    = $this->input->post("item_price");
+			$item_service  = $this->input->post("item_service");
 	        
 	        $save = array(
-	            'item_name' => $item_name,
-	            'item_details' => $item_details,
+	            'item_name'     => $item_name,
+	            'item_details'  => $item_details,
 	            'item_quantity' => $item_quantity,
-	            'item_price' => $item_price,
-	            'item_service' => $item_service,
-		        'employee_id' => $this->uid,
+	            'item_price'    => $item_price,
+	            'item_service'  => $item_service,
+		        'employee_id'   => $this->uid,
 	            'item_add_date' => date('Y-m-d H:m:s')
 	        );
 	        if ($set_item_id) 
@@ -99,7 +122,15 @@ class Services extends Admin_Controller {
 	        	$save['item_id'] = $set_item_id;
 	        }
 				
-			$this->services_model->add_stock($save);
+			$new_item_id = $this->services_model->add_stock($save);
+
+            // Send notifications
+            $re_data = array( 
+                'type' => ($new_item_id) ? 'added_inventory_item' : 'updated_inventory_item',
+                'url'  => site_url('services/inventory')
+            );
+            $this->notifications->notifyPrivilegedMods($re_data);  
+
 			$mit = $inventory_item ? 'updated' : 'added';
 			$this->session->set_flashdata('message', alert_notice('Inventory Item '.$mit, 'success')); 
 			redirect("services/inventory");
@@ -120,6 +151,11 @@ class Services extends Admin_Controller {
 		$this->load->view($this->h_theme.'/footer');
 	}
 
+
+    /**
+     * This methods allows for adding new sales services (Department) 
+     * @return null                 	Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function add()
 	{
         error_redirect(has_privilege('sales-services'), '401');
@@ -151,45 +187,53 @@ class Services extends Admin_Controller {
 		$this->load->view($this->h_theme.'/footer');
 	}
 
+
+    /**
+     * This methods allows for selling services 
+     * @return null                 	Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function sale()
 	{
         error_redirect(has_privilege('service-point') || has_privilege('inventory') || has_privilege('sales-services') || service_point_access_session(TRUE), '401');
 
-		$post = $this->input->post();
+		$post = $this->input->post(NULL, TRUE);
 
 		if(!$this->input->post("stock_item"))
 		{
-			$this->session->set_flashdata('message', alert_notice(' Order not placed, No items where selected', 'error')); 
+			$this->session->set_flashdata('message', alert_notice(' Order not placed, No items where selected', 'error'));
 		}
 		else
 		{ 
-			$items_array = $this->input->post('stock_item');
-			$items = implode(',', $items_array);
-
-			$quantity_array = $this->input->post('stock_qty');
-			$quantity = implode(',', $quantity_array);
-
+			$items_array     = $this->input->post('stock_item');
+			$items           = implode(',', $items_array);
+			$quantity_array  = $this->input->post('stock_qty');
+			$quantity        = implode(',', $quantity_array);
 			$stock_item_name = $this->input->post('stock_item_name');
+            $reference       = $this->enc_lib->generateToken(12, 1, 'HRSPR-', TRUE);
 
-			$errors = []; $sum_qty = 0;
+			$errors = $price = []; $sum_qty = 0;
 	        foreach ($items_array as $key => $sid) 
 	        {
-	            $res = $this->CI->services_model->get_stock(array('item_id' => $sid)); 
+	            $res = $this->services_model->get_stock(array('item_id' => $sid)); 
 
 	            if ($res)
             	{	
-            		$real_quantity = ($quantity_array ? $quantity_array[$key] : 1);
+            		$request_quantity = ($quantity_array ? $quantity_array[$key] : 1);
 
-            		if ($real_quantity == 0) 
+            		if ($request_quantity == 0) 
             		{
             			$errors[] .= 'You can\'t make a request for 0 '.$stock_item_name[$key];
             		}
-            		elseif ($res['item_quantity'] < $real_quantity) 
+            		elseif ($res['item_quantity'] < $request_quantity) 
 	            	{
-	            		$errors[] .= 'There are less than '.$real_quantity.' '.$stock_item_name[$key].' in stock';
-	            	} 
+	            		$errors[] .= 'There are less than '.$request_quantity.' '.$stock_item_name[$key].' in stock';
+	            	} elseif ($post['customer'] == 0 && $post['payment'] <= 0 && $post['payment'] != 'c') {
+                        $errors[] .= 'Generic Customers can\'t make a purchase on credit';
+                    }
 
-            		$sum_qty += $real_quantity;
+                    $price[]  = $res['item_price'];
+
+            		$sum_qty += $request_quantity;
             	}
 	            else
 	            {
@@ -197,21 +241,39 @@ class Services extends Admin_Controller {
             	}
 	        }
 
+            $item_prices = implode(',', $price);
+
 	        if (empty($errors)) { 
 		        $save = array(
-		            'service_name' => $post['service'],
-		            'customer_id' => $post['customer'],
-		            'order_items' => $items,
-		            'order_quantity' => $quantity,
-		            'order_price' => $post['price'],
-		            'order_date' => $post['date'],
-		            'employee_id' => $this->uid,
+		            'service_name'     => $post['service'],
+		            'customer_id'      => $post['customer'],
+		            'order_items'      => $items,
+		            'order_quantity'   => $quantity,
+		            'order_price'      => $post['price'],
+		            'order_date'       => $post['date'],
+                    'employee_id'      => $this->uid,
+		            'paid'             => ($post['payment'] == 'c' ? $post['price'] : $post['payment']),
 		            'ordered_datetime' => date('Y-m-d H:m:s')
 		        );
 
 				$this->hms_parser->update_stock($items_array, $quantity_array);
-				$this->services_model->order_service($save);
-				$this->session->set_flashdata('message', alert_notice($sum_qty.' Items Sold', 'success'));
+				$invoice = $this->services_model->order_service($save);
+
+                $quantity_price = array($quantity, $item_prices);
+                $_items   = $this->hms_data->explode_sales_items($items, $quantity_price, ', ');
+                // Add a new payment record
+                $add_payment_record = array(
+                    'customer_id'   => $save['customer_id'],
+                    'payment_type'  => 'sales_service_orders',
+                    'reference'     => $reference,
+                    'invoice'       => $invoice,
+                    'amount'        => $save['paid'],
+                    'description'   => 'Service Purchase of ' . $_items
+                );
+                $this->payment_model->add_payments($add_payment_record);
+
+                $print_invoice = anchor_popup('generate/invoice/'.$reference.'/sales_service_orders', '<i class="fa fa-print"></i> Print Invoice', ['class'=>'text-white font-weight-bold btn btn-success mb-3']);
+				$this->session->set_flashdata('message', alert_notice($sum_qty.' Items Sold - '.$_items, 'success').$print_invoice);
 			}
 			else
 			{ 
@@ -221,9 +283,15 @@ class Services extends Admin_Controller {
 
 			}
 		} 
-		redirect("services");
+		redirect("service/point/" . $post['service']);
 	}
 
+
+    /**
+     * Delete a service
+     * @param string 	$service_name 	The service with the records to delete
+     * @return null                 	redirect to services
+     */
 	function delete($service_name)
 	{
         error_redirect(has_privilege('sales-services'), '401');
@@ -234,6 +302,13 @@ class Services extends Admin_Controller {
 		redirect("services");
 	}
 
+
+    /**
+     * Delete a service record
+     * @param string 	$type 	The type of service record to delete {inventory} or {sales_records} item
+     * @param string 	$item 	The id of the service record to delete  
+     * @return null             Redirect to service/inventory or services/sales_records methods
+     */
 	function delete_record($type = '', $item = '')
 	{
         error_redirect(has_privilege('inventory'), '401');
@@ -243,13 +318,20 @@ class Services extends Admin_Controller {
 			$this->services_model->delete_stock(['item_id' => $item]);
 			redirect("services/inventory");
  		}
- 		elseif ($type === 'sales_records') {
+ 		elseif ($type === 'sales_records') 
+ 		{
 			$this->session->set_flashdata('message', alert_notice('Sales record deleted', 'success')); 
 			$this->services_model->delete_order(['id' => $item]);
 			redirect("services/sales_records");
  		}
 	}
 
+
+    /**
+     * This methods allows for editing services 
+     * @param string	$get_service_name	The name of the service to edit 
+     * @return null                 		Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function edit($get_service_name)
 	{
         error_redirect(has_privilege('sales-services'), '401');
@@ -284,17 +366,16 @@ class Services extends Admin_Controller {
 		$this->load->view($this->h_theme.'/footer'); 
 	}
 
-	public function calculator()
-	{	
-        error_redirect(has_privilege('service-point'), '401');
 
-		$item_id = $this->input->post('item_id');
-		$stock_item = $this->services_model->get_stock(['item_id' => $item_id]);
-		print_r($stock_item);
-	}
-
+    /**
+     * This methods lists service stocks for sale
+     * @param string	$service	The name of the service with stock to edit 
+     * @return null     			Does not return anything but echoes a JSON Object with a response
+     */
 	public function list_stock($service = "")
-	{         
+	{    
+        header('Content-type: application/json'); 
+             
 		$get_service_name = urldecode($service);
 		$stock_list = $this->services_model->get_stock(['item_service' => $get_service_name]);
 
@@ -346,6 +427,7 @@ class Services extends Admin_Controller {
 			{
 			$stock_item_array[] = '<div class="col-12">'.alert_notice('This store has no items on stock', 'error', FALSE, FALSE).'</div>';
 		}
+		
 		$script = '
 		<script> 
 			$(\'input[name="stock_qty[]"]\').change(function() {
@@ -364,7 +446,4 @@ class Services extends Admin_Controller {
 		}
 		echo json_encode($stock_item_blocks, JSON_FORCE_OBJECT); 
 	}
-}
-
-/* End of file welcome.php */
-/* Location: ./application/controllers/welcome.php */
+} 

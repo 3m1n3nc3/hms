@@ -20,7 +20,7 @@ class Customer_model extends CI_Model {
     {
         if (isset($data['id']) || isset($data['email']) || isset($data['username']) || isset($data['customer_id']) || isset($data['customer_TCno'])) 
         {
-            $this->db->select('customer_id, customer_username, customer_firstname, customer_lastname, image, customer_TCno, customer_address, customer_state, customer_city, customer_country, customer_telephone,  customer_email')->from('customer');
+            $this->db->select("customer_id, customer_username, customer_firstname, customer_lastname, CONCAT_WS(' ', customer_firstname, customer_lastname) AS name, image, customer_TCno, CONCAT_WS(', ', customer_address, customer_city, customer_state, customer_country) AS address, customer_address, customer_state, customer_city, customer_country, customer_nationality, customer_passport_no, passport, customer_telephone,  customer_email")->from('customer');
         
             if (isset($data['username'])) 
             {
@@ -62,6 +62,42 @@ class Customer_model extends CI_Model {
             return $query;
         }
     } 
+    /**
+     * This function will fetch return the a specified customer from the customers table
+     * @param array $data
+     * @return mixed    Depending on available parameters it will either return an object or an array
+     */
+    function purchases($data)
+    { 
+        $this->db->select('*')->from("sales_service_orders"); 
+
+        if (isset($data['customer_id'])) 
+        {
+            $this->db->where('customer_id', $data['customer_id']); 
+        }
+
+        if (isset($data['employee_id'])) 
+        { 
+            $this->db->where('employee_id', $data['employee_id']);
+        }
+
+        if (isset($data['item_id'])) 
+        { 
+            $this->db->where('id', $data['item_id']);
+        }
+         
+        if (isset($data['page'])) {
+            $this->db->limit($this->config->item('per_page'), $data['page']);
+        }
+
+        $query = $this->db->get();
+
+        if (isset($data['item_id'])) 
+        { 
+            return $query->row_array(); 
+        }
+        return $query->result_array(); 
+    } 
 
 
     /**
@@ -71,13 +107,16 @@ class Customer_model extends CI_Model {
      */
     function list_customers($data = '')
     {
-        $this->db->select('customer_id, customer_firstname, customer_lastname, customer_TCno, customer_address, customer_state, customer_city, customer_country, customer_telephone,  customer_email')->from('customer');
+        $this->db->select('customer_id, customer_firstname, customer_lastname, customer_TCno, customer_address, customer_state, customer_city, customer_country, customer_telephone,  customer_email')->from('customer'); 
+        $this->db->select("(SELECT SUM(`order_price`) FROM sales_service_orders WHERE `customer_id` = `customer`.`customer_id`) AS orders");
+        $this->db->select("(SELECT SUM(`paid`) FROM sales_service_orders WHERE `customer_id` = `customer`.`customer_id`) AS paid");
+        $this->db->select("(SELECT SUM(`orders`-`paid`)) AS debt");
          
         if (isset($data['page'])) {
             $this->db->limit($this->config->item('per_page'), $data['page']);
         }
 
-        $query = $this->db->get();
+        $query = $this->db->get(); 
         return $query->result();
     }
 
@@ -89,6 +128,7 @@ class Customer_model extends CI_Model {
      */
     function add_customer($data)
     {
+        unset($data['accept']);
         if (isset($data['cid'])) 
         {
             $data['customer_id'] = $data['cid'];
@@ -103,21 +143,7 @@ class Customer_model extends CI_Model {
             $this->db->insert('customer', $data);
             return $this->db->insert_id();
         }
-    }
-
-    // function _get_active_customers()
-    // {
-    //     $date = date('Y-m-d');
-    //     $q = $this->db->free;
-    //     $q = $this->db->query("CALL get_customers('$date')");
-
-    //     $data = array();
-    //     foreach ($q->result() as $customer) {
-    //         $data[] = $customer;
-    //     }
-    //     return $data;
-    // } 
-
+    } 
 
     /**
      * This function will fetch return data of all active customers currently logged 
@@ -144,6 +170,19 @@ class Customer_model extends CI_Model {
         $this->db->delete('room_sales', array('customer_id' => $customer_id));
         $this->db->delete('reservation', array('customer_id' => $customer_id));
         $this->db->delete('customer', array('customer_id' => $customer_id));
+        return $this->db->affected_rows();
+    }
+
+
+    /**
+     * This function will update an items debt info
+     * @return integer    Returns the count of records updated by the query
+     */
+    function update_debt($data)
+    {
+        $this->db->where("id", $data['item_id']);
+        db_inc('paid',$data['amount']);
+        $this->db->update('sales_service_orders'); 
         return $this->db->affected_rows();
     }
 

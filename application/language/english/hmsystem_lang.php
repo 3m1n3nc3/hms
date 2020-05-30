@@ -21,7 +21,7 @@ $lang['adult']                      = 'Adult';
 $lang['adults']                     = 'Adults';
 $lang['address']                    = 'Address';
 $lang['all_reservations']           = 'All reservations for';
-$lang['all_reservations_this_room'] = 'All reservations for this room';
+$lang['all_reservations_this_room'] = 'Other reservations for this room';
 $lang['arrival']                    = 'Arrival';
 $lang['assign_privilege']           = 'Assign Privilege';
 $lang['available_rooms']            = 'Available Rooms';
@@ -33,8 +33,10 @@ $lang['book_now']                   = 'Book Now';
 $lang['by']                         = 'By';
 $lang['cashier_report']             = 'Cashier\'s Report';  
 $lang['checkin']                    = 'Checkin';  
+$lang['checkin_from']               = 'Checkin From';  
 $lang['checkin_date_past']          = 'Check in date is past and can\'t be before today'; 
-$lang['checkout']                   = 'Checkout';   
+$lang['checkout']                   = 'Checkout';    
+$lang['checkout_to']                = 'Checkout Destination';   
 $lang['child']                      = 'Child';  
 $lang['change_image']               = 'Change Image';  
 $lang['change_reservation']         = 'Change Reservation';  
@@ -46,13 +48,21 @@ $lang['contact']                    = 'Contact';
 $lang['content']                    = 'Content';
 $lang['content_image']              = 'Content Image';
 $lang['country']                    = 'Country';
+$lang['country_of_residence']       = 'Country of residence';
 $lang['created']                    = 'Created';
 $lang['create_page']		        = 'Create Page';
 $lang['create_privilege']           = 'Create Privilege';
 $lang['customer']                   = 'Customer';
+$lang['customer_checkin_from']      = 'Where will this customer check in from?';
+$lang['customer_checkout_to']       = 'Where will this customer check out to?';
 $lang['customer_deleted']           = 'Customer Deleted';
 $lang['customer_updated']           = 'Customer data has been successfully updated.';
 $lang['customer_id_code']           = 'Customer Identification Number';
+$lang['customer_image']             = 'Customer Photo';
+$lang['customer_passport']          = 'Customer Passport';
+$lang['customer_overstay']          = 'This customer has stayed %s days beyond their reservation and has incurred a debt of %s. <a href="%s" class="text-light font-weight-bold">Click to view details</a>';
+$lang['customer_overstaying']       = 'A customer is currently lodged in this room beyond their checkout date, this room cannot be booked at this time <a href="%s" class="text-light font-weight-bold">Click to view details</a>';
+$lang['customer_has_debt']          = 'This customer has unpaid debts of up to %s <a href="%s" class="text-light font-weight-bold">Click to view details</a>.';
 $lang['dashboard']                  = 'Dashboard';
 $lang['department']                 = 'Department';
 $lang['date']                       = 'Date';
@@ -69,12 +79,12 @@ $lang['employee_deleted']           = 'Employee Deleted';
 $lang['employee_id']                = 'Employee ID';
 $lang['employee_updated']           = 'Employee Profile Updated';
 $lang['employee_type']              = 'Employee Type';
-$lang['error_processing_payment']   = 'There was an error processing your payment.';  
 $lang['facilities']                 = 'Facilities';
 $lang['facility']                   = 'Facility';
 $lang['facebook']                   = 'Facebook';
 $lang['filter']                     = 'Filter';
 $lang['firstname']                  = 'First Name';
+$lang['for_non_citizens']           = 'For visitors who are non citizens of %s';
 $lang['forgot_password']            = 'Forgot Password';
 $lang['from']                       = 'From';
 $lang['frontsite']                  = 'Front End';
@@ -91,30 +101,24 @@ $lang['kid']                    = 'kid';
 $lang['lastname']               = 'Last Name';
 $lang['list_facilities']        = 'List Facilities';
 $lang['list_users']			    = 'List Users';
-$lang['list_payments']          = 'List Payments'; 
 $lang['manage_pages']           = 'Manage Pages'; 
 $lang['manage_privileges']      = 'Manage Privileges'; 
 $lang['my_account']             = 'My Account';
-$lang['my_payments']            = 'My Payments';
+$lang['nationality']            = 'Nationality';
 $lang['my_reservations']        = 'My Reservations';
 $lang['new_customer_added']     = 'You have successfully added a new customer.';
 $lang['new_privilege_created']  = 'You have created a new user privilege.';
 $lang['no_available_rooms']     = 'There are no available rooms for %s.';
 $lang['no_more_reservations']   = 'No more reservations';
 $lang['no_more_reservations_this_room'] = 'No more reservations for this room';
-$lang['no_payment_records']     = 'No payment records available.';
 $lang['no_sales_records']       = 'No Sales Records available.';
-$lang['online_payments']        = 'Online Payments';
 $lang['page_created']           = 'Page Created';
 $lang['page_not_found_404']     = 'Error 404 Page not found';
 $lang['page']                   = 'Page';
 $lang['page_title']             = 'Page Title';
 $lang['page_updated']           = 'Page Updated';
+$lang['passport_number']        = 'Passport Number';
 $lang['password']               = 'Password';
-$lang['payment_success']        = 'Payment Success';
-$lang['payments']               = 'Payments';
-$lang['payment']                = 'Payment';
-$lang['payment_error']          = 'Payment Error';
 $lang['permission']             = 'Permission';
 $lang['permissions']            = 'Permissions';
 $lang['phone']                  = 'Phone Number';
@@ -135,16 +139,16 @@ $lang['reservation_date']       = 'Reservation Date';
 $lang['reservation_made']       = 'Reservation Has been successfully made!';
 $lang['reserved_room']          = 'Reserved Room';
 $lang['reserved_rooms']         = 'Reserved Rooms';
+$lang['required_upload_passport'] = 'You may be required to upload the data page of your passport.';
 $lang['room']                   = 'Room';
 $lang['rooms']                  = 'Rooms';
 $lang['room_number']            = 'Room Number';
 $lang['room_service']           = 'Room Service';
 $lang['room_sale']              = 'Room Sale';
 $lang['room_type']              = 'Room Type';
-$lang['payment_already_done']	= 'This payment has already been processed'; 
-$lang['payment_proccessed']		= ' Thank you, your payment has been processed you can now set up your '; 
 $lang['registration_failed']    = 'Registration Failed'; 
 $lang['room_not_available']     = 'This room is not available';
+$lang['sales_report']           = 'Sales Report';
 $lang['salary']                 = 'Salary';
 $lang['save']                   = 'Save';
 $lang['saved']                  = 'Saved';
@@ -174,6 +178,8 @@ $lang['update_pages']           = 'Update Pages';
 $lang['update_privilege']       = 'Update Privilege';
 $lang['update_profile']         = 'Update Profile';
 $lang['update_user']            = 'Update User';
+$lang['upload_image']           = 'Upload Image';
+$lang['upload_passport_image']  = 'Upload Passport Image';
 $lang['user_granted_privilege'] = 'User %s has been granted %s Privilege';
 $lang['user_login']             = 'User Login';
 $lang['user_profile_updated']   = 'User Profile Updates';
@@ -182,15 +188,64 @@ $lang['username_email']         = 'Username or Email Address';
 $lang['view_profile']           = 'View Profile'; 
 $lang['visitors']               = 'Visitors'; 
 $lang['welcome']                = 'Welcome';
+$lang['user_checkin_from']      = 'Where will you check in from?';
+$lang['user_checkout_to']       = 'Where will you check out to?';
 $lang['you_need_to_note']       = '<small>You may need to note this down</small>';
 $lang['your_account']           = 'Your Account';
 $lang['your_profile_updated']   = 'Your profile has been updated.';
 $lang['your_reservations']      = 'Your Reservations';
 
-// -----------------------------------------------------------------------------------------------------------------
+// Payments and Invoice
+// ----------------------------------------------------------------------------------------------------
+$lang['error_processing_payment'] = 'There was an error processing your payment.';  
+$lang['list_payments']            = 'List Payments'; 
+$lang['my_payments']              = 'My Payments';
+$lang['no_payment_records']       = 'No payment records available.';
+$lang['online_payments']          = 'Online Payments';
+$lang['payment_success']          = 'Payment Success';
+$lang['payments']                 = 'Payments';
+$lang['payment']                  = 'Payment';
+$lang['payment_error']            = 'Payment Error';
+$lang['payment_already_done']     = 'This payment has already been processed'; 
+$lang['payment_proccessed']       = ' Thank you, your payment has been processed you can now set up your '; 
+$lang['reservation_invoice_desc'] = 'Reservation payments for %s %s for %s days'; 
+$lang['reservation_pay_desc']     = 'Reservation payments for %s'; 
+
+
+// Containers
+// ----------------------------------------------------------------------------------------------------
+$lang['show_rooms_description'] = 'Hayatt Regency Suite is in a class of its own.';
+$lang['show_rooms_title']       = 'Hotel Accommodation';
+
+
+// Notifications
+// ----------------------------------------------------------------------------------------------------
+$lang['added_inventory_item']              = 'Added an inventory item';
+$lang['added_inventory_item_message']      = '%s added a new inventory item.';
+$lang['added_new_customer']                = 'Registered a new customer';
+$lang['added_new_customer_message']        = '%s has registered a new customer.';
+$lang['cleared_a_debt']                    = 'Settled a debt';
+$lang['cleared_a_debt_message']            = '%s made payments to clear a debt.';
+$lang['customer_paid_reservation']         = 'Made reservations';
+$lang['customer_paid_reservation_message'] = '%s has made payments to secure a reservation.';
+$lang['made_reservation']                  = 'Made reservations';
+$lang['made_reservation_message']          = '%s made reservations for a customer.';
+$lang['made_services_sales']               = 'Sold an item';
+$lang['made_services_sales_message']       = '%s has sold an item at a service point.';
+$lang['overstayed_reservation']            = 'Overstayed Reservation';
+$lang['overstayed_reservation_message']    = '%s is overstaying their reservation.';
+$lang['updated_inventory_item']            = 'Added an inventory item'; 
+$lang['updated_inventory_item_message']    = '%s has made updates to an inventory item.'; 
+
+// Messages
+// ----------------------------------------------------------------------------------------------------
 $lang['list_privileges']           = 'default, dashboard, reservation, rooms, room-sales, room-types, reserved-rooms, customers, sales-services, sales-records, inventory, service-point, cashier-report, expense-register, manage-employee, manage-configuration, manage-privilege, manage-pages, payments';
+
 $lang['signup_success_message']    = ' Thank you for your trust in us to deliver quality content and data management to your organization, your registration was successful ';
+
 $lang['no_available_room_message'] = 'No rooms available, try reducing the number of expected occupants or or try choosing another room or room type';
-$lang['login_to_book']    = 'You need to login before you can book a room.';
+
+$lang['login_to_book']    = 'You need an active and logged in account before you can book a room, please correctly fill the form to proceed.';
+
 $lang['account_created']  = 'Your account has been created successfully.';
 $lang['input_has_errors'] = 'Your input has errors, please confirm and correct them.';

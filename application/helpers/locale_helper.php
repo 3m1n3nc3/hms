@@ -15,7 +15,7 @@ if ( ! function_exists('select_countries'))
      * @param   integer 
      * @return  mixed   depends on what the type specifies
      */
-    function select_countries($value = '', $type = 0) {
+    function select_countries($value = '', $type = 0, $optional = FALSE) {
 
         $CI = & get_instance();  
 
@@ -25,6 +25,9 @@ if ( ! function_exists('select_countries'))
         {
             $rows = '
             <option disabled>Please Select Country</option>';
+            $rows .= 
+            ($optional === TRUE) ? 
+            '<option value="0"'.set_select('customer_nationality', TRUE).'>Not Applicable</option>' : '';
 
             foreach($locale AS $country) 
             {

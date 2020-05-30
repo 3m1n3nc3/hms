@@ -1,9 +1,9 @@
 			<?php if ($post['invoice_id']): ?>
-			<div class="container border p-0 m-5">
+			<div class="container p-0 my-5 mr-auto">
 				<div class="row">
 					<div class="col-12"> 
 						<!-- Main content -->
-						<div class="invoice p-3 mb-3">
+						<div class="invoice border p-3 m-3">
 							<!-- title row -->
 							<div class="row">
 								<div class="col-12">
@@ -29,7 +29,7 @@
 									To
 									<address>
 										<strong><?= $customer['name']; ?></strong><br>
-										<?php //echo $address; ?>
+										<?= $customer['customer_address']??'' ?>
 									</address>
 								</div>
 								<!-- /.col -->
@@ -59,7 +59,7 @@
 										<tbody>
 											<tr>
 												<td>1</td>
-												<td><?= ($post['room_type'] ?? $post['room_type']) . ' room ' . $post['room_id']?></td>
+												<td><?= ($post['room_type'] ?? $post['room_type']) . ' Room ' . $post['room_id']?></td>
 												<td><?= $post['payment_ref'] ?></td>
 												<td><?= $post['description'] ?></td>
 												<td><?= $this->cr_symbol.number_format(($post['amount'] ?? $room[0]->room_price), 2) ?></td>
@@ -72,7 +72,7 @@
 							<!-- /.row -->
 							<div class="row">
 								<!-- accepted payments column -->
-								<div class="col-6">
+								<div class="col-6 no-print">
 									<p class="lead">Payment Methods:</p>
 									<img src="<?php echo base_url('backend/img/credit/visa.png') ?>" alt="Visa">
 									<img src="<?php echo base_url('backend/img/credit/mastercard.png') ?>" alt="Mastercard">
@@ -94,7 +94,7 @@
 											</tr>
 											<tr>
 												<th>
-													Vat (<?= $room[0]->vat ?>%)
+													Vat (<?= $room[0]->vat??0 ?>%)
 												</th>
 												<td>
 													<?= $this->cr_symbol.number_format(($post['amount'] ?? $room[0]->room_price)*$room[0]->vat/100, 2) ?> 
@@ -120,8 +120,9 @@
 										<i class="far fa-credit-card"></i> Pay Now 
 									</button>   
 								<?php endif; ?>
+								<?php $p_page = isset($p_page) ? $p_page.'/' : 'homepage/'?>
 
-									<a href="<?php echo $action ?? site_url('homepage/invoice/'.$post['payment_ref'].'/?print=true') ?>" target="_blank" class="btn btn-default">
+									<a href="<?php echo $action ?? site_url($p_page.'invoice/'.$post['payment_ref'].'/?print=true') ?>" target="_blank" class="btn btn-default">
 										<i class="fas fa-print"></i> Print
 									</a>
 

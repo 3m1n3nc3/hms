@@ -43,7 +43,7 @@
                       </td>
                       <td> <?=$employee->employee_username;?> </td>
                       <td> <?=$employee->employee_telephone;?> </td>
-                      <td> <?=$employee->department_name;?> </td>
+                      <td> <?=$employee->service_name;?> </td>
                       <td> <?=$employee->employee_type;?> </td>
                       <td> <?=$employee->employee_email;?> </td> 
                       <td class="td-actions p-0">
@@ -73,7 +73,7 @@
                     <?php endforeach; ?>
                     <?php else: ?>
                     <tr>
-                      <td colspan="7"><?php alert_notice('No employees available', 'info', TRUE, FALSE) ?></td>
+                      <td colspan="7" class="text-center"><?php alert_notice('No employees available', 'info', TRUE, FALSE) ?></td>
                     </tr>
                     <?php endif; ?>
                   </tbody>

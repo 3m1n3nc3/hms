@@ -15,7 +15,9 @@ $config['full_tag_open']    = '<ul class="d-flex pagination justify-content-cent
 $config['full_tag_close']   = '</ul>';
 
 $config['per_page']         = 10;
-$config['use_page_numbers'] = TRUE; 
+$config['notifs_per_page']  = 10;
+$config['use_page_numbers'] = TRUE;
+$config['reuse_query_string'] = FALSE;
 
 $config['first_link']       = '<i class="fa fa-chevron-left"></i><i class="fa fa-chevron-left"></i>'; 
 $config['first_tag_open']    = '<li class="page-item ml-1 text-info">';

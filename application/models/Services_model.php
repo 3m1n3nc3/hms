@@ -47,16 +47,21 @@ class Services_model extends CI_Model {
         return $this->db->affected_rows();
     }
 
-    function getService($service_id)
+    function getService($service_id, $array = FALSE)
     {
         $this->db->select('*')->from('sales_services');
         $query = $this->db->where('service_name', $service_id)->or_where('id', $service_id)->get();
+        if ($array)
+        {
+            return $query->row_array();
+        }
         return $query->result();
     }
 
     function order_service($data = array())
     {
         $this->db->insert('sales_service_orders', $data);
+        return $this->db->insert_id();
     }
 
     function get_stock($data = array())
@@ -91,6 +96,31 @@ class Services_model extends CI_Model {
         }
     }
 
+    function service_orders($data = array())
+    {
+        $this->db->select('*')->from('sales_service_orders');
+
+        
+        if (isset($data['from']))
+        {
+            $this->db->where('ordered_datetime >=', $data['from']);  
+        } 
+        
+        if (isset($data['to']))
+        {
+            $this->db->where('ordered_datetime <=', $data['to']);  
+        } 
+        
+        if (isset($data['customer_id'])) 
+        {
+            $this->db->where('customer_id', $data['customer_id']); 
+        }
+
+        $query = $this->db->get();
+        return $query->result_array(); 
+    }
+
+
     function add_stock($data = array())
     {  
         if (isset($data['item_id'])) 
@@ -101,6 +131,7 @@ class Services_model extends CI_Model {
         else
         {
             $this->db->insert('sales_service_stock', $data);
+            return $this->db->insert_id();
         }  
     }
 

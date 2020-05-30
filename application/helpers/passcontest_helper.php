@@ -136,18 +136,29 @@ if ( ! function_exists('imploder'))
      * @param  string 	$delimiter 	the string to put between data
      * @return string    
      */
-    function imploder($array = array(), $index = 'id', $delimiter = ',')
+    function imploder($array = array(), $index = '', $delimiter = ',')
     {
-        if (is_object($array)) 
+        if ($index === NULL) 
         {
-            $array = json_decode(json_encode($array), TRUE);
-        } 
-
-        $new_array = [];
-        foreach ($array as $value) {
-            $new_array[] .= $value[$index];
+            $index = 'id';
         }
-        return implode($delimiter, $new_array);
+
+        if (is_array($array)) 
+        {
+            if (is_object($array)) 
+            {
+                $array = json_decode(json_encode($array), TRUE);
+            } 
+
+            $new_array = [];
+
+            foreach ($array as $key => $value) 
+            {
+                $new_array[] .= $index ? $value[$index] : $value;
+            }
+            return implode($delimiter, $new_array);
+        }
+        return $array;
     }
 }
 
@@ -256,3 +267,200 @@ if ( ! function_exists('error_redirect'))
         return TRUE;
     }
 }
+
+
+if ( ! function_exists('db_inc')) 
+{
+    /**
+     * Method generates incremental function call for database input
+     * 
+     * @param string    $Prop The database property to increment
+     * @param int       $num increment by int or float. 1 by default
+     *  
+     * @return string
+     */
+    function db_inc($Prop = '', $num = 1, $protect = TRUE)
+    {
+        global $CI;
+
+        $tags = ($protect === TRUE ? '`' : '');
+
+        if (!is_numeric($num)) {
+            $num = 1;
+        }
+        $data = $tags . $Prop . $tags . "+" . $num;
+        return $CI->db->set($tags . $Prop . $tags, $data, FALSE);
+    }
+}
+
+
+if ( ! function_exists('db_dec')) 
+{
+    /**
+     * Method generates decremental function call for database input
+     * 
+     * @param string    $Prop The database property to decrement
+     * @param int       $num decrement by int or float. 1 by default
+     *  
+     * @return string
+     */
+    function db_dec($Prop = '', $num = 1, $protect = TRUE)
+    {
+        global $CI;
+
+        $tags = ($protect === TRUE ? '`' : '');
+
+        if (!is_numeric($num)) {
+            $num = 1;
+        }
+        $data = $tags . $Prop . $tags . "-" . $num;
+
+        return $CI->db->set($tags . $Prop . $tags, $data, FALSE);
+    }
+}
+
+
+if ( ! function_exists('encode_html') ) 
+{
+    function encode_html($html = "")
+    {
+        return htmlspecialchars($html);
+    }
+}
+
+
+
+if ( ! function_exists('decode_html') ) 
+{
+    function decode_html($html = "")
+    {
+        return htmlspecialchars_decode($html);
+    }
+}
+
+if (! function_exists('show_money')) 
+{
+    /** 
+     *
+     * Appends the site currency to a number
+     * Prepends the decimal placing for the number
+     *
+     * @param   string      $amount
+     * @param   string      $decimal
+     * @return  string     
+     */
+    function show_money($amount=0, $decimal = 2)
+    {
+        global $CI; 
+
+        $format = $CI->cr_symbol.number_format($amount, $decimal);
+        return $format;
+    }
+}
+
+if (! function_exists('show_percent')) 
+{
+    /** 
+     *
+     * Appends the site currency to a number
+     * Prepends the decimal placing for the number
+     *
+     * @param   string      $amount
+     * @param   string      $decimal
+     * @return  string     
+     */
+    function show_percent($v1=0, $v2=0, $show_sym = '%')
+    {
+        global $CI; 
+
+        $format = number_format(($v1*100)/$v2); 
+  
+        return $format . $show_sym;
+    }
+}
+
+if (! function_exists('percentage_color')) 
+{
+    /** 
+     *
+     * Sets a bootstrap color based on the
+     * supplied percentage
+     *
+     * @param   string      $amount
+     * @param   string      $decimal
+     * @return  string     
+     */
+    function percent_color($percentage = 0, $show_caret = FALSE)
+    { 
+        $percentage = str_ireplace('%', '', $percentage);
+        $color = 'text-danger';
+        $caret = 'fa-caret-down';
+        if ($percentage <= 25 && $percentage >= 1) 
+        {
+            $color = 'text-warning';
+            $caret = 'fa-caret-left';
+        }
+        elseif ($percentage >= 25) 
+        {
+            $color = 'text-success';
+            $caret = 'fa-caret-up';
+        }
+        
+        if ($show_caret) {
+            return $caret;
+        }
+        return $color;
+    }
+}
+
+// --------------------------------------------------------------------
+
+if ( ! function_exists('c_card_state'))
+{
+    /**
+     * Elements
+     *
+     * Checks the current state of a card and returns and adds a corresponding class
+     *
+     * @param   string 
+     * @return  string  
+     */
+    function c_card_state($card_id = '', $page = '', $uid = '')
+    {
+        global $CI; 
+
+        $state = $CI->db->select('state')
+            ->where('page', $page)->where('uid', $uid)->where('card_id', $card_id)
+            ->get('card_state')->row_array()['state']; 
+ 
+        return ' data-card-state="' . $state . '"';
+    }
+}
+
+// --------------------------------------------------------------------
+
+if ( ! function_exists('hide_c_state'))
+{
+    /**
+     * Elements
+     *
+     * Checks the current state of a card and returns and adds a corresponding class
+     *
+     * @param   string 
+     * @return  string  
+     */
+    function hide_c_state($uid = '', $page = '')
+    {
+        global $CI; 
+
+        $state = $CI->db->where('uid', $uid)
+            ->where('page', $page)
+            ->where('state !=', '')
+            ->count_all_results('card_state');  
+        
+        if ($state<=0) {
+            return ' style="display: none;"';
+        }
+    }
+}
+

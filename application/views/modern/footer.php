@@ -10,13 +10,12 @@
           'modal_title' => 'Action Modal',
           'modal_size' => 'modal-sm',
           'modal_content' => ' 
-            <div class="m-0 p-0 text-center" id="upload_loader">
+            <div class="m-0 p-0 text-center" id="upload_loader1">
                 <div class="loader"><div class="spinner-grow text-warning"></div></div> 
             </div>'
         );
         $this->load->view($this->h_theme.'/modal', $param);
-      ?>
- 
+      ?> 
       <!-- Main Footer -->
       <footer class="main-footer text-sm">
         <!-- To the right -->
@@ -28,20 +27,23 @@
             <span class="text-info">Theme: <?=ucwords($this->h_theme)?></span> 
           </span> -->
 
-          Hoolicon Tech HMS 1.0.0 <?php echo  (ENVIRONMENT === 'development') ?  ' | Page rendered in <strong>{elapsed_time}</strong> seconds. CodeIgniter Version <strong>' . CI_VERSION . '</strong>' : '' ?>
+          <?php echo HMS_NAME . ' ' . HMS_VERSION ?> <?php echo  (ENVIRONMENT === 'development') ?  ' | Page rendered in <strong>{elapsed_time}</strong> seconds. CodeIgniter Version <strong>' . CI_VERSION . '</strong>' : '' ?>
         </div>
         <!-- Default to the left -->
-        <strong>Copyright &copy; <?= date('Y'); ?> <a href="https://adminlte.io"><?= my_config('site_name'); ?></a>.</strong> All rights reserved.
+        <strong>
+          Copyright &copy; <?= date('Y'); ?> <a href="https://adminlte.io"><?= my_config('site_name'); ?></a>.
+        </strong> All rights reserved.
       </footer>
 
     </div>
     <!-- ./wrapper (Opened at view/classic/header.php) -->
 
+
     <!-- REQUIRED SCRIPTS -->
     <!-- Placed at the end of the document so the pages load faster --> 
     <!-- =============================================== -->
     <!-- jQuery -->
-    <script src="<?= base_url('backend/modern/plugins/jquery/jquery.min.js'); ?>"></script>
+    <script src="<?= base_url('backend/modern/plugins/jquery/jquery.js'); ?>"></script>
     <!-- Croppie -->
     <script src="<?= base_url('backend/js/plugins/croppie.js'); ?>"></script>
     <!-- jQuery UI -->
@@ -50,19 +52,15 @@
     <script src="<?= base_url('backend/modern/plugins/bootstrap/js/bootstrap.bundle.min.js'); ?>"></script>
     <!-- AdminLTE App -->
     <script src="<?= base_url('backend/modern/dist/js/adminlte.min.js'); ?>"></script>
-    <!-- Hotel Management System -->
-    <script src="<?= base_url('backend/js/hhms.js?time='.strtotime('NOW')); ?>"></script>
+    <!-- AdminLTE App -->
+    <script src="<?= base_url('backend/modern/plugins/bootbox/bootbox.all.js'); ?>"></script>
+    <!-- DateTimePicker -->
+    <script src="<?= base_url('backend/modern/plugins/datetimepicker/build/jquery.datetimepicker.full.js'); ?>"></script> 
+    <!-- Summernote -->
+    <script src="<?= base_url('backend/modern/plugins/jodit/jodit.js'); ?>"></script> 
 
-    <!-- Tooltips and toggle Initialization -->
-    <script type="text/javascript"> 
-      $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
-      });
-       
-      $(function () {
-        $('[data-toggle="popover"]').popover()
-      })
-    </script>
+    <!-- Hotel Management System -->
+    <script src="<?= base_url('backend/js/hhms.js?time='.strtotime('NOW')); ?>"></script>  
 
     <!-- fullCalendar -->
     <?php if (isset($has_calendar)): ?>  
@@ -76,9 +74,80 @@
     <!-- =============================================== -->
 
     <script src="<?= base_url('backend/js/excanvas.min.js'); ?>"></script> 
-    <script src="<?= base_url('backend/js/chart.min.js'); ?>" type="text/javascript"></script> 
-    <script language="javascript" type="text/javascript" src="<?= base_url('backend/js/full-calendar/fullcalendar.min.js'); ?>"></script>
+    <!-- Chart.js -->
+    <script src="<?= base_url('backend/modern/plugins/Chart.js/Chart.min.js'); ?>"></script>  
+
+    <script src="<?= base_url('backend/js/full-calendar/fullcalendar.min.js'); ?>"></script>
     <script src="<?= base_url('backend/js/base.js'); ?>"></script> 
+
+    <!-- =========================================================== -->
+    <?php if($page == "dashboard"): ?>
+    <script>     
+
+      var salesChartData = <?=$this->hms_parser->payment_stats()?>; 
+
+      var nextWeekChartData = {
+        labels  : ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+        datasets: [
+          {
+            label               : 'Reservations',
+            backgroundColor     : 'rgba(60,141,188,0.9)',
+            borderColor         : 'rgba(60,141,188,0.8)',
+            pointRadius          : false,
+            pointColor          : '#3b8bba',
+            pointStrokeColor    : 'rgba(60,141,188,1)',
+            pointHighlightFill  : '#fff',
+            pointHighlightStroke: 'rgba(60,141,188,1)',
+            data                : <?= json_encode($next_week_freq['freq_counts']);?>
+          } 
+        ]
+      } 
+      var nextWeekChartData   = jQuery.extend(true, {}, nextWeekChartData) 
+
+    </script>
+    <?php endif; ?>
+
+    <!-- Hotel Management System -->
+    <script src="<?= base_url('backend/js/hhms.charts.js?time='.strtotime('NOW')); ?>"></script>  
+
+    <!-- Notifications and more -->
+    <?php if ($this->account_data->logged_in()): ?>
+      <script>
+
+        responsiveFileManager = function (modal_id = '') { 
+          $.ajax({
+              url: site_url('backend/RFileManager/dialog.php?type=1&editor=ckeditor&fldr='),
+              type: 'GET',
+              dataType: 'html'
+          })
+          .done(function(data) {
+            $('.modal-dialog').addClass('modal-xl').removeClass('modal-sm');
+            $('.modal-title').html('Responsive File Manager');
+            $('.modal-body').html('');
+            $(modal_id).modal('show');
+          });
+        } 
+                    
+           
+        jQuery(document).ready(function($) {
+
+            $("#get-notifications").click(function(event) {
+                var notf_list = $("#notifications__list");
+                var preloader = notf_list.next('.preloader').clone().removeClass('d-none');
+                notf_list.html(preloader);
+                get_notifications();console.log(notf_list.children('.preloader'));
+                delay(function(){
+                
+                },400); 
+            });  
+
+           // Jodit
+            $('.textarea').each(function () { 
+                var editor = new Jodit(this);
+            });
+        });
+      </script>
+    <?php endif ?>
 
     <!-- Datatables -->
     <?php if (isset($use_table) && $use_table): ?>
@@ -105,12 +174,18 @@
     <?php if (isset($has_calendar)): ?>  
     <script>
       function date2string(date) {
-        var d = date.getDate(); 
-        var m = date.getMonth()+1;
-        var y = date.getFullYear();
-        if(d<10)d='0'+d;
-        if(m<10)m='0'+m;
-        return y+'-'+m+'-'+d;
+        var d  = date.getDate(); 
+        var m  = date.getMonth()+1;
+        var y  = date.getFullYear();
+        var H  = date.getHours();
+        var mn = date.getMinutes();
+        var s  = date.getSeconds();
+        if(d<10) d  ='0'+d;
+        if(m<10) m  ='0'+m;
+        if(H<10) H  ='0'+H;
+        if(mn<10)mn ='0'+mn;
+        if(s<10) s  ='0'+s;
+        return y+'-'+m+'-'+d+' '+H+':'+mn+':'+s;
       }
       /* initialize the calendar
        -----------------------------------------------------------------*/
@@ -155,53 +230,14 @@
       });
 
       calendar.render();
-    </script>
-    <?php endif; ?>
+    </script> 
 
-    <!-- =========================================================== -->
-    <?php if($page == "dashboard"): ?>
-
-      <script>      
-
-        var lineChartData = {
-          labels: <?= json_encode($next_week_freq['dates']);?>,
-          datasets: [ 
-            {
-              fillColor: "rgba(151,187,205,0.5)",
-              strokeColor: "rgba(151,187,205,1)",
-              pointColor: "rgba(151,187,205,1)",
-              pointStrokeColor: "#fff",
-              data: <?= json_encode($next_week_freq['freq_counts']);?>
-            }
-          ]
-
-        }
-        
-        var myLine = new Chart(document.getElementById("area-chart").getContext("2d")).Line(lineChartData);
-
-        var barChartData = {
-          labels: ["January", "February", "March", "April", "May", "June", "July"],
-          datasets: [
-            {
-              fillColor: "rgba(220,220,220,0.5)",
-              strokeColor: "rgba(220,220,220,1)",
-              data: [65, 59, 90, 81, 56, 55, 40]
-            },
-            {
-              fillColor: "rgba(151,187,205,0.5)",
-              strokeColor: "rgba(151,187,205,1)",
-              data: [28, 48, 40, 19, 96, 27, 100]
-            }
-          ]
-        }    
-
-      </script><!-- /Calendar -->
-        <!-- Welcome Guide -->
+      <!-- Welcome Guide -->
       <?php if(SHOW_GUIDE): ?>
         <!-- <script src="<?= base_url('backend/js/guidely/guidely.min.js'); ?>"></script> -->
 
         <script>
-          $(function () {
+          // $(function () {
             
           //   guidely.add ({
           //     attachTo: '#target-1', 
@@ -209,7 +245,7 @@
           //     title: 'Today \'s Stats', 
           //     text: 'You can see how many services are registered today. We used stored procedure here.'
           //   });
-            
+
           //   guidely.add ({
           //     attachTo: '#target-2', 
           //     anchor: 'top-left', 
@@ -224,7 +260,6 @@
           //     text: 'Here, you can see the customer who spend most money to our hotel. We used MAX, SUM, GROUP BY functions on our database.'
           //   });
             
-            
           //   guidely.add ({
           //     attachTo: '#target-4', 
           //     anchor: 'top-left', 
@@ -236,23 +271,8 @@
           // });
         </script>
       <?php endif; ?>
-        <!--/Welcome Guide-->
+      <!--/Welcome Guide-->
 
     <?php endif; ?>
-
-    <style type="text/css">
-      .calendar {
-        -webkit-user-select: none; -moz-user-select: none;
-      }
-    </style>
-
-    <script type="text/javascript">
-      function open_form()
-      {
-        console.log("Opening Form...");
-        $('#form').slideToggle();
-      }
-
-    </script>
   </body>
 </html>  

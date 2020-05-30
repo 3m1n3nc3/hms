@@ -2,7 +2,17 @@
 
 if ( ! function_exists('alert_notice'))
 {
-    function alert_notice($msg = '', $type = 'info', $echo = FALSE, $dismissible = TRUE)
+    /** 
+     *
+     * Returns a bootstrap alert
+     *
+     * @param   string      $msg            The message string
+     * @param   string      $type           [info,danger,error,warning,success]   
+     * @param   string      $echo           whether to echo the notice or return it
+     * @param   string      $dismissible    whether the notice can be dismissed
+     * @return  string
+     */
+    function alert_notice($msg = '', $type = 'info', $echo = FALSE, $dismissible = TRUE, $header = '')
     {   
         $icon = $dismissible_alert = $dismiss_btn = '';
         if ($type == 'danger' || $type == 'error') 
@@ -35,12 +45,17 @@ if ( ! function_exists('alert_notice'))
 
         if ($msg != '') 
         {
+            if ($header) 
+            {
+                $title = $header;
+            }
+            
             if ($dismissible !== 'FLAT') 
             {
                 $alert = 
                 '<div class="alert alert-'.$type.$dismissible_alert.'">
                     '.$dismiss_btn.'
-                    <h6><i class="icon fa fa-'.$icon.'"></i> '.$title.'</h6>
+                    <h5><i class="icon fa fa-'.$icon.'"></i> '.$title.'</h5>
                     '.str_ireplace('.', '.', $msg).'
                 </div>';
             } else {
@@ -240,5 +255,126 @@ if ( ! function_exists('social_link') )
         }
 
         return $link;
+    }
+}
+
+
+if ( ! function_exists('o2array') ) 
+{
+    /** 
+     *
+     * Converts an Object of standard type to Array
+     *
+     * @param   object      $obj   
+     * @return  array
+     */
+    function o2array($obj) {
+        
+        if (is_object($obj))
+            $obj = (array) $obj;
+
+        if (is_array($obj)) {
+            $new = array();
+            foreach ($obj as $key => $val) {
+                $new[$key] = o2array($val);
+            }
+        } 
+
+        else {
+            $new = $obj;
+        }
+
+        return $new;
+    }
+}
+
+
+if ( ! function_exists('sprintlang') ) 
+{
+    /** 
+     *
+     * Converts an Object of standard type to Array
+     *
+     * @param   object      $obj   
+     * @return  array
+     */
+    function sprintlang($line, $sprint_f = '') {
+        
+        $line = get_instance()->lang->line($line);
+
+        if ($sprint_f) 
+        {
+            if (is_array($sprint_f)) 
+            {
+                $line = vsprintf($line, $sprint_f); 
+            }
+            else
+            {
+                $line = sprintf($line, $sprint_f); 
+            }
+        }
+
+        return $line;
+    }
+}
+
+
+if ( ! function_exists('timeAgo') ) 
+{
+    /**
+     * Time Difference function
+     */     
+    function timeAgo($time, $x=0)
+    {
+        // Use strtotime() function to convert your time stamps before sending to the plugin
+
+        $time_difference = time() - $time;
+
+        if($time_difference < 1 && $x==0) { return 'less than 1 second ago'; }
+        $seconds = array( 12 * 30 * 24 * 60 * 60 =>  'year',
+                    30 * 24 * 60 * 60       =>  'month',
+                    24 * 60 * 60            =>  'day',
+                    60 * 60                 =>  'hour',
+                    60                      =>  'minute',
+                    1                       =>  'second', 
+                   -1                       =>  'millisecond' 
+        );
+
+        foreach( $seconds as $secs => $ret )
+        {
+            $diff = $time_difference / $secs;
+
+            if( $diff >= 1 )
+            {
+                $t = round( $diff );
+                $y = $ret == 'hour' || $ret == 'minute' || $ret == 'second' || $ret == 'millisecond' ? true : false;
+                // Check the request type
+                if ($x == 1) {
+                    if ($ret == 'day' && $t==1) {
+                        // If the time is been more than a day but less than two show yesterday
+                        return date('h:i A', $time).' | Yesterday'; 
+                    } elseif ($ret == 'year') {
+                        // If the time is been up to a year show full year
+                        return date('h:i A', $time).' | '.date('F j Y', $time); 
+                    } elseif ($y) {
+                        // If the time is been less than or equal to a day show today
+                        return date('h:i A', $time).' | Today'; 
+                    } else {
+                        // If the time is been more than two days show the date
+                        return date('h:i A', $time).' | '.date('F j', $time); 
+                    }                   
+                } elseif ($x == 2) {
+                    // Show only date
+                    if ($ret == 'year' && $t==1) {
+                        // If the time is been more than a day but less than two show yesterday
+                        return date('M j Y', $time);
+                    } else {
+                        return date('M j', $time);
+                    }
+                } else {
+                    return 'About ' . $t . ' ' . $ret . ( $t > 1 ? 's' : '' ) . ' ago';
+                }
+            }
+        }
     }
 }

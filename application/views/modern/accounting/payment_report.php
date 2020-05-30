@@ -6,7 +6,7 @@
       <div class="row">
         <div class="col-12">
           <h2 class="page-header">
-          <img src="<?= $this->creative_lib->fetch_image(my_config('site_logo'), 4); ?>" alt="<?=my_config('site_name')?> Logo" class="brand-image" style="opacity: .8"></i> <?=my_config('site_name')?>.
+          <img src="<?= $this->creative_lib->fetch_image(my_config('site_logo'), 2); ?>" alt="<?=my_config('site_name')?> Logo" class="brand-image" style="opacity: .8"></i> <?=my_config('site_name')?>.
           <small class="float-right"><?= lang('date'); ?>: <?= date('d/m/Y'); ?></small>
           </h2>
         </div>
@@ -46,14 +46,13 @@
               </tr>
             </thead>
             <tbody>
-              <?php foreach ($payments as $payment): ?>
-              <?php $customer = $this->account_data->fetch($payment['customer_id'], 1); ?>
+              <?php foreach ($payments as $payment): ?> 
               <tr>
-                <td> <?=$customer['name'];?> </td>
+                <td> <?=$payment['customer_name'];?> </td>
                 <td> <?=$this->cr_symbol.number_format($payment['amount'], 2);?> </td>
                 <td> <?=$payment['reference'];?> </td>
                 <td> <?=$payment['description'];?> </td>
-                <td> <?=$payment['date'];?> </td>
+                <td> <?=date('d M Y h:i A', strtotime($payment['date']));?> </td>
               </tr>
               <?php endforeach; ?>
             </tbody>

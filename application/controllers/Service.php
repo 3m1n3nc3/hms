@@ -24,8 +24,16 @@ class Service extends Admin_Controller
       'order_price' => $price
     );
 
-    if ($this->input->post()) {
-      $this->restaurant_model->add_service($data);
+    if ($this->input->post()) 
+    {
+      $this->restaurant_model->add_service($data); 
+
+      $re_data = array( 
+        'type'    => 'made_services_sales', 
+        'url'     => site_url('services/sales_records') 
+      );
+      $this->notifications->notifyPrivilegedMods($re_data); 
+
       $this->session->set_flashdata('message', alert_notice('Service request placed', 'success'));
       redirect('services');
     } 
@@ -61,12 +69,10 @@ class Service extends Admin_Controller
       'service' => $service[0] ?? [], 
       'customers' => $customers,  
     );  
-
+ 
     $this->load->view($this->h_theme.'/header', $data);
     $this->load->view($this->h_theme.'/services/service_point', $viewdata);
     $this->load->view($this->h_theme.'/footer');
   }
-}
-
-/* End of file welcome.php */
-/* Location: ./application/controllers/welcome.php */
+} 
+ 

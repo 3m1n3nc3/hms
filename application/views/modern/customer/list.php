@@ -26,21 +26,24 @@
                       <th> Phone Number </th>
                       <th> Email Address</th>
                       <th> Identity Code </th>
+                      <th> Debt </th>
                       <th class="td-actions"> Actions </th>
                     </tr>
                   </thead>
                   <tbody>
                     <?php if ($customers): ?>
                     <?php foreach ($customers as $customer): ?>
+                    <?php $stats = $this->accounting_model->statistics(['customer' => $customer->customer_id]); ?>
                     <tr>
                       <td>
-                        <a href="<?= site_url('customer/data/'.$customer->customer_TCno) ?>">
+                        <a href="<?= $customer->customer_id !== '0' ? site_url('customer/data/'.$customer->customer_TCno) : 'javascript:void(0)' ?>">
                           <?=$customer->customer_firstname . ' ' . $customer->customer_lastname;?>
                         </a>
                       </td>
                       <td> <?=$customer->customer_telephone;?> </td>
                       <td> <?=$customer->customer_email;?> </td>
                       <td> <?=$customer->customer_TCno;?> </td>
+                      <td> <?=$this->cr_symbol.number_format($stats['debt'], 2)?> </td>
                       <td class="td-actions">
                         <?php if ($customer->customer_id !== '0'): ?>
                         <a href="<?= site_url('customer/reserve/'.$customer->customer_TCno) ?>" class="btn btn-sm btn-success" data-toggle="tooltip" title="Reserve">
@@ -58,7 +61,7 @@
                     <?php endforeach; ?>
                     <?php else: ?>
                     <tr>
-                      <td colspan="5"><?php alert_notice('No rooms available', 'info', TRUE, FALSE) ?></td>
+                      <td colspan="5" class="text-center"><?php alert_notice('No rooms available', 'info', TRUE, FALSE) ?></td>
                     </tr>
                     <?php endif; ?>
                   </tbody>

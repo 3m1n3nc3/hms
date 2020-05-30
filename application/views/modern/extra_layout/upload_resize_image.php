@@ -48,6 +48,5 @@
                             </div>
 
                         </div>
-                    </div>
-
-                    <!-- <script src="<?php echo base_url('backend/js/plugins/upload-handler.js?time=121'); ?>" async ="false" type="text/javascript"></script> -->
+                    </div>  
+                    <input type="hidden" id="button_identifiers" value=""> 

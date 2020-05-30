@@ -1,7 +1,12 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Cashier extends Admin_Controller {
+class Cashier extends Admin_Controller 
+{
 
+    /**
+     * Manages the hotels cashier reporting 
+     * @return null           Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function index()
 	{ 
         // Check if the user has permission to access this method
@@ -23,8 +28,8 @@ class Cashier extends Admin_Controller {
 
 		$viewdata = array(
 			'expenses' => $this->accounting_model->get_expense($filter),  
-			'date_from' => $this->accounting_model->min_max()['date'],
-			'date_to' => $this->accounting_model->min_max(1)['date'],
+			'date_from' => $this->accounting_model->min_max(),
+			'date_to' => $this->accounting_model->min_max(1),
 			'from' => $filter_from,
 			'to' => $filter_to,
 			'filter_query' => $filter_query,
@@ -47,14 +52,19 @@ class Cashier extends Admin_Controller {
 		}
 	} 
 
+
+    /**
+     * Manages the hotels online payments records 
+     * @return null           Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function payments()
 	{ 
         // Check if the user has permission to access this method
         error_redirect(has_privilege('payments'), '401');
 
 		$filter_from = $this->input->get('from');
-		$filter_to = $this->input->get('to');
-		$filter = array();
+		$filter_to   = $this->input->get('to');
+		$filter      = array();
 		if ($filter_from) 
 		{
 			$filter['from'] = $filter_from;
@@ -63,13 +73,15 @@ class Cashier extends Admin_Controller {
 		{
 			$filter['to'] = $filter_to;
 		}
+        
+        $filter['type'] = 'ALL';
 		
 		$filter_query = ($filter_from && $filter_to ? '?from='.$filter_from.'&to='.$filter_to : ($filter_from ? '?from='.$filter_from : ($filter_to ? '?to='.$filter_to : null)));
 
 		$viewdata = array(
 			'payments' => $this->payment_model->get_payments($filter),  
-			'date_from' => $this->payment_model->min_max()['date'],
-			'date_to' => $this->payment_model->min_max(1)['date'],
+			'date_from' => $this->payment_model->min_max(),
+			'date_to' => $this->payment_model->min_max(1),
 			'from' => $filter_from,
 			'to' => $filter_to,
 			'filter_query' => $filter_query,
@@ -77,11 +89,11 @@ class Cashier extends Admin_Controller {
 			'table_method' => 'payment_report'.($filter_query)
 		); 
 
-		$data = array('title' => 'Online Payments - ' . my_config('site_name'), 'page' => 'online_payments');
+		$data = array('title' => 'Sales Report - ' . my_config('site_name'), 'page' => 'sales_report');
 
 		if ($this->input->post('print')) 
 		{	
-			$viewdata['table_method'] = 'cashier_report/0'.($filter_query);
+			$viewdata['table_method'] = 'payment_report/0'.($filter_query);
 			$this->load->view($this->h_theme.'/accounting/payment_report',array_merge($data, $viewdata));
 		}
 		else
@@ -92,13 +104,20 @@ class Cashier extends Admin_Controller {
 		}
 	} 
 
+
+    /**
+     * Manages the hotels room sale records
+     * Record filters are dates specifying the record date 
+     * ranges to fetch, the request is made through get queries
+     * @return null           Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function room_sales()
 	{ 
         // Check if the user has permission to access this method
         error_redirect(has_privilege('room-sales'), '401');
 
-		$filter_from = $this->input->get('from');
-		$filter_to = $this->input->get('to');
+		$filter_from = $this->input->get('from', TRUE);
+		$filter_to = $this->input->get('to', TRUE);
 		$filter = array();
 		if ($filter_from) 
 		{
@@ -113,8 +132,8 @@ class Cashier extends Admin_Controller {
 
 		$viewdata = array(
 			'room_sales' => $this->room_model->room_sales($filter),  
-			'date_from' => $this->room_model->min_max()['date'],
-			'date_to' => $this->room_model->min_max(1)['date'],
+			'date_from' => $this->room_model->min_max(),
+			'date_to' => $this->room_model->min_max(1),
 			'from' => $filter_from,
 			'to' => $filter_to,
 			'filter_query' => $filter_query,
@@ -137,6 +156,12 @@ class Cashier extends Admin_Controller {
 		}
 	} 
 
+
+    /**
+     * Manages the hotels expense register
+     * @param  string $record_id	This specified for a particular record to be returned
+     * @return null           Does not return anything but uses code igniter's view() method to render the page
+     */
 	public function expenses_register($record_id = '')
 	{
         // Check if the user has permission to access this method
@@ -173,6 +198,12 @@ class Cashier extends Admin_Controller {
 		$this->load->view($this->h_theme.'/footer');
 	} 
 
+
+    /**
+     * Deletes an expense record
+     * @param  string $id     The id of the record to be deleted
+     * @return null           Does not return anything but uses code igniter's view() method to render the page
+     */
 	function delete_expenses($record_id)
 	{
         // Check if the user has permission to access this method
@@ -183,6 +214,12 @@ class Cashier extends Admin_Controller {
 		redirect("accounting/cashier");
 	}
 
+
+    /**
+     * Deletes a payment record
+     * @param  string $id     The id of the record to be deleted
+     * @return null           Does not return anything but uses code igniter's view() method to render the page
+     */
 	function delete_payment($record_id)
 	{
         // Check if the user has permission to access this method
@@ -198,6 +235,12 @@ class Cashier extends Admin_Controller {
 		redirect("accounting/cashier/payments");
 	}
 
+
+    /**
+     * Deletes a room sale record
+     * @param  string $id     The id of the record to be deleted
+     * @return null           Does not return anything but uses code igniter's view() method to render the page
+     */
 	function delete_room_sale($record_id)
 	{
         // Check if the user has permission to access this method
@@ -212,7 +255,4 @@ class Cashier extends Admin_Controller {
 		$this->reservation_model->deleteReservation($reservation['reservation_id']);
 		redirect("accounting/cashier/room_sales");
 	}
-}
-
-/* End of file welcome.php */
-/* Location: ./application/controllers/welcome.php */
+} 

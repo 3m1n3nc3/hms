@@ -10,7 +10,9 @@
 				<div class="card card-primary card-outline">
 					<div class="card-body box-profile">
 						<div class="text-center">
-							<img class="profile-user-img img-fluid img-circle" src="<?= $this->creative_lib->fetch_image($employee['image'], 3); ?>" alt="User profile picture">
+                            <a href="javascript:void(0)" onclick="modalImageViewer('.profile-user-img')">
+								<img class="profile-user-img img-fluid rounded img-thumbnail customer" src="<?= $this->creative_lib->fetch_image($employee['image'], 3); ?>" alt="Employee profile picture">
+							</a> 
 						</div>
 						<h3 class="profile-username text-center"><?=$employee['employee_firstname'] . ' ' .$employee['employee_lastname']?></h3>
 						<p class="text-muted text-center"><?=$employee['employee_type']?></p>
@@ -37,7 +39,7 @@
 								<b>Basic Salary</b> <a class="float-right"><?=$employee['employee_salary']?></a>
 							</li>
 							<li class="list-group-item">
-								<b>Department</b> <a class="float-right"><?=$department['department_name']?></a>
+								<b>Department</b> <a class="float-right"><?=$department['service_name']?></a>
 							</li>
 						</ul> 
 						<a href="<?=site_url('employee/add/'.$employee['employee_id'])?>" class="btn btn-primary btn-block text-white"><b>Update Employee Data</b></a> 

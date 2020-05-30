@@ -6,7 +6,7 @@
         <div class="row">
           <div class="col-12">
             <h2 class="page-header">
-            <img src="<?= $this->creative_lib->fetch_image(my_config('site_logo'), 4); ?>" alt="<?=my_config('site_name')?> Logo" class="brand-image" style="opacity: .8"></i> <?=my_config('site_name')?>.
+            <img src="<?= $this->creative_lib->fetch_image(my_config('site_logo'), 2); ?>" alt="<?=my_config('site_name')?> Logo" class="brand-image" style="opacity: .8"></i> <?=my_config('site_name')?>.
             <small class="float-right"><?= lang('date'); ?>: <?= date('d/m/Y'); ?></small>
             </h2>
           </div>
@@ -56,7 +56,7 @@
                   <td> <?=$room['room_type'] . ' ' . lang('room') .' ' . $room_sale['room_id'];?> </td> 
                   <td> <?=$this->cr_symbol.number_format($room_sale['room_sales_price'], 2);?> </td> 
                   <td> <?=$room_sale['reservation_ref'];?> </td>
-                  <td> <?=$room_sale['reservation_date'];?> </td> 
+                  <td> <?=date("d M Y h:i A", strtotime($room_sale['reservation_date']));?> </td> 
                 </tr>
                 <?php endforeach; ?>
               </tbody>

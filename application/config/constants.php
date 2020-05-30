@@ -1,6 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed'); 
 
+defined('HMS_VERSION') OR define('HMS_VERSION', 'v1.0.001');
+defined('HMS_NAME')    OR define('HMS_NAME', 'Hoolicon Tech HMS');
 /*
 |--------------------------------------------------------------------------
 | Display Debug backtrace

@@ -70,7 +70,7 @@ class Account_Data {
         else 
         {
             $this->CI->session->set_userdata('redirect_customer_to', current_url());
-            redirect('account/login');
+            if ($redirect) redirect("account/login");
         }
     }
 
@@ -120,7 +120,7 @@ class Account_Data {
     {   
         if ($customer === 1) 
         {
-            $data = $this->CI->customer_model->get_customer(['id' => $id]); 
+            $data = $this->CI->customer_model->get_customer(['customer_id' => $id]); 
 
             if ($data['customer_firstname'] && $data['customer_lastname']) 
             {

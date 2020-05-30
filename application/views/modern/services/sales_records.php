@@ -58,7 +58,7 @@
                                         <?= form_error('service'); ?>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <!-- text input -->
                                     <div class="form-group">
                                         <label for="date">Date</label>
@@ -66,7 +66,20 @@
                                         <?= form_error('date'); ?>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+ 
+                                <div class="col-md-4">
+                                    <!-- text input -->
+                                    <div class="form-group">
+                                        <label for="payment">Amount Paid</label>
+                                        <input type="text" id="payment" name="payment" class="form-control" value="<?= set_value('payment') ?>" required>
+                                        <?= form_error('payment'); ?>
+                                        <small class="text-info">
+                                            Enter <span class="text-danger">c</span> if customer paid in full
+                                            or <span class="text-danger">0</span> if customer paid nothing.
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
                                     <!-- text input -->
                                     <div class="form-group">
                                         <label for="price">Total Price</label>
@@ -79,8 +92,9 @@
                                 </button>
                                 <?php
                                     $param = array(
-                                        'modal_target' => 'stockitems-modal',
-                                        'modal_title' => 'Choose Items to Buy',
+                                        'modal_btn'     => TRUE,
+                                        'modal_target'  => 'stockitems-modal', 
+                                        'modal_title'   => 'Choose Items to Buy',
                                         'modal_content' => '
                                         <div class="col-md-12">
                                             <div class="row p-2" id="stock_item">
@@ -112,12 +126,13 @@
                             <table class="table table-striped display" id="datatables_table" style="width: 100%">
                                 <thead>
                                     <tr>
-                                        <th> Order Items </th>
-                                        <th> Order Quantity (Per Items) </th>
+                                        <th> Order Items </th> 
                                         <th> Order Amount </th>
-                                        <th> Ordered By </th>
+                                        <th> Customer  </th>
                                         <th> Sold At </th>
                                         <th> Sold By </th>
+                                        <th> Paid </th>
+                                        <th> Bal. </th>
                                         <th> Order Time </th>
                                         <th class="td-actions"> Actions </th>
                                     </tr>

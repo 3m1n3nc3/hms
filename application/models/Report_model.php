@@ -6,32 +6,25 @@ class Report_model extends CI_Model {
     {
         // Call the Model constructor
         parent::__construct();
-    }
-    
-    function today_stats()
-    {
-        $date = date('Y-m-d');
-        $query = $this->db->query("CALL todays_service_count('$date')");
-        $data = array();
-
-        if ($query) {
-            foreach ($query->result() as $row)
-            {
-                $data[$row->type] = $row->amount;
-            }
-            if(count($data))
-                return $data;
-        }
-        return false;
-    }
+    } 
 
     function search_customers($query)
     {
-        $query = $this->db->from("customer")->like('customer_firstname', $query)->or_like('customer_lastname', $query)->or_like('customer_TCno', $query)->or_like('customer_email', $query)->or_like('customer_state', $query)->get();
+        $query = trim($query);
+        $this->db->select("*"); 
+        $this->db->select("(SELECT SUM(`order_price`) FROM sales_service_orders WHERE `customer_id` = `customer`.`customer_id`) AS orders");
+        $this->db->select("(SELECT SUM(`paid`) FROM sales_service_orders WHERE `customer_id` = `customer`.`customer_id`) AS paid");
+        $this->db->select("(SELECT SUM(`orders`-`paid`)) AS debt");
+        $query = $this->db->from("customer") 
+            ->like('customer_TCno', $query)
+            ->or_like('customer_email', $query)
+            ->or_like('customer_state', $query)
+            ->or_like("CONCAT_WS(' ', customer_firstname, customer_lastname)", $query) 
+        ->get();
         $data = array();
         foreach ($query->result() as $res) {
             $data[] = $res;
-        }
+        } 
         return $data;
     }
 
