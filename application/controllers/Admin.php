@@ -15,6 +15,8 @@ class Admin extends Admin_Controller {
         $customer_most_paid = $this->report_model->get_customer_most_paid();
         $next_week_freq     = $this->report_model->get_next_week_freq();
         $sales_stats        = $this->accounting_model->statistics(/*['service' => 'Wine Bar']*/);
+        $site_stats         = $this->accounting_model->site_statistics();
+        $monthly_summary    = $this->accounting_model->site_statistics(['monthly' => true, 'year' => date('Y')], 1);
         
         $data = array(
             'title'        => my_config('site_name'), 
@@ -27,6 +29,8 @@ class Admin extends Admin_Controller {
             'customer_pay_list'  => $customer_pay_list,
             'customer_most_paid' => $customer_most_paid,
             'next_week_freq'     => $next_week_freq,
+            'site_stats'         => $site_stats,
+            'monthly_summary'    => $monthly_summary,
             'sales_stats'        => $sales_stats
         );
         $this->load->view($this->h_theme.'/welcome_message', $viewdata);

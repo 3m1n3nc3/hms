@@ -41,8 +41,45 @@ class Hms_parser
                 textColor      : \'#fff\' //yellow
             }';
         }
-        $reservation = implode(',', $reserved);
+        $reservation = implode(', ', $reserved);
         return $reservation;
+    }
+
+    public function payment_stats($year = '')
+    {
+        $year = ($year) ? $year : date('Y');
+
+        $this->CI->load->model('accounting_model');
+        $statistics = $this->CI->accounting_model->site_statistics(['monthly' => true, 'year' => $year]);
+// print_r($statistics);
+        $data = $label = [];
+        foreach ($statistics as $key => $stats) 
+        { 
+            $month   = DateTime::createFromFormat('!m', $stats['month'])->format('F');
+            $data[]  = $stats['amount'];
+            $label[] = '\''.$month.'\'';
+        }
+        $stats  = '[' . implode(', ', $data) . ']';
+        $labels = '[' . implode(', ', $label) . ']';
+
+        $datasets = 
+        "{
+            labels  : $labels,
+            datasets: [
+              {
+                label               : 'Payments',
+                backgroundColor     : 'rgba(60,141,188,0.9)',
+                borderColor         : 'rgba(60,141,188,0.8)',
+                pointRadius         : false,
+                pointColor          : '#3b8bba',
+                pointStrokeColor    : 'rgba(60,141,188,1)',
+                pointHighlightFill  : '#fff',
+                pointHighlightStroke: 'rgba(60,141,188,1)',
+                data                : $stats
+              } 
+            ]
+        }";
+        return $datasets;
     }
 
 

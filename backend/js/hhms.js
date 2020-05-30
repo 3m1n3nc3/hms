@@ -491,6 +491,82 @@ jQuery(document).ready(function($) {
     $('[data-toggle="tooltip"]').tooltip(); 
  
     $('[data-toggle="popover"]').popover();
+
+    $('div .card').each(function(data) {
+        var pos        = data+1;
+        var _target    = '#' + $(this).attr('id');
+        var card_state = $(_target).data('card-state');
+
+        if (card_state && card_state !== 'remove') {
+            $(_target).addClass(card_state + 'd-card');
+
+            var button = $(_target).find('button[data-card-widget="'+card_state+'"] i');
+
+            if (card_state == 'collapse') {
+                var icon  = 'fa-minus';
+                var _icon = 'fa-plus';
+            } else if (card_state == 'maximize') {
+                var icon  = 'fa-window-maximize';
+                var _icon = 'fa-window-minimize';
+            }
+
+            button.toggleClass(icon).toggleClass(_icon); 
+            
+        } else if (card_state && card_state === 'remove') { 
+            $(_target).css('display', 'none');
+        }
+    });
+
+    $('.card-tools button').click(function(event) {
+        var state         = $(this).data('card-widget');
+        var page          = $('body').data('page');
+        var card_selector = $(this).closest('.card');
+        var card_id       = card_selector.attr('id');
+        if (state === 'maximize') {
+            $(this).children('i').toggleClass('fa-window-maximize').toggleClass('fa-window-minimize'); 
+        } else if (state === 'remove') {
+            $('#view_closed_views').parent('.nav-item').show(); 
+        }
+        $.post(site_url('ajax/connect/change_card_state'), {page:page, id:card_id, state:state});
+    });
+
+    $('#view_closed_views').click(function() {
+        var modal_id  = $(this).data('target');
+        var page      = $('body').data('page');
+        var _trigger  = $(this);
+        var _all_good =
+            '<div class="text-center">'
+                +'<i class="fa fa-check-circle fa-5x text-success"></i>'
+            +'</div>';
+
+        var hidden_cards = $('div[style="display: none;"].card');
+
+        $('.modal' + modal_id + ' .modal-body').html(_all_good);
+        $('.modal' + modal_id + ' .modal-title').text('Closed Views');
+
+        $(hidden_cards).each(function(data) {
+            var _title  = $(this).children('.card-header').children('.card-title').html();
+            var card_id = $(this).attr('id');
+            $('.modal' + modal_id + ' .modal-body').append(''
+                +'<div class="mb-1">'
+                    +'<button data-card-id="'+card_id+'" class="btn btn-light border btn-block text-left font-weight-bold reopen-view">'
+                        +_title
+                    +' </button>'
+                +'</div>'
+            );
+            $('.reopen-view').click(function() { 
+                var hidden_cards = $('div[style="display: none;"].card');
+
+                $('div.card#'+$(this).data('card-id')).slideDown();
+                $(this).slideDown().remove();
+                if (hidden_cards.length <= 1) {
+                    $('.modal' + modal_id + ' .modal-body').html(_all_good);
+                    _trigger.parent('.nav-item').hide();
+                }
+                $.post(site_url('ajax/connect/change_card_state'), {page:page, id:card_id, state:'remove'});
+            });
+        });
+    });
 })
 
 Date.createFromPHP = function(mysql_string)
@@ -506,4 +582,4 @@ Date.createFromPHP = function(mysql_string)
     }
 
    return result;   
-}
+} 

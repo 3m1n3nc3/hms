@@ -314,4 +314,52 @@ class Connect extends MY_Controller {
 
         echo json_encode($response);
     }
+
+
+    /**
+     * Jodit FileBrowser Connector for Jodit v.3.0
+     * Official Jodit WYSIWYG PHP connector
+     * @return NULL     Echoes a json string containing the notifications
+     */
+    public function responsive_filemanager()
+    {
+        define('JODIT_ROOT', FCPATH . 'uploads/jodit/');
+        
+        include_once APPPATH . '/third_party/RFileManager/dialog.php';
+
+    }
+
+
+    /**
+     * Change the state of the card 
+     * @return NULL     Echoes a json string containing the new state
+     */
+    public function change_card_state()
+    { 
+        $post      = $this->input->post(NULL, TRUE);
+        $cur_state = $this->db->select('state')
+            ->where('page', $post['page'])->where('uid', $this->uid)->where('card_id', $post['id'])
+            ->get('card_state')->row_array(); 
+        
+        $new_state = ($cur_state['state'] !== $post['state'] ? $post['state'] : '');
+
+        if ($cur_state) 
+        {
+            $this->db->where('page', $post['page'])->where('uid', $this->uid)->where('card_id', $post['id'])
+            ->update('card_state', array('state' => $new_state));
+        } 
+        else 
+        {
+            $this->db->insert('card_state', 
+                array(
+                    'page' => $post['page'], 
+                    'uid' => $this->uid, 
+                    'card_id' => $post['id'], 
+                    'state' => $post['state']
+                )
+            );
+        }
+
+        echo ($cur_state['state'] !== $post['state'] ? true : false);
+    }
 }

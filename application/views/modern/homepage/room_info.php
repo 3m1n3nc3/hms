@@ -123,9 +123,11 @@
                             <?php if ($book_rooms): ?>
                             <?php
                                 $rooms = $book_rooms;
-                                $size = count($rooms);
-                                $cols = ceil(sqrt($size));
-                                $rows = ceil($size/$cols);
+                                $size  = count($rooms);
+                                $cols  = ceil(sqrt($size));
+                                $rows  = ceil($size/$cols);
+                                $booked_days = dateDifference(set_value('checkin_date'), set_value('checkout_date')); 
+                                $booked_days = $booked_days > 0 ? $booked_days : 1;
                             ?>
                             <table>
                                 <thead>
@@ -137,14 +139,21 @@
                                     <?php for ($t=0, $i=0; $t<$rows; ++$t): ?>
                                     <tr>
                                         <?php for($j=0; $j<$cols && $i<$size; ++$i, ++$j): ?>
-                                        <td class="td-actions">
-                                            <button name="room_id" type="button" value="<?=$rooms[$i]->room_id?>" onclick="return re(this)" class="btn btn-lg py-4 m-2 font-weight-bold btn-success shadow">
-                                                <?=$rooms[$i]->room_type?>
+                                        <td class="td-actions"> 
+                                            <button name="room_ids" value="<?=$rooms[$i]->room_id?>" 
+                                                onclick="return re(this)"
+                                                type="submit"
+                                                class="btn btn-lg py-4 m-2 px-5 font-weight-bold btn-light border shadow">
+                                                <?=$rooms[$i]->room_type;?> 
                                                 <br>
                                                 Room <?=$rooms[$i]->room_id?>
                                                 <i class="btn-icon-only fa fa-calendar-check"> </i>
                                                 <br>
-                                                <?='At $' . $rooms[$i]->room_price;?>
+                                                At <?=$this->cr_symbol . number_format($rooms[$i]->room_price, 2);?>
+                                                <br><hr>
+                                                <span class="text-success">
+                                                <?=$this->cr_symbol . number_format($rooms[$i]->room_price*$booked_days, 2) . ' for ' . $booked_days . ' days';?>
+                                                </span>
                                             </button>
                                         </td>
                                         <?php endfor; ?>
