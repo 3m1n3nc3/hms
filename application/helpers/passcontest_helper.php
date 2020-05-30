@@ -337,3 +337,130 @@ if ( ! function_exists('decode_html') )
         return htmlspecialchars_decode($html);
     }
 }
+
+if (! function_exists('show_money')) 
+{
+    /** 
+     *
+     * Appends the site currency to a number
+     * Prepends the decimal placing for the number
+     *
+     * @param   string      $amount
+     * @param   string      $decimal
+     * @return  string     
+     */
+    function show_money($amount=0, $decimal = 2)
+    {
+        global $CI; 
+
+        $format = $CI->cr_symbol.number_format($amount, $decimal);
+        return $format;
+    }
+}
+
+if (! function_exists('show_percent')) 
+{
+    /** 
+     *
+     * Appends the site currency to a number
+     * Prepends the decimal placing for the number
+     *
+     * @param   string      $amount
+     * @param   string      $decimal
+     * @return  string     
+     */
+    function show_percent($v1=0, $v2=0, $show_sym = '%')
+    {
+        global $CI; 
+
+        $format = number_format(($v1*100)/$v2); 
+  
+        return $format . $show_sym;
+    }
+}
+
+if (! function_exists('percentage_color')) 
+{
+    /** 
+     *
+     * Sets a bootstrap color based on the
+     * supplied percentage
+     *
+     * @param   string      $amount
+     * @param   string      $decimal
+     * @return  string     
+     */
+    function percent_color($percentage = 0, $show_caret = FALSE)
+    { 
+        $percentage = str_ireplace('%', '', $percentage);
+        $color = 'text-danger';
+        $caret = 'fa-caret-down';
+        if ($percentage <= 25 && $percentage >= 1) 
+        {
+            $color = 'text-warning';
+            $caret = 'fa-caret-left';
+        }
+        elseif ($percentage >= 25) 
+        {
+            $color = 'text-success';
+            $caret = 'fa-caret-up';
+        }
+        
+        if ($show_caret) {
+            return $caret;
+        }
+        return $color;
+    }
+}
+
+// --------------------------------------------------------------------
+
+if ( ! function_exists('c_card_state'))
+{
+    /**
+     * Elements
+     *
+     * Checks the current state of a card and returns and adds a corresponding class
+     *
+     * @param   string 
+     * @return  string  
+     */
+    function c_card_state($card_id = '', $page = '', $uid = '')
+    {
+        global $CI; 
+
+        $state = $CI->db->select('state')
+            ->where('page', $page)->where('uid', $uid)->where('card_id', $card_id)
+            ->get('card_state')->row_array()['state']; 
+ 
+        return ' data-card-state="' . $state . '"';
+    }
+}
+
+// --------------------------------------------------------------------
+
+if ( ! function_exists('hide_c_state'))
+{
+    /**
+     * Elements
+     *
+     * Checks the current state of a card and returns and adds a corresponding class
+     *
+     * @param   string 
+     * @return  string  
+     */
+    function hide_c_state($uid = '', $page = '')
+    {
+        global $CI; 
+
+        $state = $CI->db->where('uid', $uid)
+            ->where('page', $page)
+            ->where('state !=', '')
+            ->count_all_results('card_state');  
+        
+        if ($state<=0) {
+            return ' style="display: none;"';
+        }
+    }
+}
+

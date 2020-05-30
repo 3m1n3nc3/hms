@@ -150,7 +150,7 @@ class Notifications {
 		        $this->CI->db->where_in('id', $update)->update('notifications', array('seen' => time()));
 	        }
 
-	    	$data = $this->setNotificationSession($data);
+	    	$data = $this->setNotificationSession($data); 
             $this->queryOverStayNotifications();
 	    }
 

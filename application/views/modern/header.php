@@ -437,7 +437,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
                   </ul>
                 </li>
-              <?php endif; ?>
+              <?php endif;?>
+                <li class="nav-item border border-info text-center rounded"<?=hide_c_state($this->uid, $page)?>>
+                  <a href="javascript:void(0)" class="nav-link mb-0 text-info font-weight-bold" data-toggle="modal" data-target="#actionModal" id="view_closed_views">
+                    <i class="nav-icon fas fa-bars"></i>
+                    <p>
+                      Closed Views
+                    </p>
+                  </a>
+                </li> 
 
             </ul>
           </nav>

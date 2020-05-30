@@ -38,6 +38,7 @@
     </div>
     <!-- ./wrapper (Opened at view/classic/header.php) -->
 
+
     <!-- REQUIRED SCRIPTS -->
     <!-- Placed at the end of the document so the pages load faster --> 
     <!-- =============================================== -->
@@ -57,6 +58,7 @@
     <script src="<?= base_url('backend/modern/plugins/datetimepicker/build/jquery.datetimepicker.full.js'); ?>"></script> 
     <!-- Summernote -->
     <script src="<?= base_url('backend/modern/plugins/jodit/jodit.js'); ?>"></script> 
+
     <!-- Hotel Management System -->
     <script src="<?= base_url('backend/js/hhms.js?time='.strtotime('NOW')); ?>"></script>  
 
@@ -72,9 +74,41 @@
     <!-- =============================================== -->
 
     <script src="<?= base_url('backend/js/excanvas.min.js'); ?>"></script> 
-    <script src="<?= base_url('backend/js/chart.min.js'); ?>" type="text/javascript"></script> 
+    <!-- Chart.js -->
+    <script src="<?= base_url('backend/modern/plugins/Chart.js/Chart.min.js'); ?>"></script>  
+
     <script src="<?= base_url('backend/js/full-calendar/fullcalendar.min.js'); ?>"></script>
     <script src="<?= base_url('backend/js/base.js'); ?>"></script> 
+
+    <!-- =========================================================== -->
+    <?php if($page == "dashboard"): ?>
+    <script>     
+
+      var salesChartData = <?=$this->hms_parser->payment_stats()?>; 
+
+      var nextWeekChartData = {
+        labels  : ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+        datasets: [
+          {
+            label               : 'Reservations',
+            backgroundColor     : 'rgba(60,141,188,0.9)',
+            borderColor         : 'rgba(60,141,188,0.8)',
+            pointRadius          : false,
+            pointColor          : '#3b8bba',
+            pointStrokeColor    : 'rgba(60,141,188,1)',
+            pointHighlightFill  : '#fff',
+            pointHighlightStroke: 'rgba(60,141,188,1)',
+            data                : <?= json_encode($next_week_freq['freq_counts']);?>
+          } 
+        ]
+      } 
+      var nextWeekChartData   = jQuery.extend(true, {}, nextWeekChartData) 
+
+    </script>
+    <?php endif; ?>
+
+    <!-- Hotel Management System -->
+    <script src="<?= base_url('backend/js/hhms.charts.js?time='.strtotime('NOW')); ?>"></script>  
 
     <!-- Notifications and more -->
     <?php if ($this->account_data->logged_in()): ?>
@@ -196,47 +230,8 @@
       });
 
       calendar.render();
-    </script>
-    <?php endif; ?>
+    </script> 
 
-    <!-- =========================================================== -->
-    <?php if($page == "dashboard"): ?>
-
-      <script>      
-
-        var lineChartData = {
-          labels: <?= json_encode($next_week_freq['dates']);?>,
-          datasets: [ 
-            {
-              fillColor: "rgba(151,187,205,0.5)",
-              strokeColor: "rgba(151,187,205,1)",
-              pointColor: "rgba(151,187,205,1)",
-              pointStrokeColor: "#fff",
-              data: <?= json_encode($next_week_freq['freq_counts']);?>
-            }
-          ]
-
-        }
-        
-        var myLine = new Chart(document.getElementById("area-chart").getContext("2d")).Line(lineChartData);
-
-        var barChartData = {
-          labels: ["January", "February", "March", "April", "May", "June", "July"],
-          datasets: [
-            {
-              fillColor: "rgba(220,220,220,0.5)",
-              strokeColor: "rgba(220,220,220,1)",
-              data: [65, 59, 90, 81, 56, 55, 40]
-            },
-            {
-              fillColor: "rgba(151,187,205,0.5)",
-              strokeColor: "rgba(151,187,205,1)",
-              data: [28, 48, 40, 19, 96, 27, 100]
-            }
-          ]
-        }    
-
-      </script><!-- /Calendar -->
       <!-- Welcome Guide -->
       <?php if(SHOW_GUIDE): ?>
         <!-- <script src="<?= base_url('backend/js/guidely/guidely.min.js'); ?>"></script> -->
